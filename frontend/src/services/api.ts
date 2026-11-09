@@ -12,8 +12,12 @@ const api = axios.create({
  * @param assetPath The relative path of the asset within the project's asset folder.
  * @returns The full, accessible URL for the asset, or null if the path is invalid.
  */
+/** A sprite that is not a file: an emoji or text placeholder put there when the object was created. */
+export const isPlaceholderSprite = (sprite: string | null | undefined): boolean =>
+  !!sprite && !sprite.startsWith('http') && !/\.[a-z0-9]{2,5}(\?.*)?$/i.test(sprite);
+
 export const getAssetUrl = (projectName: string, assetPath: string | null | undefined): string | null => {
-  if (!projectName || !assetPath) {
+  if (!projectName || !assetPath || isPlaceholderSprite(assetPath)) {
     return null;
   }
   // The backend route is /api/assets/{project_name}/{asset_path}

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, X, Package, MapPin, Volume2, VolumeX, Maximize2, Minimize2, Send, Type, Notebook } from 'lucide-react';
 import type { Project, GameObject } from '../types';
-import api, { getAssetUrl } from '../services/api';
+import api, { getAssetUrl, isPlaceholderSprite } from '../services/api';
 import { useResizable, useRightResizable } from '../hooks';
 import { ResizeHandle } from './ui';
 import GameLauncher from './GameLauncher';
@@ -17,6 +17,7 @@ interface GamePlayerProps {
 const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projectName: string, onClick: () => void }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const spriteUrl = getAssetUrl(projectName, obj.sprite);
+  const placeholder = isPlaceholderSprite(obj.sprite) ? obj.sprite : (spriteUrl ? '' : '📦');
 
   useEffect(() => {
     if (obj.animation?.type === 'sprite_sheet') {
@@ -49,9 +50,15 @@ const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projec
     height: `${height}%`,
     position: 'absolute',
     cursor: 'pointer',
-    backgroundImage: `url("${spriteUrl}")`,
+    backgroundImage: spriteUrl ? `url("${spriteUrl}")` : undefined,
     backgroundRepeat: 'no-repeat',
   };
+  if (placeholder) {
+    style.display = 'flex';
+    style.alignItems = 'center';
+    style.justifyContent = 'center';
+    style.fontSize = '2.5rem';
+  }
 
   // Ajuste para Sprite Sheet
   if (obj.animation?.type === 'sprite_sheet') {
@@ -77,6 +84,7 @@ const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projec
       title={obj.name}
       className="hover:scale-105 transition-transform duration-200 group"
     >
+      {placeholder}
       {/* Tooltip opcional */}
       <div className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-900 px-2 py-1 rounded z-10 pointer-events-none">
         {obj.name}
@@ -343,7 +351,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center overflow-hidden">
-                      {item.icon ? <img src={getAssetUrl(project.name, item.icon)} className="w-full h-full object-cover" /> : <Package className="w-4 h-4 text-yellow-400" />}
+                      {getAssetUrl(project.name, item.icon) ? <img src={getAssetUrl(project.name, item.icon)!} className="w-full h-full object-cover" /> : <Package className="w-4 h-4 text-yellow-400" />}
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-white" style={{ fontSize: `${fontSize}px` }}>{item.name}</div>

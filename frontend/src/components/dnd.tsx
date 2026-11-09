@@ -3,7 +3,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { Image as ImageIcon, Trash2, Music, FileAudio } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { GameObject, Hotspot, Project } from '../types';
-import { getAssetUrl } from '../services/api';
+import { getAssetUrl, isPlaceholderSprite } from '../services/api';
 
 export const DraggableAsset = ({ projectName, filePath, onSetBackground, onDeleteAsset, currentSceneId }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -151,7 +151,9 @@ export const DraggableObject = ({ obj, project, selected, onClick }: { obj: Game
         <div className="flex flex-col items-center gap-1 overflow-hidden">
           {obj.type === 'music' && <Music size={24} className="text-purple-400" />}
           {obj.type === 'sound' && <FileAudio size={24} className="text-blue-400" />}
-          {!obj.type || (obj.type !== 'music' && obj.type !== 'sound') && <ImageIcon size={24} className="text-gray-500" />}
+          {obj.type !== 'music' && obj.type !== 'sound' && (isPlaceholderSprite(obj.sprite)
+            ? <span className="text-3xl leading-none">{obj.sprite}</span>
+            : <ImageIcon size={24} className="text-gray-500" />)}
           <span className="text-[10px] font-medium text-gray-300 truncate max-w-full px-1">{obj.name}</span>
         </div>
       </div>
