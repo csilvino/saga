@@ -198,6 +198,11 @@ class DirectorSession:
         async with httpx.AsyncClient(timeout=300) as client:
             r = await client.post(SAGA_API_URL + path, json=payload)
             if r.status_code >= 400:
+                if "limit: 0" in r.text:
+                    # free-tier keys have no quota at all for image models: waiting does not help
+                    return {"error": "o modelo de imagem configurado não tem cota no plano gratuito desta chave "
+                                     "(limite 0). Para gerar imagens é preciso ativar o faturamento no Google "
+                                     "AI Studio ou usar a geração local. Explique isso ao usuário; não tente de novo."}
                 return {"error": f"{path} respondeu {r.status_code}: {r.text[:300]}"}
             return r.json()
 

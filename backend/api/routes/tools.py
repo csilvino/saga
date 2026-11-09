@@ -141,7 +141,8 @@ async def list_models_tool():
             if "generateContent" not in (m.supported_actions or []):
                 continue
             entry = {"name": m.name, "label": m.display_name or m.name}
-            (image if "image" in m.name else text).append(entry)
+            is_image = any(k in (m.name + " " + (m.display_name or "")).lower() for k in ("image", "banana"))
+            (image if is_image else text).append(entry)
         return {**current, "text": sorted(text, key=lambda e: e["name"]),
                 "image": sorted(image, key=lambda e: e["name"])}
     except Exception as e:
