@@ -1,0 +1,162 @@
+{
+  "name": "test_consciousness_project",
+  "start_scene": "default",
+  "launcher": {
+    "title": "test_consciousness_project",
+    "description": "Inicie sua jornada épica com o Saga Engine.",
+    "flyer_image": "/flyer_calixto.png",
+    "version": "1.0.0"
+  },
+  "scenes": {
+    "default": {
+      "id": "default",
+      "name": "Cena de Exemplo",
+      "background": "",
+      "objects": [],
+      "hotspots": []
+    },
+    "scene_f5fe6882": {
+      "id": "scene_f5fe6882",
+      "name": "Beco Escuro",
+      "objects": [
+        {
+          "id": "background_86bd444d",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_8ca83386.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        },
+        {
+          "id": "game_object_bd5621a4",
+          "name": "Latas de Lixo",
+          "type": "interactive",
+          "sprite": "📦",
+          "position": {
+            "x": 1659,
+            "y": 802
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para o objeto Latas de Lixo\n\non examine {\n  narrate('Latas de metal amassadas, exalando um cheiro acre. Parece haver algo espiando por de trás de uma delas.')\n}\n\non interact {\n  narrate('Não parece fazer nada por enquanto.')\n}\n"
+        },
+        {
+          "id": "game_object_61c83f7a",
+          "name": "Grafite Desbotado",
+          "type": "decoration",
+          "sprite": "📦",
+          "position": {
+            "x": 422,
+            "y": 696
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para o objeto Grafite Desbotado\n\non examine {\n  narrate('Um grafite desbotado, quase ilegível, na parede úmida. Uma figura sombria foi rabiscada ali.')\n}\n\non interact {\n  narrate('Não parece fazer nada por enquanto.')\n}\n"
+        },
+        {
+          "id": "sprite_a8fce980-74a8-4f6a-99c6-b0fabd28fa5f",
+          "name": "Novo Sprite 4",
+          "type": "sprite",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para sprite 4\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "\non enter {\n  narrate(\"A escuridão do beco engole você. O cheiro de lixo e umidade paira no ar. É um lugar onde segredos se escondem.\")\n}\n",
+      "description": "📍 Beco Escuro. Vejo: Latas de lixo, uma poça d'água, um grafite desbotado. Saídas: Nenhuma óbvia."
+    }
+  },
+  "metadata": {
+    "action_history": [
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_scene_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Grafite Desbotado' na cena scene_f5fe6882",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Latas de Lixo' na cena scene_f5fe6882",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_f5fe6882: backgrounds/Cloud_Gemini_8ca83386.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_f5fe6882",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Adicionou um frasco de veneno duplicado.",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou a cena 'Laboratório'.",
+        "timestamp": ""
+      }
+    ],
+    "deleted_objects": [],
+    "narrative_directives": "O jogo deve ter um tom de mistério noir. Evite descrições alegres."
+  }
+}

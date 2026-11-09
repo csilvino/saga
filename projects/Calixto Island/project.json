@@ -1,0 +1,881 @@
+{
+  "name": "Calixto Island",
+  "version": "1.0",
+  "start_scene": "scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+  "navigation_mode": "pathfinding",
+  "metadata": {
+    "author": "Saga Engine",
+    "description": "A mystery adventure game.",
+    "action_history": [
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Relogio Antigo' na cena scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_dca60532",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_dca60532: backgrounds/Cloud_Gemini_583f9a3e.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_dbfba2ac",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_dbfba2ac",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_f4f93aa3",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_47f25e49",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_47f25e49",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_c51ff5f6",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_f4f93aa3",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_f4f93aa3",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_d947f1cf",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_c51ff5f6",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_c51ff5f6",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_61a7e510",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_d947f1cf",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_d947f1cf",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_b2dd3564",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_61a7e510",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_61a7e510",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_dca60532",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_b2dd3564",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_b2dd3564",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_dca60532",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_dca60532",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_properties",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Painel de Controle' na cena scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_properties",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Energizador' na cena scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_a2c24737: backgrounds/Cloud_Gemini_b1e4e810.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_138d01af",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_e1e1f417",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_a2c24737: backgrounds/Cloud_Gemini_cdbb795d.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_e1e1f417: backgrounds/Cloud_Gemini_cc7f2cce.png",
+        "timestamp": ""
+      }
+    ]
+  },
+  "scenes": {
+    "scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc": {
+      "id": "scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+      "name": "Escritório do Professor Lagarto",
+      "objects": [
+        {
+          "id": "background_3b5c1068-3593-4f62-9bbe-6b29856c1ab0",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/b204b9bf-1b93-4625-9499-c98df08ed871_clean_322aa0.png?t=1772161194160",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para background 2\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        },
+        {
+          "id": "sprite_aa44ecc4-a2e0-4ad0-98e4-464c2d826a18",
+          "name": "Novo Sprite 2",
+          "type": "sprite",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para sprite 2\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        },
+        {
+          "id": "extracted_e6e8ee21",
+          "name": "Relogio",
+          "type": "sprite",
+          "sprite": "sprites/extracted_133264.png",
+          "position": {
+            "x": 714,
+            "y": 250
+          },
+          "origin": {
+            "x": 714,
+            "y": 250
+          },
+          "size": {
+            "width": 196,
+            "height": 261
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "description": "📍 Escritório do Professor Lagarto. Vejo: uma escrivaninha coberta de papéis, um tapete oriental que parece esconder algo no chão, uma estante alta de livros antigos e uma mesa antiga com símbolos gravados. Saídas: um lance de escadas que sobe e um alçapão (se revelado) que desce."
+    },
+    "scene_6be3484c": {
+      "id": "scene_6be3484c",
+      "name": "Biblioteca",
+      "objects": [
+        {
+          "id": "background_f41d595d",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_8f3abaaf.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Biblioteca\n\non load {\n  // Ações ao carregar a cena\n}\n"
+    },
+    "scene_138d01af": {
+      "id": "scene_138d01af",
+      "name": "Porão",
+      "objects": [
+        {
+          "id": "background_0754b09d-a018-4671-ad18-479e9cd67bb0",
+          "name": "Novo Background 1",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_8deeede1.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para background 1\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Porão\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Porão. Vejo: prateleiras empoeiradas, caixas antigas empilhadas, uma bomba de pneu, um balde, uma armadilha para ratos e um gabinete de madeira. Saídas: um alçapão (para cima) e uma passagem secreta (se revelada).",
+      "exits": {
+        "PASSAGEM SECRETA": "scene_e1e1f417",
+        "PRA CIMA": "scene_938c9659"
+      }
+    },
+    "scene_938c9659": {
+      "id": "scene_938c9659",
+      "name": "Sotão",
+      "objects": [
+        {
+          "id": "background_fdade0f9-222b-45c1-9e28-e02e24c21d61",
+          "name": "Novo Background 1",
+          "type": "background",
+          "sprite": "backgrounds/Gemini_Generated_Image_8phyzw8phyzw8phy.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para background 1\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Sotão\n\non load {\n  // Ações ao carregar a cena\n}\n"
+    },
+    "scene_a2c24737": {
+      "id": "scene_a2c24737",
+      "name": "Laboratório",
+      "objects": [
+        {
+          "id": "background_0e9ee41d",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_b1e4e810.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Laboratório\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Laboratório. Vejo: Onde reside o Energizador (máquina de teletransporte) e o painel de controle. É o centro tecnológico que permite a viagem para as ilhas.",
+      "exits": {
+        "TELEPORTE": "scene_dca60532"
+      }
+    },
+    "scene_e1e1f417": {
+      "id": "scene_e1e1f417",
+      "name": "Passagem Secreta",
+      "objects": [
+        {
+          "id": "background_8c657b31",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_cc7f2cce.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Passagem Secreta\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Passagem Secreta. Vejo: um corredor estreito e úmido. Saídas: Porão (para trás), Laboratório (para frente).",
+      "exits": {
+        "PARA FRENTE": "scene_a2c24737",
+        "PARA TRÁS": "scene_138d01af"
+      }
+    },
+    "scene_dca60532": {
+      "id": "scene_dca60532",
+      "name": "Campo Pantanoso",
+      "objects": [
+        {
+          "id": "background_da42eee3",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_583f9a3e.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Campo Pantanoso\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Campo Pantanoso. Vejo: Água estagnada, lama, árvores retorcidas. Saídas: NORTE (Caminho para a Colina).",
+      "exits": {
+        "NORTE": "scene_b2dd3564"
+      }
+    },
+    "scene_b2dd3564": {
+      "id": "scene_b2dd3564",
+      "name": "Colina e Caminho",
+      "objects": [
+        {
+          "id": "background_8ac1d160",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_a4d94814.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Colina e Caminho\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Colina e Caminho. Vejo: Um caminho estreito subindo uma colina, a selva densa começa a aparecer. Saídas: SUL (Campo Pantanoso), LESTE (Cabana do Trader Jack).",
+      "exits": {
+        "LESTE": "scene_61a7e510",
+        "SUL": "scene_dca60532"
+      }
+    },
+    "scene_61a7e510": {
+      "id": "scene_61a7e510",
+      "name": "Cabana do Trader Jack",
+      "objects": [
+        {
+          "id": "background_15d732da",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_70e8af1d.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Cabana do Trader Jack\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Cabana do Trader Jack. Vejo: Uma cabana rústica com uma varanda cheia de bugigangas. Saídas: OESTE (Colina e Caminho), NORTE (Galpão).",
+      "exits": {
+        "OESTE": "scene_b2dd3564",
+        "NORTE": "scene_d947f1cf"
+      }
+    },
+    "scene_d947f1cf": {
+      "id": "scene_d947f1cf",
+      "name": "Galpão",
+      "objects": [
+        {
+          "id": "background_e58e59f3",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_caf2a1b8.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Galpão\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Galpão. Vejo: Um galpão em ruínas com caixas velhas, redes de pesca e um bote de borracha murcho. Saídas: SUL (Cabana do Trader Jack), LESTE (Selva).",
+      "exits": {
+        "SUL": "scene_61a7e510",
+        "LESTE": "scene_c51ff5f6"
+      }
+    },
+    "scene_c51ff5f6": {
+      "id": "scene_c51ff5f6",
+      "name": "Selva",
+      "objects": [
+        {
+          "id": "background_64c6ed3b",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_cee999a5.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Selva\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Selva. Vejo: Um caminho denso e perigoso através da selva, a luz do sol mal penetra a copa das árvores. Saídas: OESTE (Galpão), NORTE (Fenda/Caverna).",
+      "exits": {
+        "OESTE": "scene_d947f1cf",
+        "NORTE": "scene_f4f93aa3"
+      }
+    },
+    "scene_f4f93aa3": {
+      "id": "scene_f4f93aa3",
+      "name": "Fenda/Caverna",
+      "objects": [
+        {
+          "id": "background_3c66c01c",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_9ff4d279.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Fenda/Caverna\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Fenda/Caverna. Vejo: Uma fenda escura que leva a uma pequena caverna úmida. Saídas: SUL (Selva), LESTE (Praia).",
+      "exits": {
+        "LESTE": "scene_47f25e49",
+        "SUL": "scene_c51ff5f6"
+      }
+    },
+    "scene_47f25e49": {
+      "id": "scene_47f25e49",
+      "name": "Praia",
+      "objects": [
+        {
+          "id": "background_d06426c5",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_c2c94922.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Praia\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Praia. Vejo: Uma praia isolada com areia dourada, águas claras e algumas palmeiras. Saídas: OESTE (Fenda/Caverna), ENTRAR NO OCEANO (Oceano).",
+      "exits": {
+        "OESTE": "scene_f4f93aa3",
+        "ENTRAR NO OCEANO": "Oceano (placeholder)"
+      }
+    },
+    "scene_dbfba2ac": {
+      "id": "scene_dbfba2ac",
+      "name": "Oceano",
+      "objects": [
+        {
+          "id": "background_14bafb3b",
+          "name": "Background",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_366c31e1.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Oceano\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Oceano. Vejo: As vastas águas azuis do oceano, a ilha de Calixto à distância. Saídas: VOLTAR PARA A PRAIA (Praia), NAVEGAR PARA A ILHA (Margem da Ilha).",
+      "exits": {
+        "NAVEGAR PARA A ILHA": "Margem da Ilha (placeholder)",
+        "VOLTAR PARA A PRAIA": "scene_47f25e49"
+      }
+    }
+  },
+  "assets": {
+    "sprites": {
+      "relogio_1": {
+        "path": "sprites/relogio_d8e66f03.png"
+      }
+    },
+    "audio": {},
+    "fonts": {},
+    "items": {}
+  },
+  "launcher": {
+    "title": "Calixto Island",
+    "description": "Calixto Island Remake é uma reimaginação do clássico jogo de aventura e mistério em primeira pessoa Calixto Island (1981). No jogo, você assume o papel de um investigador em busca do desaparecido Professor Lagarto, que sumiu enquanto procurava por um tesouro histórico valioso.",
+    "flyer_image": "sprites/flyer_calixto_island_1771972738727.png",
+    "launcher_music": "audio/Ilha de Calixto.mp3",
+    "version": "1.0.0"
+  }
+}

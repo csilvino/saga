@@ -1,0 +1,43 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+venv/
+.Python
+# VS Code
+.vscode/
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE / venv
+.venv/
+.idea/
+
+# tools exports
+tools/project_tree.txt
+
+# --- Configurações e Segredos ---
+# Nunca adicione arquivos com senhas, tokens ou chaves de API ao Git.
+.env
+.env.*
+!.env.example
+
+# Bloqueia arquivos de segredos, mas permite outros JSON
+*_secret.json
+!package.json
+!tsconfig.json
+!shared/project_schema.json
+!projects/**/project.json
+
+# Arquivos contendo segredos devem ser nomeados com o sufixo _secret.py (ex: secrets_secret.py)
+/backend/config/*_secret.py
+
+# --- Local only (not in the public repository) ---
+.git_private_history/
+node_modules/
+_backup_frontend_legacy/
+savegame/
+diretorios.txt

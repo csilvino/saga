@@ -1,0 +1,534 @@
+{
+  "name": "Calixto Island",
+  "version": "1.0",
+  "start_scene": "scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+  "navigation_mode": "pathfinding",
+  "metadata": {
+    "author": "Saga Engine",
+    "description": "A mystery adventure game.",
+    "action_history": [
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_properties",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Painel de Controle' na cena scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_properties",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Energizador' na cena scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_a2c24737: backgrounds/Cloud_Gemini_b1e4e810.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_138d01af",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou saídas da cena: scene_e1e1f417",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_a2c24737: backgrounds/Cloud_Gemini_cdbb795d.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_a2c24737",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_e1e1f417: backgrounds/Cloud_Gemini_cc7f2cce.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_e1e1f417",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Armadilha para ratos' na cena scene_138d01af",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Balde' na cena scene_138d01af",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Bomba de pneu' na cena scene_138d01af",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_138d01af",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_138d01af: backgrounds/Cloud_Gemini_7b995f00.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Estante de livros' na cena scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Alçapão' na cena scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+        "timestamp": ""
+      },
+      {
+        "type": "UNDO",
+        "description": "Reverteu a última ação.",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "UNDO",
+        "description": "Reverteu a última ação.",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_b43ba2d8",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_b43ba2d8: backgrounds/Cloud_Gemini_868f8a7a.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_998d9218",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_998d9218: backgrounds/Cloud_Gemini_864fd17c.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_d3f69a4e",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_d3f69a4e: backgrounds/Cloud_Gemini_a99d4673.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_bd8ff18c",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_bd8ff18c: backgrounds/Cloud_Gemini_7680d688.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_f3898fc6",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_f3898fc6: backgrounds/Cloud_Gemini_736b4ef6.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Atualizou descrição da cena: scene_fc060ec6",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Gerou e definiu background para cena scene_fc060ec6: backgrounds/Cloud_Gemini_401b0fdc.png",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: create_scene",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Mesa antiga' na cena scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+        "timestamp": ""
+      },
+      {
+        "type": "UPDATE",
+        "description": "Executou ação: update_object_ses",
+        "timestamp": ""
+      },
+      {
+        "type": "CREATE",
+        "description": "Criou objeto 'Tapete oriental' na cena scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+        "timestamp": ""
+      }
+    ]
+  },
+  "scenes": {
+    "scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc": {
+      "id": "scene_a311d29f-19c9-4f87-9358-48fa71a8a7cc",
+      "name": "Escritório do Professor Lagarto",
+      "objects": [
+        {
+          "id": "background_3b5c1068-3593-4f62-9bbe-6b29856c1ab0",
+          "name": "Novo Background 2",
+          "type": "background",
+          "sprite": "sprites/b204b9bf-1b93-4625-9499-c98df08ed871.jpg",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para background 2\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        },
+        {
+          "id": "item_2f05a520-e23b-4b65-adb8-cb278c898698",
+          "name": "Novo Item 2",
+          "type": "item",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para item 2\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "description": "📍 Escritório do Professor Lagarto. Vejo: uma escrivaninha coberta de papéis, um tapete oriental que parece esconder algo no chão, uma estante alta de livros antigos e uma mesa antiga com símbolos gravados. Saídas: um lance de escadas que sobe e um alçapão (se revelado) que desce."
+    },
+    "scene_6be3484c": {
+      "id": "scene_6be3484c",
+      "name": "Biblioteca",
+      "objects": [
+        {
+          "id": "background_f41d595d",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_8f3abaaf.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Biblioteca\n\non load {\n  // Ações ao carregar a cena\n}\n"
+    },
+    "scene_138d01af": {
+      "id": "scene_138d01af",
+      "name": "Porão",
+      "objects": [
+        {
+          "id": "background_0754b09d-a018-4671-ad18-479e9cd67bb0",
+          "name": "Novo Background 1",
+          "type": "background",
+          "sprite": "sprites/Cloud_Gemini_8deeede1.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para background 1\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Porão\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Porão. Vejo: prateleiras empoeiradas, caixas antigas empilhadas, uma bomba de pneu, um balde, uma armadilha para ratos e um gabinete de madeira. Saídas: um alçapão (para cima) e uma passagem secreta (se revelada).",
+      "exits": {
+        "PASSAGEM SECRETA": "scene_e1e1f417",
+        "PRA CIMA": "scene_938c9659"
+      }
+    },
+    "scene_938c9659": {
+      "id": "scene_938c9659",
+      "name": "Sotão",
+      "objects": [
+        {
+          "id": "background_fdade0f9-222b-45c1-9e28-e02e24c21d61",
+          "name": "Novo Background 1",
+          "type": "background",
+          "sprite": "sprites/Gemini_Generated_Image_8phyzw8phyzw8phy.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": "// Script para background 1\n\non click {\n  // Adicione sua lógica aqui\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Sotão\n\non load {\n  // Ações ao carregar a cena\n}\n"
+    },
+    "scene_a2c24737": {
+      "id": "scene_a2c24737",
+      "name": "Laboratório",
+      "objects": [
+        {
+          "id": "background_0e9ee41d",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_b1e4e810.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Laboratório\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Laboratório. Vejo: Onde reside o Energizador (máquina de teletransporte) e o painel de controle. É o centro tecnológico que permite a viagem para as ilhas."
+    },
+    "scene_e1e1f417": {
+      "id": "scene_e1e1f417",
+      "name": "Passagem Secreta",
+      "objects": [
+        {
+          "id": "background_8c657b31",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Cloud_Gemini_cc7f2cce.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "actions": [],
+          "ses": "// Script para o Background\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "// Script para a cena Passagem Secreta\n\non load {\n  // Ações ao carregar a cena\n}\n",
+      "description": "📍 Passagem Secreta. Vejo: um corredor estreito e úmido. Saídas: Porão (para trás), Laboratório (para frente).",
+      "exits": {
+        "PARA FRENTE": "scene_a2c24737",
+        "PARA TRÁS": "scene_138d01af"
+      }
+    }
+  },
+  "assets": {
+    "sprites": {
+      "relogio_1": {
+        "path": "sprites/relogio_d8e66f03.png"
+      }
+    },
+    "audio": {},
+    "fonts": {},
+    "items": {}
+  },
+  "dialogs": {},
+  "scripts": {},
+  "launcher": {
+    "title": "Calixto Island",
+    "description": "Calixto Island Remake é uma reimaginação do clássico jogo de aventura e mistério em primeira pessoa Calixto Island (1981). No jogo, você assume o papel de um investigador em busca do desaparecido Professor Lagarto, que sumiu enquanto procurava por um tesouro histórico valioso.",
+    "flyer_image": "sprites/flyer_calixto_island_1771972738727.png",
+    "launcher_music": "audio/Ilha de Calixto.mp3",
+    "version": "1.0.0"
+  }
+}
