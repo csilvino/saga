@@ -16,8 +16,10 @@ interface GamePlayerProps {
 // Componente para renderizar objetos animados ou estáticos
 const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projectName: string, onClick: () => void }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
-  const spriteUrl = getAssetUrl(projectName, obj.sprite);
-  const placeholder = isPlaceholderSprite(obj.sprite) ? obj.sprite : (spriteUrl ? '' : '📦');
+  // painted = the object is part of the background picture: only a clickable area on top of it
+  const painted = !!obj.properties?.painted;
+  const spriteUrl = painted ? null : getAssetUrl(projectName, obj.sprite);
+  const placeholder = painted ? '' : isPlaceholderSprite(obj.sprite) ? obj.sprite : (spriteUrl ? '' : '📦');
 
   useEffect(() => {
     if (obj.animation?.type === 'sprite_sheet') {
@@ -82,7 +84,9 @@ const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projec
       style={style}
       onClick={onClick}
       title={obj.name}
-      className="hover:scale-105 transition-transform duration-200 group"
+      className={painted
+        ? "group rounded-md hover:outline hover:outline-2 hover:outline-cyan-300/60"
+        : "hover:scale-105 transition-transform duration-200 group"}
     >
       {placeholder}
       {/* Tooltip opcional */}
@@ -99,6 +103,7 @@ interface GameView {
   objects: { id: string; name: string }[];
   inventory: { id: string; name: string }[];
   exits: Record<string, string>;
+  background?: string | null;   // state variant (e.g. door open), else the scene background
   ended: string | null;
 }
 
@@ -111,8 +116,15 @@ const messageType = (text: string) => {
   return 'normal';
 };
 
+// Autosave: the engine is stateless, so the whole game is {state, view, log}; kept per project
+// in this browser so a reload (or closing the player) continues where you were.
+const saveKey = (projectName: string) => `saga_autosave:${projectName}`;
+const loadSave = (projectName: string): any => {
+  try { return JSON.parse(localStorage.getItem(saveKey(projectName)) || 'null'); } catch { return null; }
+};
+
 const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClose }) => {
-  const [showLauncher, setShowLauncher] = useState(true);
+  const [showLauncher, setShowLauncher] = useState(() => !loadSave(project.name));
   const [gameState, setGameState] = useState<any>(null);
   const [view, setView] = useState<GameView | null>(null);
   const [busy, setBusy] = useState(false);
@@ -162,6 +174,23 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
     addToLog('');
   };
 
+  // save after every change of state (the log goes too, so the screen comes back as it was)
+  useEffect(() => {
+    if (!gameState) return;
+    try {
+      localStorage.setItem(saveKey(project.name),
+        JSON.stringify({ state: gameState, view, log: textLog.slice(-300), savedAt: Date.now() }));
+    } catch { /* storage full or blocked: playing still works */ }
+  }, [gameState, view, textLog, project.name]);
+
+  const resumeGame = (save: any) => {
+    setGameState(save.state);
+    setView(save.view);
+    setTextLog([...(save.log || []),
+      { text: '— jogo salvo: continuando de onde parou (digite RECOMEÇAR para um jogo novo) —', type: 'system', timestamp: Date.now() },
+      { text: '', type: 'normal', timestamp: Date.now() }]);
+  };
+
   const startGame = async () => {
     setTextLog([]);
     addToLog('═══════════════════════════════════════════════════════', 'system');
@@ -179,7 +208,9 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   useEffect(() => {
     if (showLauncher || initialized.current) return;
     initialized.current = true;
-    startGame();
+    const save = loadSave(project.name);
+    if (save?.state) resumeGame(save);
+    else startGame();
   }, [showLauncher]);
 
   const processCommand = async (cmd: string) => {
@@ -198,6 +229,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
       return;
     }
     if (lower === 'recomeçar' || lower === 'recomecar' || lower === 'restart') {
+      try { localStorage.removeItem(saveKey(project.name)); } catch { /* storage blocked */ }
       startGame();
       return;
     }
@@ -260,7 +292,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   }
 
   const backgroundObj = currentScene?.objects.find(o => o.type === 'background' || o.name === 'Background');
-  const backgroundUrl = backgroundObj ? getAssetUrl(project.name, backgroundObj.sprite) : '';
+  const backgroundUrl = getAssetUrl(project.name, view?.background || backgroundObj?.sprite || '') || '';
 
   return (
     <div className={`flex flex-col ${isFullscreen ? 'fixed inset-0 z-50' : 'h-screen'} bg-gray-900`}>
@@ -351,7 +383,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center overflow-hidden">
-                      {getAssetUrl(project.name, item.icon) ? <img src={getAssetUrl(project.name, item.icon)!} className="w-full h-full object-cover" /> : <Package className="w-4 h-4 text-yellow-400" />}
+                      {getAssetUrl(project.name, item.icon) ? <img src={getAssetUrl(project.name, item.icon)!} className="w-full h-full object-contain" /> : <Package className="w-4 h-4 text-yellow-400" />}
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-white" style={{ fontSize: `${fontSize}px` }}>{item.name}</div>
@@ -370,12 +402,15 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
         <div className="flex-1 flex flex-col min-w-0">
 
           {/* Canvas da Cena com Objetos */}
-          <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
+          <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center"
+               style={{ containerType: 'size' }}>
+            {/* 16:9 stage: background and objects share the same 1920x1080 coordinates */}
+            <div className="relative" style={{ width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
             {backgroundUrl && (
               <img
                 src={backgroundUrl}
                 alt={view?.scene_name || ''}
-                className="w-full h-full object-contain"
+                className="absolute inset-0 w-full h-full object-cover"
               />
             )}
 
@@ -391,6 +426,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
                 />
               );
             })}
+            </div>
 
             {/* Overlay com Info da Cena */}
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent pointer-events-none"></div>

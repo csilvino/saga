@@ -4,8 +4,9 @@ Saga local image worker: FLUX.1 Kontext [dev] (GGUF) on your own GPU.
 Runs in its own virtualenv (heavy deps: torch, diffusers) and listens on 127.0.0.1:8071.
 The Saga backend calls it when Settings > image source = Local.
 
-    POST /generate  {"prompt", "width", "height", "reference_image": "<abs path>"?, "steps"?, "seed"?}
+    POST /generate  {"prompt", "width", "height", "reference_image": "<abs path>"?, "edit"?, "steps"?, "seed"?}
                     -> image/png
+    POST /sprites   {"sheet", "count", "background"?, "boxes"?} -> {"sprites": [{"png" (base64), "box"}]}
     GET  /health    -> {"ok": true, "loaded": "...", "busy": bool}
 
 Built for a 12 GB card / 16 GB RAM: the T5 text encoder (~9.5 GB) and the transformer (~7 GB, Q4)
@@ -128,7 +129,7 @@ class Flux:
             tokenizer=None, tokenizer_2=None, torch_dtype=DT).to("cuda")
         log.info("transformer carregado em %.0fs", time.time() - t)
 
-    def generate(self, prompt, width, height, reference=None, steps=24, seed=None):
+    def generate(self, prompt, width, height, reference=None, steps=24, seed=None, edit=False):
         with self.lock:
             self.busy = True
             try:
@@ -139,7 +140,13 @@ class Flux:
                 kwargs = dict(prompt_embeds=pe.to("cuda", DT), pooled_prompt_embeds=pooled.to("cuda", DT),
                               num_inference_steps=steps, guidance_scale=2.5,
                               generator=torch.Generator("cuda").manual_seed(seed if seed is not None else int(time.time())))
-                if reference:
+                if reference and edit:
+                    # same size in and out: Kontext edits the picture (e.g. "the door is now open")
+                    size = gen_size(width, height)
+                    kwargs["image"] = Image.open(reference).convert("RGB").resize(size, Image.LANCZOS)
+                    kwargs["width"], kwargs["height"] = size
+                    kwargs["_auto_resize"] = False
+                elif reference:
                     kwargs["image"] = Image.open(reference).convert("RGB")
                     kwargs["width"], kwargs["height"] = NEW_SCENE_SIZE
                 else:
@@ -177,6 +184,95 @@ def fit(img: Image.Image, width, height) -> Image.Image:
 FLUX = Flux()
 
 
+# --- sprites: cut a sheet of objects into transparent PNGs that sit well in the scene -------------
+
+_rembg_session = None
+
+
+def _remove_bg(img: Image.Image) -> Image.Image:
+    global _rembg_session
+    from rembg import new_session, remove
+    if _rembg_session is None:          # CPU: the GPU belongs to FLUX
+        _rembg_session = new_session("isnet-general-use", providers=["CPUExecutionProvider"])
+    return remove(img, session=_rembg_session)
+
+
+def cut_sheet(sheet: Image.Image, count: int):
+    """Transparent cutouts of the `count` largest objects on the sheet, left to right."""
+    import numpy as np
+    from scipy import ndimage
+    rgba = _remove_bg(sheet.convert("RGB"))
+    alpha = np.asarray(rgba)[:, :, 3] > 40
+    labels, _ = ndimage.label(ndimage.binary_dilation(alpha, iterations=6))
+    boxes = ndimage.find_objects(labels)
+    areas = [int((labels[b] == i + 1).sum()) for i, b in enumerate(boxes)]
+    keep = sorted(range(len(boxes)), key=lambda i: -areas[i])[:count]
+    keep = [i for i in keep if areas[i] > 0.002 * alpha.size]
+    keep.sort(key=lambda i: boxes[i][1].start)
+    out = []
+    for i in keep:
+        ys, xs = boxes[i]
+        crop = rgba.crop((xs.start, ys.start, xs.stop, ys.stop))
+        mask = (labels[ys, xs] == i + 1)                  # drop bits of neighbours inside the box
+        a = np.asarray(crop).copy()
+        a[:, :, 3] = a[:, :, 3] * mask
+        out.append(Image.fromarray(a, "RGBA"))
+    return out
+
+
+def grade(sprite: Image.Image, background: Image.Image, box, strength=0.8) -> Image.Image:
+    """Pull the sprite's colours and contrast towards the scene around `box`, so it does not look pasted."""
+    import numpy as np
+    s = np.asarray(sprite, dtype=np.float32) / 255
+    rgb, a = s[..., :3], s[..., 3:]
+    m = a[..., 0] > 0.5
+    if m.sum() < 10:
+        return sprite
+    B = np.asarray(background.convert("RGB"), dtype=np.float32) / 255
+    x0, y0, x1, y1 = [int(v) for v in box]
+    pad = max(x1 - x0, y1 - y0)
+    reg = B[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad].reshape(-1, 3)
+    sm, ss = rgb[m].mean(0), rgb[m].std(0) + 1e-3
+    bm, bs = reg.mean(0), reg.std(0) + 1e-3
+    matched = np.clip((rgb - sm) / ss * (bs * 1.6) + bm * 1.25, 0, 1)
+    out = rgb * (1 - strength) + matched * strength
+    return Image.fromarray((np.concatenate([out, a], -1) * 255).astype(np.uint8), "RGBA")
+
+
+def fit_box(sprite: Image.Image, box):
+    """Scale the sprite into the box (keeping its proportions), standing on the box's bottom edge."""
+    x0, y0, x1, y1 = box
+    bw, bh = max(1, x1 - x0), max(1, y1 - y0)
+    k = min(bw / sprite.width, bh / sprite.height)
+    w, h = max(1, int(sprite.width * k)), max(1, int(sprite.height * k))
+    cx = (x0 + x1) / 2
+    return sprite.resize((w, h), Image.LANCZOS), [int(cx - w / 2), int(y1 - h), int(cx + w / 2), int(y1)]
+
+
+def make_sprites(job):
+    import base64
+    sheet = Image.open(job["sheet"])
+    count = int(job["count"])
+    cuts = cut_sheet(sheet, count)
+    if len(cuts) != count:
+        return {"error": f"a folha tinha {len(cuts)} objetos separados, esperava {count}", "found": len(cuts)}
+    bg = Image.open(job["background"]) if job.get("background") else None
+    sprites = []
+    for i, sp in enumerate(cuts):
+        box = (job.get("boxes") or [None] * count)[i]
+        if box and bg is not None:
+            sx, sy = bg.width / 1920, bg.height / 1080          # boxes come in scene units (1920x1080)
+            pbox = [box[0] * sx, box[1] * sy, box[2] * sx, box[3] * sy]
+            sp, pbox = fit_box(sp, pbox)
+            sp = grade(sp, bg, pbox)
+            box = [round(pbox[0] / sx), round(pbox[1] / sy), round(pbox[2] / sx), round(pbox[3] / sy)]
+        buf = io.BytesIO()
+        sp.save(buf, "PNG")
+        sprites.append({"png": base64.b64encode(buf.getvalue()).decode(), "box": box,
+                        "size": [sp.width, sp.height]})
+    return {"sprites": sprites}
+
+
 class Handler(BaseHTTPRequestHandler):
     def _json(self, code, body):
         data = json.dumps(body).encode()
@@ -194,6 +290,17 @@ class Handler(BaseHTTPRequestHandler):
         self._json(404, {"error": "not found"})
 
     def do_POST(self):
+        if self.path == "/sprites":
+            try:
+                job = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+                for key in ("sheet", "background"):
+                    if job.get(key) and not Path(job[key]).is_file():
+                        return self._json(400, {"error": f"arquivo não existe: {job[key]}"})
+                result = make_sprites(job)
+                return self._json(200 if "error" not in result else 422, result)
+            except Exception as e:
+                log.exception("falha ao recortar sprites")
+                return self._json(500, {"error": f"{type(e).__name__}: {e}"})
         if self.path != "/generate":
             return self._json(404, {"error": "not found"})
         try:
@@ -202,7 +309,7 @@ class Handler(BaseHTTPRequestHandler):
             if ref and not Path(ref).is_file():
                 return self._json(400, {"error": f"imagem de referência não existe: {ref}"})
             img = FLUX.generate(job["prompt"], int(job.get("width", 1024)), int(job.get("height", 1024)),
-                                ref, int(job.get("steps", 24)), job.get("seed"))
+                                ref, int(job.get("steps", 24)), job.get("seed"), bool(job.get("edit")))
             buf = io.BytesIO()
             img.save(buf, "PNG")
             data = buf.getvalue()

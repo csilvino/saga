@@ -21,7 +21,7 @@
           "id": "background_32112c69",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Local_FLUX_79193c22.png",
+          "sprite": "backgrounds/Scene_80f953cd.png",
           "position": {
             "x": 960,
             "y": 540
@@ -48,14 +48,14 @@
           "id": "obj_garrafa_7637",
           "name": "garrafa",
           "type": "item",
-          "sprite": "❓",
+          "sprite": "sprites/Sprite_obj_garrafa_7637_88688c.png",
           "position": {
-            "x": 435,
-            "y": 850
+            "x": 498,
+            "y": 870
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 45,
+            "height": 103
           },
           "scale": {
             "x": 1,
@@ -76,14 +76,14 @@
           "id": "obj_bilhete_85cc",
           "name": "bilhete",
           "type": "item",
-          "sprite": "❓",
+          "sprite": "sprites/Sprite_obj_bilhete_85cc_306e18.png",
           "position": {
-            "x": 1437,
-            "y": 888
+            "x": 434,
+            "y": 890
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 61,
+            "height": 69
           },
           "scale": {
             "x": 1,
@@ -106,14 +106,14 @@
           "id": "obj_barco_7a68",
           "name": "barco",
           "type": "cenario",
-          "sprite": "📦",
+          "sprite": "",
           "position": {
-            "x": 776,
-            "y": 739
+            "x": 603,
+            "y": 672
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 480,
+            "height": 257
           },
           "scale": {
             "x": 1,
@@ -127,7 +127,8 @@
             "hidden": false,
             "aliases": [
               "destrocos"
-            ]
+            ],
+            "painted": true
           },
           "actions": [],
           "ses": ""
@@ -136,14 +137,14 @@
           "id": "obj_gaivota_e758",
           "name": "gaivota",
           "type": "personagem",
-          "sprite": "🧍",
+          "sprite": "sprites/Sprite_obj_gaivota_e758_db9a98.png",
           "position": {
-            "x": 576,
-            "y": 577
+            "x": 1484,
+            "y": 755
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 73,
+            "height": 80
           },
           "scale": {
             "x": 1,
@@ -179,7 +180,7 @@
           "id": "background_4b59a129",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Local_FLUX_9116bac1.png",
+          "sprite": "backgrounds/Scene_01c2eef3.png",
           "position": {
             "x": 960,
             "y": 540
@@ -219,7 +220,7 @@
           "id": "background_c5a41f6f",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Local_FLUX_6c42024a.png",
+          "sprite": "backgrounds/Scene_ce7199ac.png",
           "position": {
             "x": 960,
             "y": 540
@@ -246,14 +247,14 @@
           "id": "obj_gaveta_93c5",
           "name": "gaveta",
           "type": "movel",
-          "sprite": "📦",
+          "sprite": "",
           "position": {
-            "x": 852,
-            "y": 757
+            "x": 418,
+            "y": 744
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 397,
+            "height": 332
           },
           "scale": {
             "x": 1,
@@ -268,7 +269,8 @@
             "aliases": [
               "comoda",
               "cômoda"
-            ]
+            ],
+            "painted": true
           },
           "actions": [],
           "ses": "on open {\n  if flag(gaveta_aberta) { say \"A gaveta já está aberta.\" }\n  else { set gaveta_aberta; show fosforos; say \"Você força a gaveta. Dentro, uma caixa de fósforos.\" }\n}"
@@ -277,14 +279,14 @@
           "id": "obj_fosforos_3773",
           "name": "fósforos",
           "type": "item",
-          "sprite": "❓",
+          "sprite": "sprites/Sprite_obj_fosforos_3773_034b88.png",
           "position": {
-            "x": 1614,
-            "y": 807
+            "x": 352,
+            "y": 642
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 65,
+            "height": 47
           },
           "scale": {
             "x": 1,
@@ -308,14 +310,14 @@
           "id": "obj_lampiao_466c",
           "name": "lampião",
           "type": "movel",
-          "sprite": "📦",
+          "sprite": "",
           "position": {
-            "x": 281,
-            "y": 604
+            "x": 900,
+            "y": 338
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 77,
+            "height": 132
           },
           "scale": {
             "x": 1,
@@ -330,7 +332,8 @@
             "aliases": [
               "lampiao",
               "lamparina"
-            ]
+            ],
+            "painted": true
           },
           "actions": [],
           "ses": "on examine {\n  if flag(chave_achada) { say \"Um lampião velho, vazio.\" }\n  else { set chave_achada; show chave; say \"Você levanta o lampião. Embaixo da base, presa com cera, uma chave grande!\" }\n}"
@@ -339,14 +342,14 @@
           "id": "obj_chave_63d7",
           "name": "chave",
           "type": "chave",
-          "sprite": "🔑",
+          "sprite": "sprites/Sprite_obj_chave_63d7_793443.png",
           "position": {
-            "x": 304,
-            "y": 814
+            "x": 348,
+            "y": 711
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 25,
+            "height": 60
           },
           "scale": {
             "x": 1,
@@ -370,14 +373,14 @@
           "id": "obj_cama_0546",
           "name": "cama",
           "type": "movel",
-          "sprite": "📦",
+          "sprite": "",
           "position": {
-            "x": 820,
-            "y": 957
+            "x": 1066,
+            "y": 706
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 580,
+            "height": 339
           },
           "scale": {
             "x": 1,
@@ -389,7 +392,8 @@
           "properties": {
             "portable": false,
             "hidden": false,
-            "aliases": []
+            "aliases": [],
+            "painted": true
           },
           "actions": [],
           "ses": ""
@@ -411,7 +415,7 @@
           "id": "background_43d72be3",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Local_FLUX_ff5929c6.png",
+          "sprite": "backgrounds/Scene_base_fechada.png",
           "position": {
             "x": 960,
             "y": 540
@@ -438,14 +442,14 @@
           "id": "obj_porta_aa36",
           "name": "porta",
           "type": "porta",
-          "sprite": "🚪",
+          "sprite": "",
           "position": {
-            "x": 1332,
-            "y": 887
+            "x": 788,
+            "y": 576
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 290,
+            "height": 477
           },
           "scale": {
             "x": 1,
@@ -459,7 +463,8 @@
             "hidden": false,
             "aliases": [
               "porta de ferro"
-            ]
+            ],
+            "painted": true
           },
           "actions": [],
           "ses": "on examine {\n  if flag(porta_aberta) { say \"A porta está aberta. Lá dentro, uma escada sobe.\" }\n  else { say \"Uma porta de ferro, trancada, com uma fechadura grande.\" }\n}\non open {\n  if flag(porta_aberta) { say \"Já está aberta.\" }\n  else { say \"Trancada. Precisa de uma chave.\" }\n}\non use with chave {\n  if flag(porta_aberta) { say \"Já está aberta.\" }\n  else { set porta_aberta; link norte to \"Dentro do Farol\"; say \"A chave gira com um rangido. A porta se abre para o norte.\" }\n}"
@@ -467,7 +472,14 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": ""
+      "ses": "",
+      "variants": [
+        {
+          "when": "flag(porta_aberta)",
+          "background": "backgrounds/Variant_0e507d33.png",
+          "change": "a porta de ferro está aberta, revelando a escuridão da entrada com a escada em espiral lá dentro"
+        }
+      ]
     },
     "scene_7712d46c": {
       "id": "scene_7712d46c",
@@ -482,7 +494,7 @@
           "id": "background_24b4a8fa",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Local_FLUX_d7c29b44.png",
+          "sprite": "backgrounds/Scene_09a7f5be.png",
           "position": {
             "x": 960,
             "y": 540
@@ -522,7 +534,7 @@
           "id": "background_5473a3e7",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Local_FLUX_601ef85b.png",
+          "sprite": "backgrounds/Scene_f7950d5e.png",
           "position": {
             "x": 960,
             "y": 540
@@ -549,14 +561,14 @@
           "id": "obj_lampada_4fa3",
           "name": "lâmpada",
           "type": "movel",
-          "sprite": "📦",
+          "sprite": "",
           "position": {
-            "x": 1710,
-            "y": 630
+            "x": 950,
+            "y": 527
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 284,
+            "height": 896
           },
           "scale": {
             "x": 1,
@@ -572,7 +584,8 @@
               "lampada",
               "lente",
               "pavio"
-            ]
+            ],
+            "painted": true
           },
           "actions": [],
           "ses": "on use with fosforos {\n  end \"Você risca um fósforo e acende o pavio. A lente gira e o facho varre o mar. Minutos depois, o navio muda de rumo e apita três vezes: viram você. FIM.\"\n}\non use { say \"Com o quê? O pavio precisa de fogo.\" }"

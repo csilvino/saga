@@ -619,10 +619,11 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                         onChange={(e) => handlePropertyChange('portable', e.target.checked)} />
                       Pode ser pego
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-2 cursor-pointer"
+                      title="Marcado: o jogador não vê o objeto no início; ele aparece quando um script faz show/take. No editor ele fica transparente, com contorno amarelo.">
                       <input type="checkbox" checked={!!draft.properties?.hidden}
                         onChange={(e) => handlePropertyChange('hidden', e.target.checked)} />
-                      Escondido (aparece com <code>show</code>)
+                      Começa escondido (aparece com <code>show</code>)
                     </label>
                   </div>
                   <input

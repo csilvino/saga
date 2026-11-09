@@ -31,8 +31,9 @@ class LocalImageGenerator:
             return {"ok": False, "error": str(e)}
 
     def generate_image(self, prompt: str, negative_prompt: str = "", width: int = 1024, height: int = 1024,
-                       reference_image_path: str | None = None) -> Image.Image:
-        payload = {"prompt": prompt, "width": int(width), "height": int(height)}
+                       reference_image_path: str | None = None, edit: bool = False) -> Image.Image:
+        """edit=True: change the reference picture itself (same framing), e.g. open a door."""
+        payload = {"prompt": prompt, "width": int(width), "height": int(height), "edit": bool(edit)}
         if reference_image_path:
             payload["reference_image"] = os.path.abspath(reference_image_path)
         try:

@@ -201,3 +201,18 @@ def test_docs_cover_the_whole_language():
     doc = (Path(__file__).resolve().parents[1] / "docs" / "SES.md").read_text(encoding="utf-8")
     for word in list(STATEMENTS) + [f"{c}(" for c in CONDITIONS] + list(EVENTS):
         assert f"`{word}" in doc or f"{word} " in doc, word
+
+
+def test_background_variant_follows_state():
+    from backend.ses.engine import GameEngine
+    project = {"start_scene": "s1", "scenes": {"s1": {
+        "id": "s1", "name": "Base", "description": "Uma porta.",
+        "variants": [{"when": "flag(porta_aberta)", "background": "backgrounds/aberta.png"},
+                     {"when": "isto não é condição (", "background": "backgrounds/quebrada.png"}],
+        "objects": [{"id": "porta", "name": "porta", "type": "porta", "description": "Uma porta.",
+                     "properties": {}, "ses": 'on open { set porta_aberta; say "Abriu." }'}]}}}
+    eng = GameEngine(project)
+    out = eng.start()
+    assert out["view"]["background"] is None
+    out = eng.command(out["state"], "abrir porta")
+    assert out["view"]["background"] == "backgrounds/aberta.png"

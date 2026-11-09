@@ -15,7 +15,7 @@ from __future__ import annotations
 import copy
 from typing import Dict, List, Optional
 
-from backend.ses.language import (Cond, DIRECTIONS, If, OBJECT_EVENTS, Ref, SESError, Script,
+from backend.ses.language import (Cond, parse_condition, DIRECTIONS, If, OBJECT_EVENTS, Ref, SESError, Script,
                                   Stmt, parse)
 from backend.ses.world import World, is_scenery, obj_description, slug
 
@@ -164,9 +164,23 @@ class GameEngine:
             "objects": [{"id": o, "name": self.world.object_name(o)} for o in self.here()],
             "inventory": [{"id": o, "name": self.world.object_name(o)} for o in self.inventory()],
             "exits": {d: self.world.scene_name(t) for d, t in self.exits().items()},
+            "background": self.background(sid),
             "ended": self.state.get("ended"),
             "turns": self.state.get("turns", 0),
         }
+
+    def background(self, sid: str) -> Optional[str]:
+        """The scene picture for the current state: the last variant whose condition holds
+        (scene["variants"] = [{"when": "flag(porta_aberta)", "background": "backgrounds/x.png"}]),
+        else None (= the scene's own background)."""
+        chosen = None
+        for v in (self.world.scenes.get(sid) or {}).get("variants") or []:
+            try:
+                if v.get("background") and self._cond(sid, parse_condition(v.get("when", ""))):
+                    chosen = v["background"]
+            except SESError:
+                continue
+        return chosen
 
     # --- the player's command -----------------------------------------------------------------
 

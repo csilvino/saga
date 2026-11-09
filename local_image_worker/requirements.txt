@@ -7,3 +7,7 @@ protobuf
 safetensors
 pillow
 huggingface_hub
+rembg>=2.0.60
+onnxruntime
+scipy
+numpy

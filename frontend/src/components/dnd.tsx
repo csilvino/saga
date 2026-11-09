@@ -105,6 +105,9 @@ export const DraggableObject = ({ obj, project, selected, onClick }: { obj: Game
     zIndex: obj.zIndex || 10,
     position: 'absolute',
     cursor: isDragging ? 'grabbing' : 'grab',
+    // hidden objects only appear in the game after a script 'show': faded here so it is clear
+    opacity: obj.properties?.hidden ? 0.35 : 1,
+    outline: obj.properties?.hidden ? '2px dashed rgba(250, 204, 21, 0.8)' : undefined,
     // Remove transições durante o arrasto para evitar lag visual
     transition: isDragging ? 'none' : 'all 0.1s ease-out',
   };
@@ -146,7 +149,7 @@ export const DraggableObject = ({ obj, project, selected, onClick }: { obj: Game
         {...listeners}
         {...attributes}
         onClick={(e) => { e.stopPropagation(); onClick(obj.id); }}
-        className={`flex items-center justify-center rounded-lg shadow-lg border-2 p-2 ${selected ? 'bg-purple-600/40 border-purple-500 ring-2 ring-purple-500/50' : 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-700/80 hover:border-purple-500/50'} ${obj.type === 'music' || obj.type === 'sound' ? 'backdrop-blur-sm' : 'border-dashed'}`}
+        className={`flex items-center justify-center rounded-lg shadow-lg border-2 p-2 ${selected ? 'bg-purple-600/40 border-purple-500 ring-2 ring-purple-500/50' : obj.properties?.painted ? 'bg-transparent border-cyan-300/70 hover:bg-cyan-500/10' : 'bg-gray-800/60 border-gray-700/50 hover:bg-gray-700/80 hover:border-purple-500/50'} ${obj.type === 'music' || obj.type === 'sound' ? 'backdrop-blur-sm' : 'border-dashed'}`}
       >
         <div className="flex flex-col items-center gap-1 overflow-hidden">
           {obj.type === 'music' && <Music size={24} className="text-purple-400" />}

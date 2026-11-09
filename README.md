@@ -211,6 +211,21 @@ Há três caminhos para a primeira imagem:
 3. **Chave paga da Gemini:** o Nano Banana não tem cota no plano gratuito da API. Com faturamento
    ativado, tudo é gerado pela nuvem.
 
+**O que o texto cita, o jogador vê.** O Diretor faz a arte com a ferramenta `create_scene_art`, uma
+cena por vez:
+
+- os objetos fixos (barco, porta, cama) são pintados no cenário e ganham uma área clicável por cima;
+- os que podem sumir ou aparecer (itens que o jogador pega, objetos escondidos, personagens) viram
+  sprites com fundo transparente, no estilo da cena;
+- a Gemini olha o cenário gerado para posicionar tudo.
+
+"Pegar garrafa" tira a garrafa da tela e a põe no inventário. Uma cena também pode ter **variantes**
+ligadas ao estado do jogo. Por exemplo, a mesma imagem da Base do Farol, com a porta aberta, aparece
+quando `flag(porta_aberta)` é verdadeira.
+
+Durante o jogo, o estado é salvo sozinho no navegador. Um reload continua de onde você parou, e
+RECOMEÇAR inicia um jogo novo.
+
 A escolha entre nuvem e local fica em **Configurações → API Keys → Fonte das imagens**. Como fizemos,
 com exemplos e o que deu errado no caminho: [`docs/IMAGENS.md`](docs/IMAGENS.md).
 

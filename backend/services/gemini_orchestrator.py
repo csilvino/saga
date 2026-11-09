@@ -43,12 +43,50 @@ Como trabalhar:
 - Antes de dizer que terminou, rode playtest com a solução e confira o transcript. Se algo
   falhar, conserte e teste de novo.
 - Responda ao usuário em português, curto: o que foi feito e como jogar/vencer.
-- Imagens (generate_image_and_set_as_background, generate_sprite_for_object) só quando o
-  usuário pedir arte; elas são lentas e custam créditos.
+- Arte só quando o usuário pedir (lenta: ~8 min por cena). Use create_scene_art, uma cena por vez:
+  ela gera o cenário com os objetos fixos pintados, os sprites dos itens que podem sumir/aparecer
+  (pegáveis, escondidos, personagens) e posiciona tudo. Primeira cena sem reference_scene; as
+  outras com reference_scene = a primeira. Se ela relatar problemas (objeto que não aparece),
+  chame de novo para a mesma cena. Antes da arte, confira que cada objeto tem descrição visual.
+- Objetos pintados que mudam de estado (porta que abre, lâmpada que acende, gaveta aberta): depois da
+  arte da cena, crie a variante com create_background_variant, usando a mesma flag que o script
+  marca (ex.: when "flag(porta_aberta)", change "a porta de ferro agora está aberta, escada visível").
+- Se o cenário saiu contradizendo a história (lâmpada acesa que devia estar apagada, porta aberta
+  que devia estar trancada, fogo onde não há), corrija com edit_scene_background: ela edita a mesma
+  imagem e mantém as áreas clicáveis. O gerador ignora negações no prompt; a edição não.
 
 """ + REFERENCE
 
 IMAGE_TOOLS = [
+    types.FunctionDeclaration(
+        name="create_scene_art",
+        description=("Cria a arte completa de UMA cena: cenário com os objetos fixos pintados e clicáveis, "
+                     "sprites (fundo transparente) dos objetos pegáveis/escondidos/personagens, posicionados. "
+                     "Lenta (~8 min). Devolve o que foi feito e problemas."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "scene": types.Schema(type="STRING", description="id ou nome da cena"),
+            "style": types.Schema(type="STRING", description="direção de arte (pode ser em português): época, luz, clima, paleta"),
+            "reference_scene": types.Schema(type="STRING", description="cena já com arte cujo estilo deve ser seguido"),
+            "keep_background": types.Schema(type="BOOLEAN", description="true: mantém o cenário atual e refaz só sprites e posições"),
+        }, required=["scene"])),
+    types.FunctionDeclaration(
+        name="edit_scene_background",
+        description=("Corrige o cenário atual de uma cena editando a própria imagem (mesmo enquadramento, "
+                     "áreas clicáveis continuam valendo). Lenta (~5 min)."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "scene": types.Schema(type="STRING", description="id ou nome da cena"),
+            "change": types.Schema(type="STRING", description="o que corrigir (pode ser em português)"),
+        }, required=["scene", "change"])),
+    types.FunctionDeclaration(
+        name="create_background_variant",
+        description=("Cria uma versão do cenário de uma cena com algo mudado (porta aberta, lâmpada acesa), "
+                     "mesmo enquadramento; o jogo mostra essa versão enquanto a condição SES for verdadeira. "
+                     "Lenta (~5 min)."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "scene": types.Schema(type="STRING", description="id ou nome da cena (já com arte)"),
+            "when": types.Schema(type="STRING", description="condição SES, ex.: flag(porta_aberta)"),
+            "change": types.Schema(type="STRING", description="o que muda na imagem (pode ser em português)"),
+        }, required=["scene", "when", "change"])),
     types.FunctionDeclaration(
         name="generate_image_and_set_as_background",
         description=("Gera uma imagem de fundo e aplica numa cena (lenta: minutos; só se o usuário pedir arte). "
@@ -179,6 +217,27 @@ class DirectorSession:
                 if name not in director_tools.READ_ONLY and "error" not in result:
                     project_service.save_project_data(self.project_name, project)
                 return result
+            if name == "create_scene_art":
+                from backend.services import scene_art
+                try:
+                    return await scene_art.create_scene_art(
+                        self.project_name, args.get("scene"), args.get("style", ""),
+                        args.get("reference_scene", ""), bool(args.get("keep_background")))
+                except scene_art.ArtError as e:
+                    return {"error": str(e)}
+            if name == "edit_scene_background":
+                from backend.services import scene_art
+                try:
+                    return await scene_art.edit_background(self.project_name, args.get("scene"), args.get("change", ""))
+                except scene_art.ArtError as e:
+                    return {"error": str(e)}
+            if name == "create_background_variant":
+                from backend.services import scene_art
+                try:
+                    return await scene_art.create_variant(
+                        self.project_name, args.get("scene"), args.get("when", ""), args.get("change", ""))
+                except scene_art.ArtError as e:
+                    return {"error": str(e)}
             if name == "generate_image_and_set_as_background":
                 return await self.generate_background(args)
             if name == "generate_sprite_for_object":

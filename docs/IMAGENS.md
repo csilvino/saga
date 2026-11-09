@@ -9,7 +9,8 @@ todas as outras.
 
 *As 6 cenas do projeto de exemplo [O Farol](../projects/O%20Farol/project.json). Quem pediu as
 imagens foi o Diretor, pela conversa: a Praia foi gerada só com texto, e as outras 5 usaram a Praia
-como referência. Tudo rodou numa RTX 3060 12 GB, sem custo.*
+como referência. Os contornos azuis são as áreas clicáveis dos objetos pintados no cenário. A
+garrafa e a gaivota, na Praia, são sprites. Tudo rodou numa RTX 3060 12 GB, sem custo.*
 
 ## Como fazer
 
@@ -33,13 +34,81 @@ Com a primeira cena pronta, peça ao Diretor no chat, por exemplo:
 
 > Crie os cenários de todas as cenas no mesmo estilo da primeira. Use a primeira cena como referência.
 
-O Diretor chama `generate_image_and_set_as_background` uma cena por vez, passando
-`reference_scene` = a primeira. A imagem nova vai para `backgrounds/` e vira o fundo da cena.
+O Diretor chama `create_scene_art` uma cena por vez, passando `reference_scene` = a primeira.
 
 A fonte das imagens se escolhe em **Configurações → API Keys → Fonte das imagens**:
 
 - **Gemini (nuvem):** usa a chave da Gemini e precisa de cota de imagem.
 - **Local (sua GPU):** usa o [gerador local](../local_image_worker/README.md).
+
+## O que o texto cita, o jogador vê
+
+Um cenário bonito não basta. Se o texto diz "uma gaivota observa você de cima de uma pedra", a
+gaivota precisa estar na tela. E quando o jogador digita "pegar garrafa", a garrafa precisa sumir
+da cena e aparecer no inventário. Por isso `create_scene_art`
+([`backend/services/scene_art.py`](../backend/services/scene_art.py)) não gera só um fundo. Ela
+separa os objetos da cena em dois tipos:
+
+| Tipo | Quais objetos | Como aparecem |
+|---|---|---|
+| **Pintados** | fixos: barco, porta, cômoda, cama | desenhados no próprio cenário; por cima fica uma área clicável invisível |
+| **Sprites** | os que podem sumir ou aparecer: pegáveis, escondidos, personagens | imagem própria com fundo transparente, colocada sobre o cenário |
+
+![A Praia: o barco pintado no cenário (contorno = área clicável), a garrafa e a gaivota como sprites](images/flux-kontext/praia-com-objetos.jpg)
+
+Para uma cena, a ferramenta faz isto:
+
+1. **Prompts.** A Gemini escreve, em inglês, o prompt do cenário, com todos os objetos pintados
+   obrigatoriamente visíveis, e uma descrição curta de cada sprite.
+2. **Cenário.** O cenário é gerado com a referência de estilo.
+3. **Posições.** A Gemini **olha a imagem gerada** e responde:
+   - onde está cada objeto pintado, que é onde a área clicável vai ficar;
+   - onde cada sprite deve ficar: no chão ou sobre uma superfície, com tamanho coerente com a
+     perspectiva.
+
+   Se um objeto pintado não aparece no cenário, a ferramenta avisa, e o Diretor gera a cena de novo.
+4. **Sprites.** Os sprites da cena são gerados **juntos**, lado a lado sobre fundo cinza liso, numa
+   única imagem que usa o cenário como referência. Uma geração só faz até 4 itens.
+5. **Recorte.** O gerador local (`/sprites`) faz o acabamento:
+   - remove o fundo com o [rembg](https://github.com/danielgatis/rembg) e separa cada objeto;
+   - aproxima a cor e o contraste de cada um ao do cenário em volta;
+   - encaixa cada sprite no lugar escolhido, apoiado no chão.
+
+No jogo, o player só desenha os objetos que o motor diz estarem visíveis. "Pegar garrafa" tira a
+garrafa da tela e põe a mesma imagem no inventário. Um objeto marcado como "começa escondido" (a chave
+sob o lampião) só aparece quando um script faz `show`.
+
+Uma cena completa leva uns 13 minutos numa RTX 3060: o cenário, a folha de sprites e a troca de
+modelos.
+
+## Estados: a mesma cena, com a porta aberta
+
+Quando o jogador abre a porta, a imagem precisa mudar, mas só a porta. Uma cena pode ter
+**variantes de cenário**, cada uma ligada a uma condição SES:
+
+```json
+"variants": [{"when": "flag(porta_aberta)", "background": "backgrounds/Variant_0e507d33.png"}]
+```
+
+O motor escolhe a imagem conforme o estado do jogo, e o player troca o fundo na hora. Quem cria a
+variante é o Diretor, com `create_background_variant(cena, condição, mudança)`.
+
+![Base do Farol: porta fechada (início) e aberta (depois de usar a chave)](images/flux-kontext/porta-fechada-e-aberta.jpg)
+
+O que faz isso funcionar é o comportamento do Kontext que antes atrapalhava. Com saída do **mesmo
+tamanho** da imagem de referência, ele **edita** a imagem em vez de criar outra. Por isso a variante
+tem o mesmo enquadramento, e as áreas clicáveis continuam valendo nas duas versões.
+
+A mesma edição corrige cenários que contradizem a história, com `edit_scene_background`. O gerador
+ignora "apagado" ou "trancado" num prompt, mas segue bem uma edição como "apague a chama" ou "feche a
+porta". Em O Farol foi assim que a lâmpada do topo ficou apagada e o fogo sumiu das rochas da trilha.
+
+**Dica:** para um par de estados, gere primeiro o estado mais "cheio" (porta aberta) e derive dele o
+outro (porta fechada). As duas imagens ficam com o mesmo brilho, e a troca não dá um "pulo".
+
+**Limite atual:** os sprites saem mais limpos e claros que a pintura do cenário, como figurinhas. O
+ajuste de cor ajuda, mas não resolve. Uma ideia para melhorar é gerar os itens já sobre um pedaço do
+próprio cenário, com a mesma luz, e recortar depois.
 
 ## O gerador local: FLUX.1 Kontext na sua GPU
 

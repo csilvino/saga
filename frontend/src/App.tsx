@@ -23,6 +23,7 @@ import GamePlayer from './components/GamePlayer'; // Importado
 import { useResizable, useRightResizable } from './hooks';
 
 const LAST_PROJECT_KEY = 'saga_last_open_project';
+const PLAYING_KEY = 'saga_playing_project';     // sessionStorage: reload goes back into the game
 
 const WelcomeScreen = ({ onOpenProject, onCreateProject, projects, hasAiKey, onOpenApiKey, onOpenSettings, isOpeningProject }) => (
   <div className="w-full h-screen bg-gray-950 text-white flex flex-col">
@@ -585,6 +586,13 @@ export default function App() {
       try {
         const projectList = await loadProjectList();
         const lastProject = localStorage.getItem(LAST_PROJECT_KEY);
+        // a reload while playing goes straight back into the game (the game state is autosaved)
+        let playing: string | null = null;
+        try { playing = sessionStorage.getItem(PLAYING_KEY); } catch { /* storage blocked */ }
+        if (playing && (projectList || []).some((p: any) => (p?.name ?? p) === playing)) {
+          await openProject(playing);
+          setIsPlaying(true);
+        }
         // if (lastProject && projectList.includes(lastProject)) {
         //   await openProject(lastProject);
         // }
@@ -641,7 +649,10 @@ export default function App() {
       <GamePlayer
         project={project}
         initialSceneId={activeSceneId || project.start_scene}
-        onClose={() => setIsPlaying(false)}
+        onClose={() => {
+          try { sessionStorage.removeItem(PLAYING_KEY); } catch { /* storage blocked */ }
+          setIsPlaying(false);
+        }}
       />
     );
   }
@@ -813,7 +824,10 @@ export default function App() {
           onSave={() => handleSaveProject(project)}
           onClose={handleCloseProject}
           onOpenSettings={() => openSettings()}
-          onPlay={() => setIsPlaying(true)} // Conectado
+          onPlay={() => {
+            try { sessionStorage.setItem(PLAYING_KEY, project.name); } catch { /* storage blocked */ }
+            setIsPlaying(true);
+          }} // Conectado
           hasAiKey={hasAiKey}
           onOpenApiKey={() => openSettings('api')}
         />

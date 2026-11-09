@@ -419,6 +419,17 @@ def parse(src: str) -> Script:
     return Parser(src or "").parse()
 
 
+def parse_condition(src: str) -> Cond:
+    """Parses a lone condition, e.g. 'flag(porta_aberta)' (scene background variants)."""
+    p = Parser(" ".join((src or "").split()))
+    if p.tok.kind == "eof":
+        raise SESError("condição vazia", 1, 1)
+    c = p.condition()
+    if p.tok.kind != "eof":
+        raise p.error(f"sobrou {p.tok.value!r} depois da condição")
+    return c
+
+
 # --- Validation against a project -----------------------------------------------------------
 
 def walk(body):
