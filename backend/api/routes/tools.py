@@ -8,7 +8,7 @@ import json
 import shutil
 
 from backend.services.project_service import project_service
-from backend.config.user_settings import save_gemini_key, get_gemini_key # Adicionado
+from backend.config.user_settings import save_gemini_key, get_gemini_key, get_image_model
 
 router = APIRouter(prefix="/api/tools", tags=["tools"])
 logger = logging.getLogger(__name__)
@@ -115,6 +115,45 @@ async def check_api_key_tool(validate: bool = False):
             reason = message[:200]
         logger.warning(f"Teste da chave Gemini falhou: {reason}")
         return {"configured": True, "valid": False, "error": reason}
+
+
+class ModelSelection(BaseModel):
+    text_model: Optional[str] = None
+    image_model: Optional[str] = None
+
+
+@router.get("/models")
+async def list_models_tool():
+    """
+    Modelos Gemini que a chave do usuário pode usar (para o seletor em Configurações) e os
+    escolhidos agora. "image": modelos que geram imagem (nome com "image").
+    """
+    from backend.config.user_settings import get_gemini_model
+    current = {"text_model": get_gemini_model(), "image_model": get_image_model()}
+    key = get_gemini_key()
+    if not key:
+        return {**current, "text": [], "image": [], "error": "Nenhuma chave cadastrada."}
+    try:
+        from google import genai
+        client = genai.Client(api_key=key)
+        text, image = [], []
+        async for m in await client.aio.models.list():
+            if "generateContent" not in (m.supported_actions or []):
+                continue
+            entry = {"name": m.name, "label": m.display_name or m.name}
+            (image if "image" in m.name else text).append(entry)
+        return {**current, "text": sorted(text, key=lambda e: e["name"]),
+                "image": sorted(image, key=lambda e: e["name"])}
+    except Exception as e:
+        return {**current, "text": [], "image": [], "error": str(e)[:200]}
+
+
+@router.post("/models")
+async def save_models_tool(selection: ModelSelection):
+    """Salva os modelos escolhidos (texto/orquestração e imagem)."""
+    from backend.config.user_settings import save_models
+    save_models(selection.text_model, selection.image_model)
+    return {"success": True}
 
 
 @router.delete("/api-key")

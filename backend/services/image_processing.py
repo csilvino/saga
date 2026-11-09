@@ -11,7 +11,7 @@ import logging
 from rembg import remove
 
 from backend.services.gemini_imagen import GeminiImagenExtractor
-from backend.config.user_settings import get_gemini_key
+from backend.config.user_settings import get_gemini_key, get_image_model
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def inpaint_with_gemini(image_pil: Image.Image, mask_pil: Image.Image) -> Image.
         from google.genai import types
         
         client = genai.Client(api_key=api_key)
-        model_id = "models/gemini-2.5-flash-image" 
+        model_id = get_image_model()
         
         # CORREÇÃO: Removido response_mime_type="image/png" pois causa erro 400 no modelo multimodal
         response = client.models.generate_content(

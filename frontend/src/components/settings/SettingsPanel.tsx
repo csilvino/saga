@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Settings, Key, Image as ImageIcon, Layout, Zap, Code, Globe, Palette, Save, X, Eye, EyeOff, RefreshCw, HardDrive, Cloud, Cpu, CheckCircle, XCircle, Music, Volume2 } from 'lucide-react';
-import { saveApiKey, checkApiKey, deleteApiKey, uploadSprite, getAssetUrl } from '../../services/api';
+import { saveApiKey, checkApiKey, deleteApiKey, listModels, saveModels, uploadSprite, getAssetUrl } from '../../services/api';
+import type { ModelsResponse } from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 const SettingsPanel = ({
@@ -16,6 +17,41 @@ const SettingsPanel = ({
 }) => {
   const [activeTab, setActiveTab] = useState(initialTab || (project ? 'project' : 'api'));
   const [apiKeyError, setApiKeyError] = useState<string | null>(null);
+  const [models, setModels] = useState<ModelsResponse | null>(null);
+  const [modelsLoading, setModelsLoading] = useState(false);
+
+  // Modelos que a chave do usuário pode usar (lista vinda do Google) e os escolhidos agora
+  const loadModels = async () => {
+    setModelsLoading(true);
+    try {
+      setModels(await listModels());
+    } catch {
+      setModels(null);
+    } finally {
+      setModelsLoading(false);
+    }
+  };
+
+  useEffect(() => { loadModels(); }, []);
+
+  const changeModel = async (kind: 'text' | 'image', name: string) => {
+    if (!name) return;
+    try {
+      await saveModels(kind === 'text' ? name : undefined, kind === 'image' ? name : undefined);
+      setModels(prev => prev ? { ...prev, [kind === 'text' ? 'text_model' : 'image_model']: name } : prev);
+      toast.success(`Modelo de ${kind === 'text' ? 'texto' : 'imagem'}: ${name.replace('models/', '')}`);
+    } catch {
+      toast.error('Não foi possível salvar o modelo.');
+    }
+  };
+
+  // Uma lista com o modelo atual sempre presente (mesmo se o Google não o listar mais)
+  const modelOptions = (kind: 'text' | 'image') => {
+    if (!models) return [];
+    const list = kind === 'text' ? models.text : models.image;
+    const current = kind === 'text' ? models.text_model : models.image_model;
+    return list.some(m => m.name === current) ? list : [{ name: current, label: `${current} (indisponível?)` }, ...list];
+  };
   const [showApiKey, setShowApiKey] = useState(false);
   const [apiKeyStatus, setApiKeyStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -109,6 +145,7 @@ const SettingsPanel = ({
       if (keyToTest) {
         await saveApiKey(keyToTest);
         updateSetting('geminiApiKey', placeholderKey);
+        loadModels();          // a nova chave pode ter outros modelos
       }
 
       const response = await checkApiKey(true);
@@ -516,6 +553,51 @@ const SettingsPanel = ({
                       </span>
                     </div>
                   </div>
+                </div>
+              )
+            }
+
+            {/* MODELOS (dentro da aba API Keys) */}
+            {
+              activeTab === 'api' && (
+                <div className="space-y-4 mt-8 pt-6 border-t border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Modelos da IA</h3>
+                      <p className="text-sm text-gray-400">A lista vem da sua conta Google: só aparecem os modelos que a sua chave pode usar.</p>
+                    </div>
+                    <button
+                      onClick={loadModels}
+                      disabled={modelsLoading}
+                      className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                      title="Atualizar a lista de modelos"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${modelsLoading ? 'animate-spin' : ''}`} />
+                      Atualizar
+                    </button>
+                  </div>
+
+                  {models?.error && (
+                    <p className="text-sm text-amber-400">Não foi possível listar os modelos: {models.error}</p>
+                  )}
+
+                  {(['text', 'image'] as const).map(kind => (
+                    <div key={kind} className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-300">
+                        {kind === 'text' ? 'Texto / orquestração (o chat que opera o editor)' : 'Geração e edição de imagens'}
+                      </label>
+                      <select
+                        value={(kind === 'text' ? models?.text_model : models?.image_model) || ''}
+                        onChange={(e) => changeModel(kind, e.target.value)}
+                        disabled={!models || modelsLoading}
+                        className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none disabled:opacity-50"
+                      >
+                        {modelOptions(kind).map(m => (
+                          <option key={m.name} value={m.name}>{m.label} — {m.name.replace('models/', '')}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
                 </div>
               )
             }

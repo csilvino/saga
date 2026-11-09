@@ -28,7 +28,7 @@ class GeminiImagenExtractor:
             self.client = genai.Client(api_key=api_key)
             self.model_name = get_gemini_model()
             # O modelo de edição de imagem pode ser diferente, vamos usar o recomendado.
-            self.edit_model_name = "gemini-2.5-flash-image" 
+            self.edit_model_name = get_image_model()
             logging.info(f"GeminiImagenExtractor inicializado. Modelo de análise: {self.model_name}, Modelo de edição: {self.edit_model_name}.")
 
         except Exception as e:

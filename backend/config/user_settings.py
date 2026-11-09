@@ -15,7 +15,8 @@ USE_PRO_MODELS = False
 # --- MODELOS ---
 
 # Modelo de Texto/Orquestração (Rápido e Econômico)
-DEFAULT_GEMINI_MODEL = 'models/gemini-2.5-flash-lite'
+# Padrões; cada usuário escolhe os seus em Configurações → API Keys (gemini_model / gemini_image_model)
+DEFAULT_GEMINI_MODEL = 'models/gemini-3.5-flash-lite'
 
 # Modelos de Imagem (Cloud)
 # Usando o modelo multimodal correto conforme instrução do usuário
@@ -62,6 +63,15 @@ def get_gemini_model() -> str:
     """Obtém o nome do modelo de texto Gemini das configurações."""
     settings = get_user_settings()
     return settings.get("gemini_model", DEFAULT_GEMINI_MODEL)
+
+def save_models(text_model: str | None = None, image_model: str | None = None):
+    """Salva os modelos escolhidos pelo usuário (None mantém o atual)."""
+    settings = get_user_settings()
+    if text_model:
+        settings["gemini_model"] = text_model
+    if image_model:
+        settings["gemini_image_model"] = image_model
+    save_user_settings(settings)
 
 def get_image_model() -> str:
     """Obtém o nome do modelo de imagem Gemini das configurações."""

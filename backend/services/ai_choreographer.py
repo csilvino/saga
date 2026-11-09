@@ -5,6 +5,7 @@ import uuid
 import logging
 from typing import List, Dict, Any, Optional
 from google import genai
+from backend.config.user_settings import get_gemini_model
 from tools.ai_connectors.comfy_client import ComfyClient
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ class AIChoreographer:
         
         try:
             response = self.client.models.generate_content(
-                model='gemini-2.0-flash',
+                model=get_gemini_model(),
                 contents=prompt
             )
             clean_text = response.text.replace("```json", "").replace("```", "").strip()
@@ -134,7 +135,7 @@ class AIChoreographer:
         
         try:
             response = self.client.models.generate_content(
-                model='gemini-2.0-flash',
+                model=get_gemini_model(),
                 contents=[prompt, img]
             )
             clean_text = response.text.replace("```json", "").replace("```", "").strip()
@@ -164,7 +165,7 @@ class AIChoreographer:
         
         try:
             response = self.client.models.generate_content(
-                model='gemini-2.0-flash',
+                model=get_gemini_model(),
                 contents=prompt
             )
             clean_text = response.text.replace("```json", "").replace("```", "").strip()

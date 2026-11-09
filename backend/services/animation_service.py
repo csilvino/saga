@@ -70,7 +70,7 @@ class AnimationService:
         """
 
         client = genai.Client(api_key=api_key)
-        model_id = "models/gemini-2.5-flash-image" 
+        model_id = get_image_model()
 
         logger.info(f"Gerando animação '{animation_description}' para {target_obj['name']} com {frame_count} frames...")
 

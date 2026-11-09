@@ -10,7 +10,7 @@ from google import genai
 from google.genai import types
 
 from backend.services.project_service import project_service
-from backend.config.user_settings import get_gemini_key
+from backend.config.user_settings import get_gemini_key, get_gemini_model
 
 router = APIRouter(prefix="/api/gemini", tags=["gemini"])
 
@@ -76,8 +76,7 @@ async def extract_precise_object(request: GeminiExtractRequest):
         """
         
         # Usando o modelo solicitado (ou o mais próximo disponível publicamente se o 2.5 for beta restrito)
-        # O SDK google-genai usa nomes de modelo como 'gemini-2.0-flash'
-        model_name = 'gemini-2.0-flash' # Ajuste para 2.5 se disponível no seu ambiente
+        model_name = get_gemini_model()
         
         response = client.models.generate_content(
             model=model_name,

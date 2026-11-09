@@ -9,7 +9,7 @@ import uuid
 import re
 
 from backend.services.project_service import project_service, get_project_path
-from backend.config.user_settings import get_gemini_key
+from backend.config.user_settings import get_gemini_key, get_gemini_model
 from backend.services.image_processing import process_extraction
 import logging
 
@@ -67,7 +67,7 @@ async def ai_chat(chat_message: ChatMessage):
                     print(f"AVISO: Não foi possível carregar a imagem de contexto: {e}")
         
         contents.append(chat_message.message)
-        response = client.models.generate_content(model='gemini-2.0-flash', contents=contents)
+        response = client.models.generate_content(model=get_gemini_model(), contents=contents)
         return {"reply": response.text}
     except Exception as e:
         print(f"ERRO API Gemini: {e}")
@@ -105,7 +105,7 @@ async def detect_objects(request: DetectRequest):
         ]
         """
         
-        response = client.models.generate_content(model='gemini-2.0-flash', contents=[prompt, img])
+        response = client.models.generate_content(model=get_gemini_model(), contents=[prompt, img])
         cleaned_json = clean_json_string(response.text)
         objects = json.loads(cleaned_json)
         return {"objects": objects}

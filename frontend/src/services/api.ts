@@ -66,6 +66,21 @@ export const checkApiKey = async (validate: boolean = false) => {
   return response.data as { configured: boolean; valid?: boolean; error?: string };
 };
 
+export type ModelInfo = { name: string; label: string };
+export type ModelsResponse = { text_model: string; image_model: string; text: ModelInfo[]; image: ModelInfo[]; error?: string };
+
+/** Modelos Gemini disponíveis para a chave do usuário, e os escolhidos agora. */
+export const listModels = async () => {
+  const response = await api.get('/api/tools/models');
+  return response.data as ModelsResponse;
+};
+
+/** Salva os modelos escolhidos (texto/orquestração e imagem). */
+export const saveModels = async (textModel?: string, imageModel?: string) => {
+  const response = await api.post('/api/tools/models', { text_model: textModel, image_model: imageModel });
+  return response.data;
+};
+
 /** Remove a chave da API do Gemini das configurações do usuário. */
 export const deleteApiKey = async () => {
   const response = await api.delete('/api/tools/api-key');
