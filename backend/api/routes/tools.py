@@ -88,13 +88,44 @@ async def save_api_key_tool(request: SaveApiKeyRequest): # Adicionado
         logger.error(f"Erro ao salvar chave da API: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao salvar chave: {str(e)}")
 
-@router.get("/check-api-key") # Adicionado
-async def check_api_key_tool(): # Adicionado
+@router.get("/check-api-key")
+async def check_api_key_tool(validate: bool = False):
     """
     🔑 Verifica se a chave da API do Gemini está configurada.
+    validate=true: faz uma chamada mínima ao Gemini (uma palavra) para confirmar que a chave
+    funciona de verdade (chave inválida, revogada ou sem créditos aparecem aqui).
     """
     key = get_gemini_key()
-    return {"configured": key is not None and len(key) > 0}
+    configured = bool(key)
+    if not validate or not configured:
+        return {"configured": configured}
+    try:
+        from google import genai
+        from backend.config.user_settings import get_gemini_model
+        client = genai.Client(api_key=key)
+        await client.aio.models.generate_content(model=get_gemini_model(), contents="ok")
+        return {"configured": True, "valid": True}
+    except Exception as e:
+        message = str(e)
+        if "RESOURCE_EXHAUSTED" in message or "402" in message:
+            reason = "A chave funciona, mas os créditos da conta acabaram (Google AI Studio → Billing)."
+        elif "API_KEY_INVALID" in message or "API key not valid" in message or "PERMISSION_DENIED" in message:
+            reason = "Chave inválida ou revogada."
+        else:
+            reason = message[:200]
+        logger.warning(f"Teste da chave Gemini falhou: {reason}")
+        return {"configured": True, "valid": False, "error": reason}
+
+
+@router.delete("/api-key")
+async def delete_api_key_tool():
+    """🔑 Remove a chave da API do Gemini das configurações do usuário."""
+    from backend.config.user_settings import get_user_settings, save_user_settings
+    settings = get_user_settings()
+    for k in ("gemini_api_key", "geminiApiKey"):
+        settings.pop(k, None)
+    save_user_settings(settings)
+    return {"success": True}
 
 # ==================== SPRITE SHEET ====================
 

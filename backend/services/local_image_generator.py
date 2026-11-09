@@ -1,4 +1,3 @@
-import torch
 import logging
 from PIL import Image
 from backend.config.user_settings import get_local_model_id
@@ -7,12 +6,12 @@ logger = logging.getLogger(__name__)
 
 class LocalImageGenerator:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(LocalImageGenerator, cls).__new__(cls)
             cls._instance.pipe = None
-            cls._instance.device = "cuda" if torch.cuda.is_available() else "cpu"
+            cls._instance.device = None     # decided when the model is loaded
         return cls._instance
 
     def _load_model(self):
@@ -20,8 +19,11 @@ class LocalImageGenerator:
             return
 
         try:
+            # torch/diffusers only when local generation is used: the backend starts without them
+            import torch
             from diffusers import StableDiffusionXLPipeline
-            
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
             model_id = get_local_model_id()
             logger.info(f"Carregando modelo local SSD-1B ({model_id}) no dispositivo: {self.device}...")
 

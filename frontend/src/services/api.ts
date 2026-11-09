@@ -4,14 +4,6 @@ const api = axios.create({
   baseURL: 'http://localhost:8070',
 });
 
-// Interceptor para adicionar o token de autenticação em todas as requisições
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('gemini_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 /**
  * Constructs the full URL for a given project asset.
@@ -69,8 +61,14 @@ export const saveApiKey = async (apiKey: string) => {
  * Verifica se a chave da API do Gemini já está configurada no backend.
  * @returns A resposta da API, contendo { configured: boolean }.
  */
-export const checkApiKey = async () => {
-  const response = await api.get('/api/tools/check-api-key');
+export const checkApiKey = async (validate: boolean = false) => {
+  const response = await api.get('/api/tools/check-api-key', { params: { validate } });
+  return response.data as { configured: boolean; valid?: boolean; error?: string };
+};
+
+/** Remove a chave da API do Gemini das configurações do usuário. */
+export const deleteApiKey = async () => {
+  const response = await api.delete('/api/tools/api-key');
   return response.data;
 };
 

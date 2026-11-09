@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Settings, Key, Image as ImageIcon, Layout, Zap, Code, Globe, Palette, Save, X, Eye, EyeOff, RefreshCw, HardDrive, Cloud, Cpu, CheckCircle, XCircle, Music, Volume2 } from 'lucide-react';
-import { saveApiKey, checkApiKey, uploadSprite, getAssetUrl } from '../../services/api';
+import { saveApiKey, checkApiKey, deleteApiKey, uploadSprite, getAssetUrl } from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 const SettingsPanel = ({
   onClose,
   project = null,
-  onSaveProject
+  onSaveProject,
+  initialTab
 }: {
   onClose: () => void,
   project?: any,
-  onSaveProject?: (p: any) => Promise<void>
+  onSaveProject?: (p: any) => Promise<void>,
+  initialTab?: string
 }) => {
-  const [activeTab, setActiveTab] = useState(project ? 'project' : 'api');
+  const [activeTab, setActiveTab] = useState(initialTab || (project ? 'project' : 'api'));
+  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
   const [apiKeyStatus, setApiKeyStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -94,26 +97,45 @@ const SettingsPanel = ({
     fetchKeyStatus();
   }, []);
 
+  // Salva a chave digitada (se houver) e a testa de verdade com uma chamada mínima ao Gemini
   const handleTestConnection = async () => {
     setApiKeyStatus('checking');
+    setApiKeyError(null);
     try {
       const keyToTest = (settings.geminiApiKey && settings.geminiApiKey !== placeholderKey)
-        ? settings.geminiApiKey
+        ? settings.geminiApiKey.trim()
         : null;
 
       if (keyToTest) {
         await saveApiKey(keyToTest);
+        updateSetting('geminiApiKey', placeholderKey);
       }
 
-      const response = await checkApiKey();
-      if (response.configured) {
+      const response = await checkApiKey(true);
+      if (!response.configured) {
+        setApiKeyStatus('invalid');
+        setApiKeyError('Nenhuma chave cadastrada.');
+      } else if (response.valid) {
         setApiKeyStatus('valid');
-        if (keyToTest) updateSetting('geminiApiKey', placeholderKey);
       } else {
         setApiKeyStatus('invalid');
+        setApiKeyError(response.error || 'A chave não funcionou.');
       }
     } catch (error) {
       setApiKeyStatus('invalid');
+      setApiKeyError('Não foi possível falar com o backend.');
+    }
+  };
+
+  const handleRemoveKey = async () => {
+    try {
+      await deleteApiKey();
+      updateSetting('geminiApiKey', '');
+      setApiKeyStatus('idle');
+      setApiKeyError(null);
+      toast.success('Chave removida deste computador.');
+    } catch {
+      toast.error('Não foi possível remover a chave.');
     }
   };
 
@@ -410,7 +432,8 @@ const SettingsPanel = ({
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-4">API Configuration</h3>
                     <p className="text-sm text-gray-400 mb-6">
-                      Configure your API keys for AI services. Keys are stored locally and never shared.
+                      A IA do editor usa a <b>sua própria chave</b> do Google Gemini. Ela fica salva só neste
+                      computador (<code>~/.saga_engine_settings.json</code>), fora dos projetos, e nunca vai para o Git.
                     </p>
                   </div>
 
@@ -469,8 +492,16 @@ const SettingsPanel = ({
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:bg-gray-500"
                     >
                       <RefreshCw className="w-4 h-4" />
-                      Test Connection
+                      Salvar e testar
                     </button>
+                    {settings.geminiApiKey === placeholderKey && (
+                      <button
+                        onClick={handleRemoveKey}
+                        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                      >
+                        Remover chave
+                      </button>
+                    )}
                     {/* Status Indicator */}
                     <div className="flex items-center gap-2">
                       {apiKeyStatus === 'checking' && <div className="w-4 h-4 border-2 border-t-blue-400 border-gray-600 rounded-full animate-spin"></div>}
@@ -479,9 +510,9 @@ const SettingsPanel = ({
                       <span className={`text-sm ${apiKeyStatus === 'valid' ? 'text-green-400' :
                         apiKeyStatus === 'invalid' ? 'text-red-400' : 'text-gray-400'
                         }`}>
-                        {apiKeyStatus === 'valid' && 'Key is configured'}
-                        {apiKeyStatus === 'invalid' && 'Key not found or invalid'}
-                        {apiKeyStatus === 'checking' && 'Checking...'}
+                        {apiKeyStatus === 'valid' && 'Chave cadastrada'}
+                        {apiKeyStatus === 'invalid' && (apiKeyError || 'Chave ausente ou inválida')}
+                        {apiKeyStatus === 'checking' && 'Testando...'}
                       </span>
                     </div>
                   </div>

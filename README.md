@@ -78,8 +78,10 @@ O projeto é dividido em dois componentes principais:
 
 O editor atual é uma aplicação web (React + Vite) que conversa com um backend FastAPI.
 
-1. **Chaves (opcionais):** copie `.env.example` para `.env` e preencha. A chave do Gemini também pode
-   ser informada nas configurações do editor (fica em `~/.saga_engine_settings.json`, fora do projeto).
+1. **Sua chave de IA:** a IA do editor usa a chave do Gemini de cada pessoa (não há login).
+   Crie a sua em [Google AI Studio](https://aistudio.google.com/apikey) e cadastre no editor em
+   **Configurações → API Keys** (botão "Configurar IA" no topo); "Salvar e testar" confere se ela
+   funciona. A chave fica só no seu computador, em `~/.saga_engine_settings.json`, fora do projeto.
 2. **Backend** (porta 8070):
    ```bash
    python -m backend.main

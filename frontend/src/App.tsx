@@ -12,7 +12,7 @@ import {
 } from '@dnd-kit/core';
 
 import type { Project, Scene, GameObject } from './types';
-import api, { getAssetUrl } from './services/api';
+import api, { getAssetUrl, checkApiKey } from './services/api';
 import { Sidebar } from './components/structure/Sidebar';
 import { SceneCanvas } from './components/structure/SceneCanvas';
 import { AIPanel } from './components/ai/AIPanel';
@@ -24,9 +24,9 @@ import { useResizable, useRightResizable } from './hooks';
 
 const LAST_PROJECT_KEY = 'saga_last_open_project';
 
-const WelcomeScreen = ({ onOpenProject, onCreateProject, projects, onLogin, onOpenSettings, isOpeningProject }) => (
+const WelcomeScreen = ({ onOpenProject, onCreateProject, projects, hasAiKey, onOpenApiKey, onOpenSettings, isOpeningProject }) => (
   <div className="w-full h-screen bg-gray-950 text-white flex flex-col">
-    <Header projectName={null} onSave={() => { }} onOpen={() => { }} isLoggedIn={false} onLogin={onLogin} onLogout={() => { }} onOpenSettings={onOpenSettings} />
+    <Header projectName={null} onSave={() => { }} onOpen={() => { }} hasAiKey={hasAiKey} onOpenApiKey={onOpenApiKey} onOpenSettings={onOpenSettings} />
     <div className="flex-1 flex flex-col items-center justify-center p-4">
       <div className="text-center mb-12">
         <Bot size={64} className="mx-auto text-purple-400 mb-4 animate-pulse" />
@@ -78,7 +78,8 @@ export default function App() {
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null);
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasAiKey, setHasAiKey] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<string | undefined>(undefined);
   const [deletionTarget, setDeletionTarget] = useState<{ type: string; id: string; sceneId?: string } | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false); // Estado para controlar o modo de jogo
@@ -556,33 +557,27 @@ export default function App() {
     setDeletionTarget(null);
   };
 
-  const handleLogin = async () => {
+  // Chave da IA: cada pessoa cadastra a sua em Configurações → API Keys (sem login)
+  const refreshAiKeyStatus = useCallback(async () => {
     try {
-      const response = await api.get('/api/auth/google/url');
-      const { url } = response.data;
-      const width = 600, height = 700;
-      const left = (window.innerWidth / 2) - (width / 2);
-      const top = (window.innerHeight / 2) - (height / 2);
-      window.open(url, 'SagaLogin', `width=${width},height=${height},top=${top},left=${left}`);
-    } catch (error) {
-      toast.error("Não foi possível iniciar o login.");
+      const { configured } = await checkApiKey();
+      setHasAiKey(configured);
+    } catch {
+      setHasAiKey(false);
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('gemini_token');
-    localStorage.removeItem('gemini_user');
-    setIsLoggedIn(false);
-    toast.success("Logout da IA realizado com sucesso!");
-  };
-
-  useEffect(() => {
-    const handleAuthSuccess = () => {
-      setIsLoggedIn(true);
-    };
-    window.addEventListener('authSuccess', handleAuthSuccess);
-    return () => window.removeEventListener('authSuccess', handleAuthSuccess);
   }, []);
+
+  useEffect(() => { refreshAiKeyStatus(); }, [refreshAiKeyStatus]);
+
+  const openSettings = (tab?: string) => {
+    setSettingsTab(tab);
+    setIsSettingsOpen(true);
+  };
+
+  const closeSettings = () => {
+    setIsSettingsOpen(false);
+    refreshAiKeyStatus();
+  };
 
   useEffect(() => {
     const initialize = async () => {
@@ -615,15 +610,17 @@ export default function App() {
           onOpenProject={openProject}
           onCreateProject={handleCreateProject}
           projects={projects}
-          onLogin={handleLogin}
-          onOpenSettings={() => setIsSettingsOpen(true)}
+          hasAiKey={hasAiKey}
+          onOpenApiKey={() => openSettings('api')}
+          onOpenSettings={() => openSettings()}
           isOpeningProject={isOpening}
         />
 
         {isSettingsOpen && (
           <SettingsPanel
-            onClose={() => setIsSettingsOpen(false)}
+            onClose={closeSettings}
             project={null}
+            initialTab={settingsTab}
           />
         )}
 
@@ -815,17 +812,17 @@ export default function App() {
           projectName={project.name}
           onSave={() => handleSaveProject(project)}
           onClose={handleCloseProject}
-          onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenSettings={() => openSettings()}
           onPlay={() => setIsPlaying(true)} // Conectado
-          isLoggedIn={isLoggedIn}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
+          hasAiKey={hasAiKey}
+          onOpenApiKey={() => openSettings('api')}
         />
 
         {isSettingsOpen && (
           <SettingsPanel
-            onClose={() => setIsSettingsOpen(false)}
+            onClose={closeSettings}
             project={project}
+            initialTab={settingsTab}
             onSaveProject={handleSaveProject}
           />
         )}

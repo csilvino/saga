@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Save, FolderOpen, Settings, LogIn, LogOut, Bot, XCircle, Play } from 'lucide-react';
+import { Save, FolderOpen, Settings, KeyRound, Bot, XCircle, Play } from 'lucide-react';
 
 interface HeaderProps {
   projectName: string | null;
@@ -8,9 +8,8 @@ interface HeaderProps {
   onOpen?: () => void;
   onPlay?: () => void; // Adicionado
   onOpenSettings: () => void;
-  isLoggedIn: boolean;
-  onLogin: () => void;
-  onLogout: () => void;
+  hasAiKey: boolean;          // a chave do Gemini está cadastrada
+  onOpenApiKey: () => void;   // abre Configurações → API Keys
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,9 +19,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpen,
   onPlay, // Adicionado
   onOpenSettings,
-  isLoggedIn,
-  onLogin,
-  onLogout,
+  hasAiKey,
+  onOpenApiKey,
 }) => {
   return (
     <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 flex-shrink-0">
@@ -67,17 +65,15 @@ export const Header: React.FC<HeaderProps> = ({
           <Settings size={16} />
         </button>
         <div className="w-px h-6 bg-gray-700" />
-        {isLoggedIn ? (
-          <button onClick={onLogout} className="px-3 py-2 text-sm bg-red-800 hover:bg-red-700 rounded-lg flex items-center gap-2 transition-colors" title="Fazer Logout da IA">
-            <LogOut size={16} />
-            Logout IA
-          </button>
-        ) : (
-          <button onClick={onLogin} className="px-3 py-2 text-sm bg-blue-800 hover:bg-blue-700 rounded-lg flex items-center gap-2 transition-colors" title="Fazer Login com a IA">
-            <LogIn size={16} />
-            Login IA
-          </button>
-        )}
+        <button
+          onClick={onOpenApiKey}
+          className={`px-3 py-2 text-sm rounded-lg flex items-center gap-2 transition-colors ${hasAiKey ? 'bg-gray-800 hover:bg-gray-700' : 'bg-amber-700 hover:bg-amber-600'}`}
+          title={hasAiKey ? 'Chave da IA cadastrada (Configurações → API Keys)' : 'Cadastre sua chave do Gemini para usar a IA'}
+        >
+          <KeyRound size={16} />
+          {hasAiKey ? 'Chave IA' : 'Configurar IA'}
+          <span className={`w-2 h-2 rounded-full ${hasAiKey ? 'bg-green-400' : 'bg-amber-300'}`} />
+        </button>
       </div>
     </div>
   );
