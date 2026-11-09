@@ -1,0 +1,9 @@
+diffusers>=0.34
+transformers
+accelerate
+gguf
+sentencepiece
+protobuf
+safetensors
+pillow
+huggingface_hub

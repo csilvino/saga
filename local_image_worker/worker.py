@@ -1,0 +1,226 @@
+"""
+Saga local image worker: FLUX.1 Kontext [dev] (GGUF) on your own GPU.
+
+Runs in its own virtualenv (heavy deps: torch, diffusers) and listens on 127.0.0.1:8071.
+The Saga backend calls it when Settings > image source = Local.
+
+    POST /generate  {"prompt", "width", "height", "reference_image": "<abs path>"?, "steps"?, "seed"?}
+                    -> image/png
+    GET  /health    -> {"ok": true, "loaded": "...", "busy": bool}
+
+Built for a 12 GB card / 16 GB RAM: the T5 text encoder (~9.5 GB) and the transformer (~7 GB, Q4)
+never sit in the GPU together. Prompts are encoded first (T5 straight onto the GPU), then T5 is
+dropped and the transformer is loaded; it stays loaded while prompts come back from the cache.
+
+Style reference: with a reference image, Kontext generates a NEW scene in the style of the
+reference only when the output size differs from the reference; with the same size it just edits
+the reference. So a referenced image is generated at 1456x720 and then cropped/resized.
+
+Models (see README.md): FLUX_BASE (pipeline: text encoders, VAE, configs) and FLUX_GGUF.
+The official base repo is gated: accept the license on Hugging Face and `huggingface-cli login`.
+"""
+
+import gc
+import io
+import json
+import logging
+import os
+import threading
+import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+SETTINGS = Path.home() / ".saga_engine_settings.json"
+try:   # HF_HOME must be set before huggingface_hub is imported (models may live on another disk)
+    _hf_home = json.loads(SETTINGS.read_text(encoding="utf-8")).get("hf_home")
+    if _hf_home:
+        os.environ.setdefault("HF_HOME", _hf_home)
+except Exception:
+    pass
+
+import torch
+from PIL import Image
+
+HOST, PORT = "127.0.0.1", int(os.environ.get("SAGA_IMAGE_WORKER_PORT", 8071))
+DT = torch.bfloat16
+NEW_SCENE_SIZE = (1456, 720)      # different from any reference size we produce (see docstring)
+MAX_CACHE = 64
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger("saga-image-worker")
+
+
+def settings() -> dict:
+    try:
+        return json.loads(SETTINGS.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def model_sources():
+    s = settings()
+    base = os.environ.get("FLUX_BASE") or s.get("flux_base_repo") or "black-forest-labs/FLUX.1-Kontext-dev"
+    rev = os.environ.get("FLUX_BASE_REVISION") or s.get("flux_base_revision") or None
+    gguf_repo = os.environ.get("FLUX_GGUF_REPO") or s.get("flux_gguf_repo") or "QuantStack/FLUX.1-Kontext-dev-GGUF"
+    gguf_file = os.environ.get("FLUX_GGUF_FILE") or s.get("flux_gguf_file") or "flux1-kontext-dev-Q4_K_S.gguf"
+    return base, rev, gguf_repo, gguf_file
+
+
+class Flux:
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.pipe = None            # transformer + VAE (no text encoders)
+        self.base_path = None
+        self.embeds = {}            # prompt -> (prompt_embeds, pooled) on CPU
+        self.busy = False
+
+    def _paths(self):
+        if self.base_path:
+            return self.base_path, self.gguf_path
+        from huggingface_hub import hf_hub_download, snapshot_download
+        base, rev, gguf_repo, gguf_file = model_sources()
+        log.info("modelos: base=%s rev=%s gguf=%s/%s", base, rev, gguf_repo, gguf_file)
+        self.base_path = snapshot_download(base, revision=rev, allow_patterns=[
+            "model_index.json", "scheduler/*", "text_encoder/*", "text_encoder_2/*", "tokenizer/*",
+            "tokenizer_2/*", "vae/*", "transformer/config.json"])
+        self.gguf_path = hf_hub_download(gguf_repo, gguf_file)
+        return self.base_path, self.gguf_path
+
+    def _free(self):
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    def _encode(self, prompts):
+        """CLIP + T5 straight onto the GPU (the transformer must not be loaded)."""
+        from diffusers import FluxKontextPipeline
+        from transformers import CLIPTextModel, T5EncoderModel
+        base, _ = self._paths()
+        if self.pipe is not None:
+            log.info("descarregando o transformer para codificar prompts")
+            self.pipe = None
+            self._free()
+        t = time.time()
+        t5 = T5EncoderModel.from_pretrained(base, subfolder="text_encoder_2", torch_dtype=DT, device_map="cuda")
+        clip = CLIPTextModel.from_pretrained(base, subfolder="text_encoder", torch_dtype=DT, device_map="cuda")
+        enc = FluxKontextPipeline.from_pretrained(base, transformer=None, vae=None, text_encoder=clip,
+                                                  text_encoder_2=t5, torch_dtype=DT)
+        with torch.no_grad():
+            for p in prompts:
+                pe, pooled, _ = enc.encode_prompt(prompt=p, prompt_2=None, device="cuda", max_sequence_length=512)
+                self.embeds[p] = (pe.cpu(), pooled.cpu())
+        while len(self.embeds) > MAX_CACHE:
+            self.embeds.pop(next(iter(self.embeds)))
+        del enc, t5, clip
+        self._free()
+        log.info("prompts codificados em %.0fs", time.time() - t)
+
+    def _load_transformer(self):
+        if self.pipe is not None:
+            return
+        from diffusers import FluxKontextPipeline, FluxTransformer2DModel, GGUFQuantizationConfig
+        base, gguf = self._paths()
+        t = time.time()
+        transformer = FluxTransformer2DModel.from_single_file(
+            gguf, quantization_config=GGUFQuantizationConfig(compute_dtype=DT), torch_dtype=DT,
+            config=base, subfolder="transformer")
+        self.pipe = FluxKontextPipeline.from_pretrained(
+            base, transformer=transformer, text_encoder=None, text_encoder_2=None,
+            tokenizer=None, tokenizer_2=None, torch_dtype=DT).to("cuda")
+        log.info("transformer carregado em %.0fs", time.time() - t)
+
+    def generate(self, prompt, width, height, reference=None, steps=24, seed=None):
+        with self.lock:
+            self.busy = True
+            try:
+                if prompt not in self.embeds:
+                    self._encode([prompt])
+                self._load_transformer()
+                pe, pooled = self.embeds[prompt]
+                kwargs = dict(prompt_embeds=pe.to("cuda", DT), pooled_prompt_embeds=pooled.to("cuda", DT),
+                              num_inference_steps=steps, guidance_scale=2.5,
+                              generator=torch.Generator("cuda").manual_seed(seed if seed is not None else int(time.time())))
+                if reference:
+                    kwargs["image"] = Image.open(reference).convert("RGB")
+                    kwargs["width"], kwargs["height"] = NEW_SCENE_SIZE
+                else:
+                    kwargs["width"], kwargs["height"] = gen_size(width, height)
+                t = time.time()
+                img = self.pipe(**kwargs).images[0]
+                log.info("imagem %sx%s em %.0fs (pedido %sx%s, ref=%s)", img.width, img.height,
+                         time.time() - t, width, height, bool(reference))
+                return fit(img, width, height)
+            finally:
+                self.busy = False
+
+
+def gen_size(width, height):
+    """A ~1 MP size with the requested aspect ratio, multiple of 16."""
+    ratio = width / max(1, height)
+    h = (1024 * 1024 / ratio) ** 0.5
+    w = h * ratio
+    return int(round(w / 16) * 16), int(round(h / 16) * 16)
+
+
+def fit(img: Image.Image, width, height) -> Image.Image:
+    """Center-crop to the requested aspect ratio, then resize to the requested size."""
+    target = width / height
+    w, h = img.size
+    if w / h > target:
+        nw = int(h * target)
+        img = img.crop(((w - nw) // 2, 0, (w - nw) // 2 + nw, h))
+    else:
+        nh = int(w / target)
+        img = img.crop((0, (h - nh) // 2, w, (h - nh) // 2 + nh))
+    return img.resize((width, height), Image.LANCZOS)
+
+
+FLUX = Flux()
+
+
+class Handler(BaseHTTPRequestHandler):
+    def _json(self, code, body):
+        data = json.dumps(body).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self):
+        if self.path == "/health":
+            return self._json(200, {"ok": True, "model": "FLUX.1-Kontext-dev",
+                                    "loaded": FLUX.pipe is not None, "busy": FLUX.busy,
+                                    "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None})
+        self._json(404, {"error": "not found"})
+
+    def do_POST(self):
+        if self.path != "/generate":
+            return self._json(404, {"error": "not found"})
+        try:
+            job = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+            ref = job.get("reference_image")
+            if ref and not Path(ref).is_file():
+                return self._json(400, {"error": f"imagem de referência não existe: {ref}"})
+            img = FLUX.generate(job["prompt"], int(job.get("width", 1024)), int(job.get("height", 1024)),
+                                ref, int(job.get("steps", 24)), job.get("seed"))
+            buf = io.BytesIO()
+            img.save(buf, "PNG")
+            data = buf.getvalue()
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as e:
+            log.exception("falha ao gerar")
+            self._json(500, {"error": f"{type(e).__name__}: {e}"})
+
+    def log_message(self, *_):
+        pass
+
+
+if __name__ == "__main__":
+    if not torch.cuda.is_available():
+        raise SystemExit("CUDA não disponível: o gerador local precisa de uma GPU NVIDIA.")
+    log.info("Saga image worker em http://%s:%s (%s)", HOST, PORT, torch.cuda.get_device_name(0))
+    ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

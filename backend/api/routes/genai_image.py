@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import uuid
@@ -5,7 +6,7 @@ from pathlib import Path
 import logging
 from PIL import Image
 
-from backend.services.local_image_generator import local_image_service
+from backend.services.local_image_generator import LocalWorkerUnavailable, local_image_service
 from backend.services.project_service import project_service
 from backend.services.gemini_imagen import GeminiImagenExtractor
 from backend.config.user_settings import get_gemini_key, get_generation_source
@@ -63,18 +64,18 @@ async def generate_image_route(request: GenerateImageRequest):
             )
             filename_prefix = "Cloud_Gemini"
         else:
-            # Fallback para Local (SANA/SSD-1B)
-            # Nota: O gerador local atual não suporta image prompting diretamente.
-            # A imagem de referência será ignorada aqui.
-            if full_reference_image_path:
-                logger.warning("Gerador local não suporta imagem de referência. Será ignorada.")
-            image = local_image_service.generate_image(
-                prompt=request.prompt,
-                negative_prompt=request.negative_prompt,
-                width=request.width,
-                height=request.height
-            )
-            filename_prefix = "Local_SANA"
+            # Local: FLUX.1 Kontext on the user's GPU (local_image_worker), with style reference
+            try:
+                image = await asyncio.to_thread(
+                    local_image_service.generate_image,
+                    prompt=request.prompt,
+                    width=request.width,
+                    height=request.height,
+                    reference_image_path=full_reference_image_path,
+                )
+            except LocalWorkerUnavailable as e:
+                raise HTTPException(status_code=503, detail=str(e))
+            filename_prefix = "Local_FLUX"
         
         project_path = project_service.load_project_path(request.project_name)
         
@@ -97,6 +98,8 @@ async def generate_image_route(request: GenerateImageRequest):
             "source": source
         }
         
+    except HTTPException:
+        raise
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail=f"Projeto '{request.project_name}' não encontrado.")
     except Exception as e:

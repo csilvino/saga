@@ -41,3 +41,8 @@ node_modules/
 _backup_frontend_legacy/
 savegame/
 diretorios.txt
+
+# local image worker
+local_image_worker/*.log
+local_image_worker/.venv/
+projects/*/project.json.bak

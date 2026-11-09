@@ -51,11 +51,13 @@ Como trabalhar:
 IMAGE_TOOLS = [
     types.FunctionDeclaration(
         name="generate_image_and_set_as_background",
-        description="Gera uma imagem de fundo e aplica numa cena (lento; só se o usuário pedir arte).",
+        description=("Gera uma imagem de fundo e aplica numa cena (lenta: minutos; só se o usuário pedir arte). "
+                     "Para várias cenas: gere a primeira sem referência e as outras com reference_scene = a primeira, "
+                     "para manter o mesmo estilo. Uma cena por vez."),
         parameters=types.Schema(type="OBJECT", properties={
             "scene": types.Schema(type="STRING", description="id ou nome da cena"),
-            "prompt": types.Schema(type="STRING", description="o que a imagem deve mostrar"),
-            "reference_scene": types.Schema(type="STRING", description="cena cujo estilo deve ser seguido"),
+            "prompt": types.Schema(type="STRING", description="em INGLÊS: o que a imagem mostra (lugar, objetos, luz, estilo); sem personagens nem texto"),
+            "reference_scene": types.Schema(type="STRING", description="cena (já com imagem) cujo estilo, paleta e luz devem ser seguidos"),
         }, required=["scene", "prompt"])),
     types.FunctionDeclaration(
         name="generate_sprite_for_object",
@@ -195,7 +197,7 @@ class DirectorSession:
     # --- images (existing endpoints) ----------------------------------------------------------
 
     async def post(self, path, payload):
-        async with httpx.AsyncClient(timeout=300) as client:
+        async with httpx.AsyncClient(timeout=1200) as client:   # local images take minutes
             r = await client.post(SAGA_API_URL + path, json=payload)
             if r.status_code >= 400:
                 if "limit: 0" in r.text:

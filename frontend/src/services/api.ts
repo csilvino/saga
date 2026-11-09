@@ -71,7 +71,11 @@ export const checkApiKey = async (validate: boolean = false) => {
 };
 
 export type ModelInfo = { name: string; label: string };
-export type ModelsResponse = { text_model: string; image_model: string; text: ModelInfo[]; image: ModelInfo[]; error?: string };
+export type LocalWorkerHealth = { ok: boolean; loaded?: boolean; busy?: boolean; gpu?: string | null; error?: string };
+export type ModelsResponse = {
+  text_model: string; image_model: string; text: ModelInfo[]; image: ModelInfo[]; error?: string;
+  image_source?: 'cloud' | 'local'; local_worker?: LocalWorkerHealth;
+};
 
 /** Modelos Gemini disponíveis para a chave do usuário, e os escolhidos agora. */
 export const listModels = async () => {
@@ -80,8 +84,8 @@ export const listModels = async () => {
 };
 
 /** Salva os modelos escolhidos (texto/orquestração e imagem). */
-export const saveModels = async (textModel?: string, imageModel?: string) => {
-  const response = await api.post('/api/tools/models', { text_model: textModel, image_model: imageModel });
+export const saveModels = async (textModel?: string, imageModel?: string, imageSource?: 'cloud' | 'local') => {
+  const response = await api.post('/api/tools/models', { text_model: textModel, image_model: imageModel, image_source: imageSource });
   return response.data;
 };
 

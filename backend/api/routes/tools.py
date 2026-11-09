@@ -120,6 +120,7 @@ async def check_api_key_tool(validate: bool = False):
 class ModelSelection(BaseModel):
     text_model: Optional[str] = None
     image_model: Optional[str] = None
+    image_source: Optional[str] = None     # cloud | local
 
 
 @router.get("/models")
@@ -129,7 +130,10 @@ async def list_models_tool():
     escolhidos agora. "image": modelos que geram imagem (nome com "image").
     """
     from backend.config.user_settings import get_gemini_model
-    current = {"text_model": get_gemini_model(), "image_model": get_image_model()}
+    from backend.config.user_settings import get_generation_source
+    from backend.services.local_image_generator import local_image_service
+    current = {"text_model": get_gemini_model(), "image_model": get_image_model(),
+               "image_source": get_generation_source(), "local_worker": local_image_service.health()}
     key = get_gemini_key()
     if not key:
         return {**current, "text": [], "image": [], "error": "Nenhuma chave cadastrada."}
@@ -153,7 +157,7 @@ async def list_models_tool():
 async def save_models_tool(selection: ModelSelection):
     """Salva os modelos escolhidos (texto/orquestração e imagem)."""
     from backend.config.user_settings import save_models
-    save_models(selection.text_model, selection.image_model)
+    save_models(selection.text_model, selection.image_model, selection.image_source)
     return {"success": True}
 
 

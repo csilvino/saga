@@ -21,7 +21,7 @@
           "id": "background_32112c69",
           "name": "Background",
           "type": "background",
-          "sprite": "",
+          "sprite": "backgrounds/Local_FLUX_79193c22.png",
           "position": {
             "x": 960,
             "y": 540
@@ -179,7 +179,7 @@
           "id": "background_4b59a129",
           "name": "Background",
           "type": "background",
-          "sprite": "",
+          "sprite": "backgrounds/Local_FLUX_9116bac1.png",
           "position": {
             "x": 960,
             "y": 540
@@ -219,7 +219,7 @@
           "id": "background_c5a41f6f",
           "name": "Background",
           "type": "background",
-          "sprite": "",
+          "sprite": "backgrounds/Local_FLUX_6c42024a.png",
           "position": {
             "x": 960,
             "y": 540
@@ -411,7 +411,7 @@
           "id": "background_43d72be3",
           "name": "Background",
           "type": "background",
-          "sprite": "",
+          "sprite": "backgrounds/Local_FLUX_ff5929c6.png",
           "position": {
             "x": 960,
             "y": 540
@@ -482,7 +482,7 @@
           "id": "background_24b4a8fa",
           "name": "Background",
           "type": "background",
-          "sprite": "",
+          "sprite": "backgrounds/Local_FLUX_d7c29b44.png",
           "position": {
             "x": 960,
             "y": 540
@@ -522,7 +522,7 @@
           "id": "background_5473a3e7",
           "name": "Background",
           "type": "background",
-          "sprite": "",
+          "sprite": "backgrounds/Local_FLUX_601ef85b.png",
           "position": {
             "x": 960,
             "y": 540

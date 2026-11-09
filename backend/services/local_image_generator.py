@@ -1,85 +1,54 @@
+"""
+Client for the local image worker (local_image_worker/worker.py, FLUX.1 Kontext on your GPU).
+
+The worker runs in its own virtualenv because of its heavy dependencies; the backend only talks
+to it over HTTP on 127.0.0.1. See local_image_worker/README.md.
+"""
+
+import io
 import logging
+import os
+
+import httpx
 from PIL import Image
-from backend.config.user_settings import get_local_model_id
 
 logger = logging.getLogger(__name__)
 
+WORKER_URL = os.environ.get("SAGA_IMAGE_WORKER_URL", "http://127.0.0.1:8071")
+TIMEOUT = 900          # the first image also loads the model (minutes on a 12 GB card)
+
+
+class LocalWorkerUnavailable(RuntimeError):
+    pass
+
+
 class LocalImageGenerator:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(LocalImageGenerator, cls).__new__(cls)
-            cls._instance.pipe = None
-            cls._instance.device = None     # decided when the model is loaded
-        return cls._instance
-
-    def _load_model(self):
-        if self.pipe is not None:
-            return
-
+    def health(self) -> dict:
         try:
-            # torch/diffusers only when local generation is used: the backend starts without them
-            import torch
-            from diffusers import StableDiffusionXLPipeline
-            self.device = "cuda" if torch.cuda.is_available() else "cpu"
-
-            model_id = get_local_model_id()
-            logger.info(f"Carregando modelo local SSD-1B ({model_id}) no dispositivo: {self.device}...")
-
-            dtype = torch.float16 if self.device == "cuda" else torch.float32
-            
-            self.pipe = StableDiffusionXLPipeline.from_pretrained(
-                model_id,
-                torch_dtype=dtype,
-                use_safetensors=True
-            )
-            
-            if self.device == "cuda":
-                # Otimizações críticas para VRAM limitada (já que o usuário roda LLM 14B)
-                self.pipe.enable_model_cpu_offload()
-                self.pipe.enable_vae_slicing()
-                self.pipe.enable_vae_tiling()
-            else:
-                self.pipe.to("cpu")
-                
-            logger.info("Modelo local carregado com sucesso.")
-            
+            r = httpx.get(f"{WORKER_URL}/health", timeout=3)
+            return r.json()
         except Exception as e:
-            logger.error(f"Erro fatal ao carregar modelo local: {e}")
-            self.pipe = None
-            raise
+            return {"ok": False, "error": str(e)}
 
-    def generate_image(self, prompt: str, negative_prompt: str = "", width: int = 1024, height: int = 1024) -> Image.Image:
-        """
-        Gera uma imagem usando o modelo local (SSD-1B).
-        """
-        self._load_model()
-        
-        if self.pipe is None:
-            raise RuntimeError("Modelo de imagem local não pôde ser carregado.")
-
-        logger.info(f"Gerando imagem localmente... Prompt: {prompt[:50]}...")
-        
-        # Parâmetros otimizados para velocidade/qualidade
-        steps = 20
-        guidance = 7.0
-        
+    def generate_image(self, prompt: str, negative_prompt: str = "", width: int = 1024, height: int = 1024,
+                       reference_image_path: str | None = None) -> Image.Image:
+        payload = {"prompt": prompt, "width": int(width), "height": int(height)}
+        if reference_image_path:
+            payload["reference_image"] = os.path.abspath(reference_image_path)
         try:
-            result = self.pipe(
-                prompt=prompt,
-                negative_prompt=negative_prompt,
-                height=height,
-                width=width,
-                num_inference_steps=steps,
-                guidance_scale=guidance
-            ).images[0]
-            
-            return result
-            
-        except Exception as e:
-            logger.error(f"Erro durante inferência local: {e}")
-            raise
+            r = httpx.post(f"{WORKER_URL}/generate", json=payload, timeout=TIMEOUT)
+        except httpx.ConnectError:
+            raise LocalWorkerUnavailable(
+                "O gerador local de imagens não está rodando. Inicie-o com "
+                "`local_image_worker\\.venv\\Scripts\\python local_image_worker\\worker.py` "
+                "(veja local_image_worker/README.md) ou troque a fonte das imagens para Gemini.")
+        if r.status_code != 200:
+            try:
+                detail = r.json().get("error")
+            except Exception:
+                detail = r.text[:300]
+            raise RuntimeError(f"gerador local falhou: {detail}")
+        return Image.open(io.BytesIO(r.content)).convert("RGB")
 
-# Singleton para uso global
+
 local_image_service = LocalImageGenerator()

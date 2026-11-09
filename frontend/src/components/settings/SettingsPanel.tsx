@@ -45,6 +45,16 @@ const SettingsPanel = ({
     }
   };
 
+  const changeImageSource = async (source: 'cloud' | 'local') => {
+    try {
+      await saveModels(undefined, undefined, source);
+      setModels(prev => prev ? { ...prev, image_source: source } : prev);
+      toast.success(source === 'local' ? 'Imagens: gerador local (FLUX na sua GPU)' : 'Imagens: Gemini (nuvem)');
+    } catch {
+      toast.error('Não foi possível salvar a fonte das imagens.');
+    }
+  };
+
   // Uma lista com o modelo atual sempre presente (mesmo se o Google não o listar mais)
   const modelOptions = (kind: 'text' | 'image') => {
     if (!models) return [];
@@ -580,6 +590,29 @@ const SettingsPanel = ({
                   {models?.error && (
                     <p className="text-sm text-amber-400">Não foi possível listar os modelos: {models.error}</p>
                   )}
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">Fonte das imagens</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {([['cloud', 'Gemini (nuvem)', 'Nano Banana; precisa de faturamento ativo na conta Google'],
+                         ['local', 'Local (sua GPU)', 'FLUX.1 Kontext; grátis, ~4 min por imagem numa RTX 3060']] as const).map(([value, title, hint]) => (
+                        <button
+                          key={value}
+                          onClick={() => changeImageSource(value)}
+                          disabled={!models}
+                          className={`text-left p-3 rounded-lg border transition-colors ${(models?.image_source || 'cloud') === value ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 bg-gray-800 hover:border-gray-600'}`}
+                        >
+                          <div className="text-sm font-semibold text-white">{title}</div>
+                          <div className="text-xs text-gray-400">{hint}</div>
+                        </button>
+                      ))}
+                    </div>
+                    {models?.image_source === 'local' && (
+                      models.local_worker?.ok
+                        ? <p className="text-xs text-green-400">● Gerador local ligado{models.local_worker.gpu ? ` (${models.local_worker.gpu})` : ''}{models.local_worker.busy ? ' — gerando agora' : ''}.</p>
+                        : <p className="text-xs text-amber-400">● Gerador local desligado. Inicie com <code>local_image_worker\.venv\Scripts\python local_image_worker\worker.py</code> (veja local_image_worker/README.md).</p>
+                    )}
+                  </div>
 
                   {(['text', 'image'] as const).map(kind => (
                     <div key={kind} className="space-y-2">
