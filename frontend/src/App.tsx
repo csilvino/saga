@@ -327,7 +327,7 @@ export default function App() {
           loop: type === 'music' ? true : undefined
         },
         actions: [],
-        ses: `// Script para ${type} ${scene.objects.length + 1}\n\non click {\n  // Adicione sua lógica aqui\n}\n`
+        ses: `// ${type} ${scene.objects.length + 1} (SES v2). Ex.: on examine { say "..." }\n`
       };
 
       const newProject = {

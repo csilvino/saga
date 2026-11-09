@@ -1,7 +1,7 @@
 // GamePlayer Component - Saga Engine
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, X, Package, MapPin, Volume2, VolumeX, Maximize2, Minimize2, Send, Type, Notebook } from 'lucide-react';
-import type { Project, Scene, GameObject } from '../types';
+import type { Project, GameObject } from '../types';
 import api, { getAssetUrl } from '../services/api';
 import { useResizable, useRightResizable } from '../hooks';
 import { ResizeHandle } from './ui';
@@ -85,14 +85,33 @@ const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projec
   );
 };
 
+interface GameView {
+  scene_id: string;
+  scene_name: string;
+  objects: { id: string; name: string }[];
+  inventory: { id: string; name: string }[];
+  exits: Record<string, string>;
+  ended: string | null;
+}
+
+// Colors the engine's messages by what they are
+const messageType = (text: string) => {
+  if (text.startsWith('== ')) return 'location';
+  if (text.startsWith('Você vê:')) return 'objects';
+  if (text.startsWith('Saídas:')) return 'exits';
+  if (text.startsWith('[')) return 'error';
+  return 'normal';
+};
+
 const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClose }) => {
   const [showLauncher, setShowLauncher] = useState(true);
-  const [currentSceneId, setCurrentSceneId] = useState(initialSceneId);
+  const [gameState, setGameState] = useState<any>(null);
+  const [view, setView] = useState<GameView | null>(null);
+  const [busy, setBusy] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [command, setCommand] = useState('');
   const [textLog, setTextLog] = useState<{ text: string; type: string; timestamp: number }[]>([]);
-  const [inventory, setInventory] = useState<any[]>([]);
   const [fontSize, setFontSize] = useState(14);
 
   // Hooks de redimensionamento
@@ -103,7 +122,13 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   const logRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
-  const currentScene = project.scenes[currentSceneId];
+  // every object of the project by id (objects can move between scenes during play)
+  const allObjects: Record<string, GameObject> = {};
+  Object.values(project.scenes).forEach(s => s.objects.forEach(o => { allObjects[o.id] = o; }));
+
+  const currentScene = project.scenes[view?.scene_id || initialSceneId] || Object.values(project.scenes)[0];
+  const inventory = (view?.inventory || []).map(i => ({ ...i, icon: allObjects[i.id]?.sprite }));
+  const visibleIds = new Set((view?.objects || []).map(o => o.id));
 
   useEffect(() => {
     if (logRef.current) {
@@ -115,90 +140,73 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
     if (!showLauncher && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [showLauncher]);
-
-  useEffect(() => {
-    if (showLauncher) return; // Don't initialize game logic if launcher is showing
-    if (initialized.current) return;
-    initialized.current = true;
-
-    addToLog('═══════════════════════════════════════════════════════', 'system');
-    addToLog(`      ${project.name.toUpperCase()}`, 'title');
-    addToLog('═══════════════════════════════════════════════════════', 'system');
-    addToLog('');
-    describeScene(currentScene);
-  }, [showLauncher]); // Depend on showLauncher to trigger when game starts
+  }, [showLauncher, busy]);
 
   const addToLog = (text: string, type = 'normal') => {
     setTextLog(prev => [...prev, { text, type, timestamp: Date.now() }]);
   };
 
-  const describeScene = (scene: Scene) => {
-    if (!scene) return;
-
-    if (scene.description) {
-      addToLog(scene.description, 'description');
-    }
-
-    const visibleObjects = scene.objects.filter(o => o.type !== 'background');
-    if (visibleObjects.length > 0) {
-      addToLog(`Objetos visíveis: ${visibleObjects.map(o => o.name).join(', ')}`, 'objects');
-    }
-
-    const exits = scene.hotspots.filter(h => h.actions.some(a => a.type === 'navigate'));
-    if (exits.length > 0) {
-      addToLog(`Saídas: ${exits.map(e => e.name).join(', ')}`, 'exits');
-    }
+  const showResult = (data: any) => {
+    setGameState(data.state);
+    setView(data.view);
+    (data.messages || []).forEach((m: string) => addToLog(m, messageType(m)));
+    if (data.view?.ended) addToLog('— FIM — digite RECOMEÇAR para jogar de novo.', 'system');
     addToLog('');
   };
 
+  const startGame = async () => {
+    setTextLog([]);
+    addToLog('═══════════════════════════════════════════════════════', 'system');
+    addToLog(`      ${project.name.toUpperCase()}`, 'title');
+    addToLog('═══════════════════════════════════════════════════════', 'system');
+    addToLog('');
+    try {
+      const response = await api.post('/api/game/start', { project_name: project.name });
+      showResult(response.data);
+    } catch (error: any) {
+      addToLog(`Não foi possível iniciar o jogo: ${error.response?.data?.detail || error.message}`, 'error');
+    }
+  };
+
+  useEffect(() => {
+    if (showLauncher || initialized.current) return;
+    initialized.current = true;
+    startGame();
+  }, [showLauncher]);
+
   const processCommand = async (cmd: string) => {
     const input = cmd.trim();
-    if (!input) return;
+    if (!input || busy) return;
 
     addToLog(`> ${input}`, 'command');
+    const lower = input.toLowerCase();
 
-    if (input.toLowerCase() === 'sair' || input.toLowerCase() === 'exit') {
+    if (lower === 'sair do jogo' || lower === 'exit') {
       onClose();
       return;
     }
-
-    if (input.toLowerCase() === 'limpar' || input.toLowerCase() === 'cls') {
+    if (lower === 'limpar' || lower === 'cls') {
       setTextLog([]);
       return;
     }
+    if (lower === 'recomeçar' || lower === 'recomecar' || lower === 'restart') {
+      startGame();
+      return;
+    }
 
+    setBusy(true);
     try {
       const response = await api.post('/api/game/command', {
         project_name: project.name,
-        scene_id: currentSceneId,
         command: input,
-        inventory: inventory
+        state: gameState,
       });
-
-      const result = response.data;
-
-      if (!result.success) {
-        addToLog(result.message, 'error');
-        return;
-      }
-
-      addToLog(result.message, 'success');
-
-      if (result.action === 'PICKUP' && result.target_id) {
-        const targetObj = currentScene.objects.find(o => o.id === result.target_id);
-        if (targetObj) {
-          setInventory(prev => [...prev, { id: targetObj.id, name: targetObj.name, icon: targetObj.sprite }]);
-        }
-      }
-
-      if (result.action === 'LOOK' && !result.target_id) {
-        describeScene(currentScene);
-      }
-
-    } catch (error) {
+      showResult(response.data);
+    } catch (error: any) {
       console.error(error);
-      addToLog("Erro ao processar comando.", 'error');
+      addToLog(`Erro ao processar comando: ${error.response?.data?.detail || error.message}`, 'error');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -243,7 +251,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
     );
   }
 
-  const backgroundObj = currentScene.objects.find(o => o.type === 'background' || o.name === 'Background');
+  const backgroundObj = currentScene?.objects.find(o => o.type === 'background' || o.name === 'Background');
   const backgroundUrl = backgroundObj ? getAssetUrl(project.name, backgroundObj.sprite) : '';
 
   return (
@@ -259,7 +267,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
           <div className="h-6 w-px bg-gray-700"></div>
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm text-gray-400 font-medium" style={{ fontSize: `${fontSize}px` }}>{currentScene.name}</span>
+            <span className="text-sm text-gray-400 font-medium" style={{ fontSize: `${fontSize}px` }}>{view?.scene_name || currentScene?.name}</span>
           </div>
         </div>
 
@@ -358,15 +366,13 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
             {backgroundUrl && (
               <img
                 src={backgroundUrl}
-                alt={currentScene.name}
+                alt={view?.scene_name || ''}
                 className="w-full h-full object-contain"
               />
             )}
 
             {/* Objetos Clicáveis na Cena */}
-            {currentScene.objects.filter(o => o.type !== 'background').map((obj) => {
-              const isCollected = inventory.some(i => i.id === obj.id);
-              if (isCollected) return null;
+            {Object.values(allObjects).filter(o => visibleIds.has(o.id)).map((obj) => {
 
               return (
                 <AnimatedObject
@@ -413,7 +419,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
             </div>
 
             <div className="mt-2 flex items-center gap-4 text-gray-500" style={{ fontSize: `${fontSize - 2}px` }}>
-              <span>💡 Dica: Clique nos objetos na cena para interagir</span>
+              <span>💡 Clique num objeto para examiná-lo</span>
               <span>•</span>
               <span>Digite AJUDA para ver todos os comandos</span>
             </div>

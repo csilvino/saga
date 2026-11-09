@@ -63,7 +63,8 @@ async def create_object(request: ObjectCreateRequest):
             "sprite": sprite_placeholder,
             "position": position,
             "size": {"width": 100, "height": 100}, # Tamanho padrão inicial
-            "properties": {},
+            "description": request.description or "",
+            "properties": {"portable": object_generation_service.is_portable_type(request.object_type)},
             "actions": [],
             "ses": ses_script
         }

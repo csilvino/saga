@@ -64,7 +64,8 @@ app.include_router(tools.router)
 app.include_router(objects.router)
 app.include_router(genai_image.router)
 app.include_router(genai_edit.router)
-app.include_router(game.router) # Nova rota do jogo
+app.include_router(game.router)
+app.include_router(game.ses_router)
 
 @app.get("/")
 async def root():

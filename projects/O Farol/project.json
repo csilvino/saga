@@ -1,0 +1,596 @@
+{
+  "name": "O Farol",
+  "version": "1.0.0",
+  "start_scene": "scene_a95b2dc8",
+  "navigation_mode": "text",
+  "metadata": {
+    "action_history": [],
+    "deleted_objects": [],
+    "narrative_directives": ""
+  },
+  "scenes": {
+    "scene_a95b2dc8": {
+      "id": "scene_a95b2dc8",
+      "name": "Praia",
+      "description": "Areia fria e destroços por toda parte. A tempestade passou, mas o seu barco não. Ao norte, uma trilha sobe entre as rochas.",
+      "exits": {
+        "norte": "scene_8571ea07"
+      },
+      "objects": [
+        {
+          "id": "background_32112c69",
+          "name": "Background",
+          "type": "background",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_garrafa_7637",
+          "name": "garrafa",
+          "type": "item",
+          "sprite": "❓",
+          "position": {
+            "x": 435,
+            "y": 850
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma garrafa de vidro verde, arrolhada. Tem um papel dentro.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": []
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(garrafa_aberta) { say \"Já está aberta e vazia.\" }\n  else { set garrafa_aberta; take bilhete; say \"Você tira a rolha e puxa o papel: um bilhete.\" }\n}"
+        },
+        {
+          "id": "obj_bilhete_85cc",
+          "name": "bilhete",
+          "type": "item",
+          "sprite": "❓",
+          "position": {
+            "x": 1437,
+            "y": 888
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Letra tremida: \"Se alguém achar isto — a chave do farol fica onde a luz dorme. O fogo está na gaveta.\"",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "papel"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_barco_7a68",
+          "name": "barco",
+          "type": "cenario",
+          "sprite": "📦",
+          "position": {
+            "x": 776,
+            "y": 739
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "O que sobrou do seu barco: meia quilha e um mastro partido. Não vai a lugar nenhum.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "destrocos"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_gaivota_e758",
+          "name": "gaivota",
+          "type": "personagem",
+          "sprite": "🧍",
+          "position": {
+            "x": 576,
+            "y": 577
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma gaivota gorda observa você de cima de uma pedra.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": []
+          },
+          "actions": [],
+          "ses": "on talk {\n  inc conversas_gaivota\n  if flag(conversas_gaivota) >= 3 { say \"A gaivota suspira e olha para o farol. Parece até que entendeu.\" }\n  else { say \"A gaivota inclina a cabeça e grita. Não ajuda muito.\" }\n}\non take { say \"Ela sai voando e pousa de novo, um pouco mais longe.\" }"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on first_enter { say \"Você acorda com o gosto de sal na boca. Está vivo, e sozinho.\" }"
+    },
+    "scene_8571ea07": {
+      "id": "scene_8571ea07",
+      "name": "Trilha",
+      "description": "Uma trilha estreita entre rochas escuras. O farol se ergue ao norte, apagado. A leste, uma casinha de pedra.",
+      "exits": {
+        "sul": "scene_a95b2dc8",
+        "leste": "scene_9bad60d9",
+        "norte": "scene_4f62831a"
+      },
+      "objects": [
+        {
+          "id": "background_4b59a129",
+          "name": "Background",
+          "type": "background",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": ""
+    },
+    "scene_9bad60d9": {
+      "id": "scene_9bad60d9",
+      "name": "Casa do Faroleiro",
+      "description": "Uma casa de um cômodo só, abandonada há anos. Cheira a querosene e mofo.",
+      "exits": {
+        "oeste": "scene_8571ea07"
+      },
+      "objects": [
+        {
+          "id": "background_c5a41f6f",
+          "name": "Background",
+          "type": "background",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_gaveta_93c5",
+          "name": "gaveta",
+          "type": "movel",
+          "sprite": "📦",
+          "position": {
+            "x": 852,
+            "y": 757
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma cômoda com uma gaveta emperrada.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "comoda",
+              "cômoda"
+            ]
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(gaveta_aberta) { say \"A gaveta já está aberta.\" }\n  else { set gaveta_aberta; show fosforos; say \"Você força a gaveta. Dentro, uma caixa de fósforos.\" }\n}"
+        },
+        {
+          "id": "obj_fosforos_3773",
+          "name": "fósforos",
+          "type": "item",
+          "sprite": "❓",
+          "position": {
+            "x": 1614,
+            "y": 807
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma caixa de fósforos, quase cheia. Secos, por milagre.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "fosforos",
+              "caixa de fosforos"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_lampiao_466c",
+          "name": "lampião",
+          "type": "movel",
+          "sprite": "📦",
+          "position": {
+            "x": 281,
+            "y": 604
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um lampião velho pendurado sobre a cama — a luz que dorme.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "lampiao",
+              "lamparina"
+            ]
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(chave_achada) { say \"Um lampião velho, vazio.\" }\n  else { set chave_achada; show chave; say \"Você levanta o lampião. Embaixo da base, presa com cera, uma chave grande!\" }\n}"
+        },
+        {
+          "id": "obj_chave_63d7",
+          "name": "chave",
+          "type": "chave",
+          "sprite": "🔑",
+          "position": {
+            "x": 304,
+            "y": 814
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma chave de ferro, pesada, do tamanho da sua mão.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "chave grande",
+              "chave de ferro"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_cama_0546",
+          "name": "cama",
+          "type": "movel",
+          "sprite": "📦",
+          "position": {
+            "x": 820,
+            "y": 957
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma cama estreita com um cobertor comido pelas traças.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": []
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": ""
+    },
+    "scene_4f62831a": {
+      "id": "scene_4f62831a",
+      "name": "Base do Farol",
+      "description": "A base de pedra do farol. Uma porta de ferro enferrujada dá para dentro.",
+      "exits": {
+        "sul": "scene_8571ea07"
+      },
+      "objects": [
+        {
+          "id": "background_43d72be3",
+          "name": "Background",
+          "type": "background",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_porta_aa36",
+          "name": "porta",
+          "type": "porta",
+          "sprite": "🚪",
+          "position": {
+            "x": 1332,
+            "y": 887
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma porta de ferro, trancada, com uma fechadura grande.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "porta de ferro"
+            ]
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(porta_aberta) { say \"A porta está aberta. Lá dentro, uma escada sobe.\" }\n  else { say \"Uma porta de ferro, trancada, com uma fechadura grande.\" }\n}\non open {\n  if flag(porta_aberta) { say \"Já está aberta.\" }\n  else { say \"Trancada. Precisa de uma chave.\" }\n}\non use with chave {\n  if flag(porta_aberta) { say \"Já está aberta.\" }\n  else { set porta_aberta; link norte to \"Dentro do Farol\"; say \"A chave gira com um rangido. A porta se abre para o norte.\" }\n}"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": ""
+    },
+    "scene_7712d46c": {
+      "id": "scene_7712d46c",
+      "name": "Dentro do Farol",
+      "description": "Uma escada em espiral sobe na escuridão. O vento assobia lá no alto.",
+      "exits": {
+        "sul": "scene_4f62831a",
+        "cima": "scene_a2df2819"
+      },
+      "objects": [
+        {
+          "id": "background_24b4a8fa",
+          "name": "Background",
+          "type": "background",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": ""
+    },
+    "scene_a2df2819": {
+      "id": "scene_a2df2819",
+      "name": "Topo do Farol",
+      "description": "A sala da lâmpada. Pelo vidro rachado, você vê o mar inteiro — e, muito longe, as luzes de um navio.",
+      "exits": {
+        "baixo": "scene_7712d46c"
+      },
+      "objects": [
+        {
+          "id": "background_5473a3e7",
+          "name": "Background",
+          "type": "background",
+          "sprite": "",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_lampada_4fa3",
+          "name": "lâmpada",
+          "type": "movel",
+          "sprite": "📦",
+          "position": {
+            "x": 1710,
+            "y": 630
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "A grande lente do farol, com um pavio grosso no centro. Precisa de fogo.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "lampada",
+              "lente",
+              "pavio"
+            ]
+          },
+          "actions": [],
+          "ses": "on use with fosforos {\n  end \"Você risca um fósforo e acende o pavio. A lente gira e o facho varre o mar. Minutos depois, o navio muda de rumo e apita três vezes: viram você. FIM.\"\n}\non use { say \"Com o quê? O pavio precisa de fogo.\" }"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": ""
+    }
+  },
+  "assets": {
+    "sprites": {},
+    "items": {},
+    "audio": {}
+  },
+  "launcher": {
+    "title": "O Farol",
+    "description": "Náufrago numa ilha, você precisa reacender o farol.",
+    "version": "1.0.0"
+  }
+}

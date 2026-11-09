@@ -21,6 +21,7 @@ export interface GameObject {
   properties?: { [key: string]: any };
   actions?: any[];
   ses?: string;
+  description?: string;      // what the player reads on "examinar"
   animation?: Animation;
 }
 
@@ -67,6 +68,9 @@ export interface Scene {
   // background: string; // Removido
   objects: GameObject[];
   hotspots: Hotspot[];
+  description?: string;            // what the player reads on entering
+  exits?: Record<string, string>;  // direction -> scene id
+  ses?: string;
 }
 
 export interface Project {

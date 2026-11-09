@@ -7,13 +7,13 @@ import { ResizeHandle } from '../ui';
 
 const WORKFLOWS = {
   diretor: { icon: Sparkles, title: 'Diretor', description: 'Crie cenas e objetos seguindo o estilo atual.', template: 'Como Diretor, crie uma nova cena baseada no estilo visual da cena "[ID_REF]" e nomeie-a como "[NOME]". Inclua lógica SES.' },
-  scripting: { icon: Terminal, title: 'SES Expert', description: 'Crie lógica de interação e narrativa.', template: 'Escreva um script SES para o objeto "[NOME]" com uma descrição "on examine" bem rica e uma ação "on interact" que use narrate().' },
+  scripting: { icon: Terminal, title: 'SES Expert', description: 'Crie lógica de interação e narrativa.', template: 'Escreva um script SES para o objeto "[NOME]" com uma descrição rica em "on examine" e uma interação com outro objeto em "on use with".' },
   narrativa: { icon: BookOpen, title: 'Narrador', description: 'Gere descrições imersivas para o log.', template: 'Descreva a cena atual de forma poética e detalhada para o jogador, focando na atmosfera Calixto Island.' },
   imageMaker: { icon: Palette, title: 'Visual', description: 'Gere backgrounds e sprites.', template: 'Gere uma imagem de fundo para a cena [NOME] que seja [DESCRIÇÃO].' }
 };
 
 const CHAT_HISTORY_KEY = 'saga_ai_chat_history';
-const defaultWelcomeMessage = { sender: 'ai', text: 'Olá! Sou o Orquestrador. Dê um comando ou escolha um workflow para começar.' };
+const defaultWelcomeMessage = { sender: 'ai', text: 'Olá! Sou o Diretor. Peça um adventure ("crie um jogo de mistério numa mansão com 4 salas") ou uma mudança ("a porta só abre com a chave"). Eu construo, testo jogando e conto como vencer.' };
 
 interface AIPanelProps {
   project: Project;
@@ -67,20 +67,10 @@ const AIPanelComponent: React.FC<AIPanelProps> = ({ project, activeScene, select
       selected_object_id: selectedObjectId,
     };
 
-    // Sistema de Audição: Pega as últimas mensagens do log real do jogo
-    let recentMessages = [];
-    try {
-      const savedLog = localStorage.getItem('saga_game_log_recent');
-      if (savedLog) recentMessages = JSON.parse(savedLog);
-    } catch (e) {
-      console.warn("Erro ao ler log do jogo:", e);
-    }
-
     try {
       const response = await api.post('/api/orchestrator/command', {
         prompt: input,
         context: context,
-        recent_messages: recentMessages
       });
       const { text_response } = response.data;
 
@@ -89,15 +79,20 @@ const AIPanelComponent: React.FC<AIPanelProps> = ({ project, activeScene, select
       const tool_responses = response.data.tool_responses || [];
 
       if (tool_responses.length > 0) {
-        tool_responses.forEach((tr: any) => {
-          if (tr.result && tr.result.request_selection && onStartExtraction) {
-            setMessages(prev => [...prev, { sender: 'system', text: `✂️ Solicitação de corte manual: "${tr.result.prompt}"` }]);
-            onStartExtraction(tr.result.prompt);
-          } else {
-            const toolName = tr.tool || "Ferramenta";
-            setMessages(prev => [...prev, { sender: 'system', text: `🔧 ${toolName} executada.`, details: JSON.stringify(tr.result, null, 2) }]);
-          }
-        });
+        // one summary line per answer ("🔧 12 ações: create_scene ×3, ..."), with the details folded
+        const counts: Record<string, number> = {};
+        tool_responses.forEach((tr: any) => { counts[tr.tool] = (counts[tr.tool] || 0) + 1; });
+        const failed = tool_responses.filter((tr: any) => tr.result?.error).length;
+        const summary = Object.entries(counts).map(([t, n]) => n > 1 ? `${t} ×${n}` : t).join(', ');
+        const details = tool_responses.map((tr: any) =>
+          `${tr.result?.error ? '✖' : '✔'} ${tr.tool} ${JSON.stringify(tr.args || {})}\n   → ${JSON.stringify(tr.result)}`).join('\n');
+        setMessages(prev => [...prev, {
+          sender: 'system',
+          text: `🔧 ${tool_responses.length} ações: ${summary}${failed ? ` (${failed} com erro, corrigidas pela IA)` : ''}`,
+          details,
+        }]);
+      }
+      if (response.data.project_changed || tool_responses.length > 0) {
         onProjectUpdate();
       }
     } catch (error) {
@@ -107,6 +102,14 @@ const AIPanelComponent: React.FC<AIPanelProps> = ({ project, activeScene, select
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Starts a new conversation: the director forgets what was said (the project stays as it is)
+  const handleNewConversation = async () => {
+    try {
+      await api.post('/api/orchestrator/reset', { project_name: project.name });
+    } catch { /* the next message starts a new chat anyway */ }
+    setMessages([defaultWelcomeMessage]);
   };
 
   const handleWorkflowClick = (template: string) => {
@@ -152,7 +155,7 @@ const AIPanelComponent: React.FC<AIPanelProps> = ({ project, activeScene, select
               {msg.sender === 'system' && <Terminal className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />}
               <div className={`max-w-[90%] rounded-lg p-3 ${msg.sender === 'user' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300'}`}>
                 <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
-                {msg.details && <pre className="mt-2 p-2 bg-gray-900 rounded-lg text-xs text-green-300 overflow-x-auto"><code>{msg.details}</code></pre>}
+                {msg.details && <details className="mt-2"><summary className="text-xs text-gray-500 cursor-pointer">detalhes</summary><pre className="mt-1 p-2 bg-gray-900 rounded-lg text-xs text-green-300 overflow-x-auto whitespace-pre-wrap"><code>{msg.details}</code></pre></details>}
               </div>
             </div>
           ))}
@@ -178,6 +181,7 @@ const AIPanelComponent: React.FC<AIPanelProps> = ({ project, activeScene, select
         <div className="flex border-b border-gray-800">
           <button onClick={() => setActiveTab('chat')} className={`flex-1 py-3 text-sm font-semibold ${activeTab === 'chat' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-500 hover:text-gray-300'}`}>💬 Chat</button>
           <button onClick={() => setActiveTab('director')} className={`flex-1 py-3 text-sm font-semibold ${activeTab === 'director' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-500 hover:text-gray-300'}`}>🎬 Diretor</button>
+          <button onClick={handleNewConversation} title="Nova conversa (a IA esquece o histórico)" className="px-3 text-gray-500 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
         </div>
 
         {renderContent()}

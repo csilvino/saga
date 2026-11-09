@@ -81,6 +81,15 @@ export const saveModels = async (textModel?: string, imageModel?: string) => {
   return response.data;
 };
 
+export interface SesProblem { line: number; col: number; message: string; }
+export interface SesValidation { ok: boolean; errors: SesProblem[]; warnings: SesProblem[]; }
+
+/** Valida um script SES (sintaxe e referências a objetos/cenas do projeto). */
+export const validateSes = async (script: string, projectName?: string, ownerKind: 'object' | 'scene' = 'object'): Promise<SesValidation> => {
+  const response = await api.post('/api/ses/validate', { script, project_name: projectName, owner_kind: ownerKind });
+  return response.data;
+};
+
 /** Remove a chave da API do Gemini das configurações do usuário. */
 export const deleteApiKey = async () => {
   const response = await api.delete('/api/tools/api-key');

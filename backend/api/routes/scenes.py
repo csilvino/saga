@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 class SceneCreateRequest(BaseModel):
     project_name: str
     scene_name: str
+    description: Optional[str] = ""
     check_if_exists: bool = Field(default=True, description="Se True, a API primeiro verifica se uma cena com o mesmo nome já existe.")
 
 # Modelo para atualização de cena
@@ -76,7 +77,9 @@ async def create_scene(request: SceneCreateRequest):
             ],
             "hotspots": [],
             "actions": [],
-            "ses": f"// Script para a cena {request.scene_name}\n\non load {{\n  // Ações ao carregar a cena\n}}\n"
+            "description": request.description or "",
+            "exits": {},
+            "ses": f"// Script da cena {request.scene_name} (SES v2). Ex.: on first_enter {{ say \"...\" }}\n"
         }
         
         if "scenes" not in project:

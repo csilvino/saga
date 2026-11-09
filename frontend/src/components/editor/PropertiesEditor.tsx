@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Save, UploadCloud, Image as ImageIcon, Music, FileAudio, Crosshair, Maximize, RotateCcw, Sparkles, Box } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { GameObject, Scene } from '../../types';
-import { uploadSprite, getAssetUrl, suggestAnimation, magicPartAnimate, animateObjectWithAI } from '../../services/api';
+import { uploadSprite, getAssetUrl, suggestAnimation, magicPartAnimate, animateObjectWithAI, validateSes } from '../../services/api';
+import type { SesValidation } from '../../services/api';
 
 interface PropertiesEditorProps {
   project: { name: string };
@@ -62,6 +63,23 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
   const handleFieldChange = (field: keyof GameObject, value: any) => {
     setDraft(prev => ({ ...prev, [field]: value }));
   };
+
+  const handlePropertyChange = (key: string, value: any) => {
+    setDraft(prev => ({ ...prev, properties: { ...(prev.properties || {}), [key]: value } }));
+  };
+
+  // SES validation as the user types (syntax errors with line/column, and missing references)
+  const [sesCheck, setSesCheck] = useState<SesValidation | null>(null);
+  useEffect(() => {
+    const script = draft.ses || '';
+    if (!script.trim()) { setSesCheck(null); return; }
+    const timer = setTimeout(() => {
+      validateSes(script, project.name, isScene ? 'scene' : 'object')
+        .then(setSesCheck)
+        .catch(() => setSesCheck(null));
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [draft.ses, project.name, isScene]);
 
   const handleSave = () => {
     onSave(draft);
@@ -582,9 +600,56 @@ export const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
             </div>
           )}
 
+          {/* Section: Adventure (what the text engine uses) */}
+          {draft.type !== 'background' && (
+            <div className="space-y-3 pt-2 border-t border-gray-800/50">
+              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest pl-1">Adventure</h3>
+              <textarea
+                value={draft.description || ''}
+                onChange={(e) => handleFieldChange('description', e.target.value)}
+                rows={3}
+                className="w-full bg-gray-900 border border-gray-800 rounded-xl p-3 text-[11px] text-gray-300 resize-y focus:outline-none focus:border-purple-500/50"
+                placeholder={isScene ? 'O que o jogador lê ao entrar na cena...' : 'O que o jogador lê ao examinar...'}
+              />
+              {!isScene && (
+                <>
+                  <div className="flex gap-4 text-[11px] text-gray-300 pl-1">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={!!draft.properties?.portable}
+                        onChange={(e) => handlePropertyChange('portable', e.target.checked)} />
+                      Pode ser pego
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={!!draft.properties?.hidden}
+                        onChange={(e) => handlePropertyChange('hidden', e.target.checked)} />
+                      Escondido (aparece com <code>show</code>)
+                    </label>
+                  </div>
+                  <input
+                    value={(draft.properties?.aliases || []).join(', ')}
+                    onChange={(e) => handlePropertyChange('aliases', e.target.value.split(',').map((a: string) => a.trim()).filter(Boolean))}
+                    className="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-[11px] text-gray-300 focus:outline-none focus:border-purple-500/50"
+                    placeholder="Outros nomes, separados por vírgula (ex.: chave, chave velha)"
+                  />
+                </>
+              )}
+            </div>
+          )}
+
           {/* Section: Script SES */}
           <div className="space-y-3 pt-2 border-t border-gray-800/50">
             <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest pl-1">Script (SES)</h3>
+            {sesCheck && (
+              <div className="space-y-1 text-[11px] font-mono">
+                {sesCheck.errors.map((e, i) => (
+                  <div key={`e${i}`} className="text-red-400">✖ linha {e.line}, coluna {e.col}: {e.message}</div>
+                ))}
+                {sesCheck.warnings.map((w, i) => (
+                  <div key={`w${i}`} className="text-yellow-400">⚠ linha {w.line}: {w.message}</div>
+                ))}
+                {sesCheck.ok && sesCheck.warnings.length === 0 && <div className="text-green-500">✔ script válido</div>}
+              </div>
+            )}
             <div className="h-64 w-full bg-gray-900 border border-gray-800 rounded-xl overflow-hidden focus-within:border-purple-500/50 transition-colors">
               <textarea
                 value={draft.ses || ''}
