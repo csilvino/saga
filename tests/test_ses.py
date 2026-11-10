@@ -216,3 +216,22 @@ def test_background_variant_follows_state():
     assert out["view"]["background"] is None
     out = eng.command(out["state"], "abrir porta")
     assert out["view"]["background"] == "backgrounds/aberta.png"
+
+
+def test_classic_presentation_and_abbreviations():
+    from backend.ses.engine import GameEngine
+    project = {"start_scene": "s1", "presentation": {"style": "classico"}, "scenes": {
+        "s1": {"id": "s1", "name": "Porão", "description": "Escuro e úmido.", "exits": {"norte": "s2"},
+               "objects": [{"id": "balde", "name": "balde", "type": "item", "description": "Um balde.",
+                            "properties": {"portable": True}}]},
+        "s2": {"id": "s2", "name": "Sala", "description": "", "objects": []}}}
+    eng = GameEngine(project)
+    out = eng.start()
+    text = "\n".join(out["messages"])
+    assert "📍 Porão. Escuro e úmido." in text and "Vejo: balde." in text and "Saídas: norte." in text
+    out = eng.command(out["state"], "PEG BALDE")           # 8-bit style abbreviation
+    assert out["state"]["where"]["balde"] == "@inventory"
+    out = eng.command(out["state"], "EXA BAL")
+    assert "Um balde." in out["messages"]
+    out = eng.command(out["state"], "N")
+    assert out["view"]["scene_id"] == "s2"

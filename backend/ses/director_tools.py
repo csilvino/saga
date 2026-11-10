@@ -238,6 +238,21 @@ def delete_scene(project, scene):
     return {"deleted": sid}
 
 
+def set_presentation(project, style=None, layout=None, retro=None):
+    p = project.setdefault("presentation", {})
+    if style is not None:
+        if style not in ("classico", "moderno"):
+            raise ToolError("style: 'classico' ou 'moderno'")
+        p["style"] = style
+    if layout is not None:
+        if layout not in ("classico", "paineis"):
+            raise ToolError("layout: 'classico' ou 'paineis'")
+        p["layout"] = layout
+    if retro is not None:
+        p["retro"] = bool(retro)
+    return {"presentation": p}
+
+
 def playtest(project, commands):
     """Plays from the start with these commands and returns what the player would read."""
     r = run_playtest(project, list(commands or []))
@@ -285,6 +300,8 @@ TOOLS = {
                    {"target": (S, "id ou nome do objeto ou da cena"), "script": (S, "")}, ["target", "script"]),
     "delete_object": (delete_object, "Apaga um objeto.", {"object": (S, "")}, ["object"]),
     "delete_scene": (delete_scene, "Apaga uma cena e as saídas que levavam a ela.", {"scene": (S, "")}, ["scene"]),
+    "set_presentation": (set_presentation, "Como o jogo se apresenta. style 'classico' = texto estilo adventure de 8 bits ('📍 Local. Vejo: ... Saídas: ...'); layout 'classico' = imagem em cima e texto embaixo, 'paineis' = inventário e texto em painéis laterais; retro = ilustração pixelada com paleta reduzida.",
+                         {"style": (S, "classico ou moderno"), "layout": (S, "classico ou paineis"), "retro": (B, "")}, []),
     "playtest": (playtest, "Joga do início com estes comandos (como o jogador digitaria) e devolve o que ele leria. Use para provar que o puzzle tem solução e que o jogo termina.",
                  {"commands": (A, "ex.: ['olhar', 'pegar chave', 'norte', 'usar chave na porta']")}, ["commands"]),
 }

@@ -35,6 +35,7 @@ def build():
     p = {"name": NAME, "version": "1.0.0", "start_scene": "", "navigation_mode": "text",
          "metadata": {"action_history": [], "deleted_objects": [], "narrative_directives": ""},
          "scenes": {}, "assets": {"sprites": {}, "items": {}, "audio": {}},
+         "presentation": {"style": "classico", "layout": "classico", "retro": False},
          "launcher": {"title": NAME, "description": "Náufrago numa ilha, você precisa reacender o farol.",
                       "version": "1.0.0"}}
 

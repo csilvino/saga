@@ -6,6 +6,7 @@ import api, { getAssetUrl, isPlaceholderSprite } from '../services/api';
 import { useResizable, useRightResizable } from '../hooks';
 import { ResizeHandle } from './ui';
 import GameLauncher from './GameLauncher';
+import RetroStage from './RetroStage';
 
 interface GamePlayerProps {
   project: Project;
@@ -14,10 +15,11 @@ interface GamePlayerProps {
 }
 
 // Componente para renderizar objetos animados ou estáticos
-const AnimatedObject = ({ obj, projectName, onClick }: { obj: GameObject, projectName: string, onClick: () => void }) => {
+const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj: GameObject, projectName: string, onClick: () => void, invisible?: boolean }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
   // painted = the object is part of the background picture: only a clickable area on top of it
-  const painted = !!obj.properties?.painted;
+  // invisible: drawn elsewhere (the retro canvas); only the clickable area stays
+  const painted = !!obj.properties?.painted || invisible;
   const spriteUrl = painted ? null : getAssetUrl(projectName, obj.sprite);
   const placeholder = painted ? '' : isPlaceholderSprite(obj.sprite) ? obj.sprite : (spriteUrl ? '' : '📦');
 
@@ -109,8 +111,8 @@ interface GameView {
 
 // Colors the engine's messages by what they are
 const messageType = (text: string) => {
-  if (text.startsWith('== ')) return 'location';
-  if (text.startsWith('Você vê:')) return 'objects';
+  if (text.startsWith('== ') || text.startsWith('📍')) return 'location';
+  if (text.startsWith('Você vê:') || text.startsWith('Vejo:')) return 'objects';
   if (text.startsWith('Saídas:')) return 'exits';
   if (text.startsWith('[')) return 'error';
   return 'normal';
@@ -133,6 +135,20 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   const [command, setCommand] = useState('');
   const [textLog, setTextLog] = useState<{ text: string; type: string; timestamp: number }[]>([]);
   const [fontSize, setFontSize] = useState(14);
+
+  // Presentation: the author's default (project.presentation) and the player's own choice
+  // (kept in this browser). 'classico' = picture on top, text below, like the 8-bit adventures.
+  const presKey = `saga_presentation:${project.name}`;
+  const [pres, setPres] = useState<{ layout: string; retro: boolean }>(() => {
+    const def = { layout: (project as any).presentation?.layout || 'paineis', retro: !!(project as any).presentation?.retro };
+    try { return { ...def, ...JSON.parse(localStorage.getItem(presKey) || '{}') }; } catch { return def; }
+  });
+  const updatePres = (change: Partial<{ layout: string; retro: boolean }>) => {
+    const next = { ...pres, ...change };
+    setPres(next);
+    try { localStorage.setItem(presKey, JSON.stringify(next)); } catch { /* storage blocked */ }
+  };
+  const classic = pres.layout === 'classico';
 
   // Hooks de redimensionamento
   const leftPanel = useResizable(320, 200, 500);
@@ -294,10 +310,33 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   const backgroundObj = currentScene?.objects.find(o => o.type === 'background' || o.name === 'Background');
   const backgroundUrl = getAssetUrl(project.name, view?.background || backgroundObj?.sprite || '') || '';
 
-  return (
-    <div className={`flex flex-col ${isFullscreen ? 'fixed inset-0 z-50' : 'h-screen'} bg-gray-900`}>
+  const visibleObjs = Object.values(allObjects).filter(o => visibleIds.has(o.id));
+  const spriteOf = (o: GameObject) => (o.properties?.painted ? null : getAssetUrl(project.name, o.sprite));
+  const retroSprites = pres.retro
+    ? visibleObjs.filter(o => spriteOf(o)).sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0)).map(o => ({
+        url: spriteOf(o)!, x: o.position.x - o.size.width / 2, y: o.position.y - o.size.height / 2,
+        w: o.size.width, h: o.size.height }))
+    : [];
 
-      {/* Header */}
+  // 16:9 stage: background and objects share the same 1920x1080 coordinates
+  const stage = (
+    <div className="relative" style={{ width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
+      {backgroundUrl && (pres.retro
+        ? <RetroStage background={backgroundUrl} sprites={retroSprites} />
+        : <img src={backgroundUrl} alt={view?.scene_name || ''} className="absolute inset-0 w-full h-full object-cover" />)}
+      {visibleObjs.map((obj) => (
+        <AnimatedObject
+          key={obj.id}
+          obj={obj}
+          projectName={project.name}
+          invisible={pres.retro && !!spriteOf(obj)}
+          onClick={() => processCommand(`examinar ${obj.name}`)}
+        />
+      ))}
+    </div>
+  );
+
+  const header = (
       <div className="bg-gray-950 border-b border-gray-800 px-6 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -312,6 +351,21 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Apresentação: clássico (imagem em cima, texto embaixo) ou painéis; ilustração retrô */}
+          <div className="flex items-center bg-gray-800 rounded-lg mr-2 border border-gray-700 text-xs font-bold">
+            <button onClick={() => updatePres({ layout: classic ? 'paineis' : 'classico' })}
+              className="px-3 py-2 rounded-l-lg text-gray-300 hover:bg-gray-700 hover:text-white"
+              title="Clássico: imagem em cima e texto embaixo, como nos adventures de 8 bits">
+              {classic ? 'CLÁSSICO' : 'PAINÉIS'}
+            </button>
+            <div className="w-px h-4 bg-gray-700"></div>
+            <button onClick={() => updatePres({ retro: !pres.retro })}
+              className={`px-3 py-2 rounded-r-lg hover:bg-gray-700 ${pres.retro ? 'text-amber-300' : 'text-gray-500'}`}
+              title="Ilustração retrô: baixa resolução e poucas cores">
+              RETRÔ
+            </button>
+          </div>
+
           {/* Controles de Fonte */}
           <div className="flex items-center bg-gray-800 rounded-lg mr-2 border border-gray-700">
             <button
@@ -353,6 +407,55 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
           </button>
         </div>
       </div>
+  );
+
+  const commandInput = (className: string, style: React.CSSProperties = {}) => (
+    <input
+      ref={inputRef}
+      type="text"
+      value={command}
+      onChange={(e) => setCommand(e.target.value)}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); }}
+      className={className}
+      style={style}
+      placeholder={classic ? '' : 'Digite um comando...'}
+      autoComplete="off"
+      spellCheck="false"
+    />
+  );
+
+  // CLÁSSICO: like the 8-bit illustrated adventures: the picture on top, the text below, one input line
+  if (classic) {
+    const retroFont = "'VT323', ui-monospace, monospace";
+    return (
+      <div className={`flex flex-col ${isFullscreen ? 'fixed inset-0 z-50' : 'h-screen'} bg-black`}>
+        {header}
+        <div className="relative bg-black overflow-hidden flex items-center justify-center flex-shrink-0 border-b-4 border-gray-800"
+             style={{ containerType: 'size', height: '58%' }}>
+          {stage}
+        </div>
+        <div ref={logRef} className="flex-1 overflow-y-auto px-6 py-3 leading-snug"
+             style={{ fontFamily: retroFont, scrollBehavior: 'smooth' }}>
+          {textLog.map((entry, index) => (
+            <div key={index} className={getLogColor(entry.type)} style={{ fontSize: `${fontSize + 8}px` }}>
+              {entry.text || ' '}
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 px-6 py-3 border-t border-gray-800 bg-black"
+             style={{ fontFamily: retroFont, fontSize: `${fontSize + 10}px` }}>
+          <span className="text-green-400">{'>'}</span>
+          {commandInput('flex-1 bg-transparent text-green-300 uppercase focus:outline-none caret-green-300',
+                        { fontFamily: retroFont, fontSize: `${fontSize + 10}px` })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex flex-col ${isFullscreen ? 'fixed inset-0 z-50' : 'h-screen'} bg-gray-900`}>
+
+      {header}
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
@@ -404,29 +507,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
           {/* Canvas da Cena com Objetos */}
           <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center"
                style={{ containerType: 'size' }}>
-            {/* 16:9 stage: background and objects share the same 1920x1080 coordinates */}
-            <div className="relative" style={{ width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
-            {backgroundUrl && (
-              <img
-                src={backgroundUrl}
-                alt={view?.scene_name || ''}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            )}
-
-            {/* Objetos Clicáveis na Cena */}
-            {Object.values(allObjects).filter(o => visibleIds.has(o.id)).map((obj) => {
-
-              return (
-                <AnimatedObject
-                  key={obj.id}
-                  obj={obj}
-                  projectName={project.name}
-                  onClick={() => processCommand(`examinar ${obj.name}`)}
-                />
-              );
-            })}
-            </div>
+            {stage}
 
             {/* Overlay com Info da Cena */}
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent pointer-events-none"></div>
@@ -436,22 +517,8 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
           <div className="bg-gray-950 border-t border-gray-800 p-4">
             <div className="flex items-center gap-3">
               <span className="text-cyan-400 font-mono font-bold" style={{ fontSize: `${fontSize + 4}px` }}>{'>'}</span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={command}
-                onChange={(e) => setCommand(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSubmit();
-                  }
-                }}
-                placeholder="Digite um comando..."
-                className="flex-1 bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
-                style={{ fontSize: `${fontSize}px` }}
-                autoComplete="off"
-                spellCheck="false"
-              />
+              {commandInput('flex-1 bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono',
+                            { fontSize: `${fontSize}px` })}
               <button
                 onClick={handleSubmit}
                 className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-bold transition-colors flex items-center gap-2"

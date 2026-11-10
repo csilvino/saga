@@ -605,5 +605,10 @@
     "title": "O Farol",
     "description": "Náufrago numa ilha, você precisa reacender o farol.",
     "version": "1.0.0"
+  },
+  "presentation": {
+    "style": "classico",
+    "layout": "classico",
+    "retro": false
   }
 }

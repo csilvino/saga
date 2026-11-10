@@ -49,6 +49,17 @@ VERBS = {
 }
 VERB_OF = {slug(w) or w: v for v, words in VERBS.items() for w in words}
 
+
+def find_verb(word: str) -> Optional[str]:
+    """The verb of a word, also accepting 8-bit style abbreviations ("peg", "exa", "abr"): a
+    prefix of 3+ letters that belongs to a single verb."""
+    if word in VERB_OF:
+        return VERB_OF[word]
+    if len(word) < 3 or word in DIR_ALIASES:
+        return None
+    verbs = {v for w, v in VERB_OF.items() if len(w) >= 3 and w.startswith(word)}
+    return verbs.pop() if len(verbs) == 1 else None
+
 DIR_ALIASES = {
     "n": "norte", "s": "sul", "l": "leste", "e": "leste", "o": "oeste", "w": "oeste",
     "ne": "nordeste", "no": "noroeste", "se": "sudeste", "so": "sudoeste",
@@ -65,7 +76,8 @@ LINKS = {"em", "no", "na", "nos", "nas", "com", "sobre", "dentro", "on", "with",
 
 HELP = ("Comandos: olhar, examinar <coisa>, pegar <coisa>, largar <coisa>, usar <coisa> [em <coisa>], "
         "abrir/fechar <coisa>, empurrar/puxar <coisa>, falar com <alguém>, inventário, "
-        "ir <direção> (ou só norte, sul, leste, oeste, cima, baixo, entrar, sair).")
+        "ir <direção> (ou só norte, sul, leste, oeste, cima, baixo, entrar, sair). "
+        "Pode abreviar: N, S, L, O, I, PEG CHAVE, EXA PORTA.")
 
 
 def norm_dir(word: str) -> str:
@@ -189,7 +201,7 @@ class GameEngine:
         if not words:
             return
         first = words[0]
-        verb = VERB_OF.get(first)
+        verb = find_verb(first)
 
         # a bare direction ("norte", "n", "subir") or an exit name ("porta")
         if verb is None or verb == "go":
@@ -298,15 +310,27 @@ class GameEngine:
             return self.say(f"{name} não responde.")
         return self.say("Nada acontece.")
 
+    @property
+    def classic(self) -> bool:
+        """'classico' presentation: the 8-bit illustrated adventure layout ("📍 Local. Vejo: ...")."""
+        return (self.project.get("presentation") or {}).get("style") == "classico"
+
     def _look(self):
         sid = self.state["scene"]
         scene = self.world.scenes.get(sid) or {}
-        self.say(f"== {scene.get('name') or sid} ==")
-        if (scene.get("description") or "").strip():
-            self.say(scene["description"].strip())
-        things = self.here()
-        if things:
-            self.say("Você vê: " + ", ".join(self.world.object_name(o) for o in things) + ".")
+        name = scene.get("name") or sid
+        desc = (scene.get("description") or "").strip()
+        things = ", ".join(self.world.object_name(o) for o in self.here())
+        if self.classic:
+            self.say(f"📍 {name}." + (f" {desc}" if desc else ""))
+            if things:
+                self.say(f"Vejo: {things}.")
+        else:
+            self.say(f"== {name} ==")
+            if desc:
+                self.say(desc)
+            if things:
+                self.say(f"Você vê: {things}.")
         self.say("Saídas: " + self._exit_list())
 
     def _exit_list(self) -> str:

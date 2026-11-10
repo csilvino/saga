@@ -9,9 +9,13 @@ mansão, 4 salas, a chave está escondida no relógio"), e o Diretor (Gemini com
 cenas, os objetos e a lógica. Depois ele **joga o próprio jogo** para conferir se o puzzle tem
 solução e chega ao fim. Você continua no editor, pedindo mudanças ou editando à mão.
 
-O caminho é este: primeiro **adventures em texto**, que já funcionam, e depois **point & click**, com
-cenários e sprites gerados por IA. Os cenários já saem no mesmo estilo, gerados pelo Diretor na
-conversa, inclusive na sua própria GPU, sem custo. Veja [Imagens](#imagens-cenários-no-mesmo-estilo).
+O caminho tem duas fases:
+
+1. **Adventures de texto ilustrados**, no espírito dos jogos de 8 bits como *Calixto Island*: o
+   jogador digita comandos, lê as respostas e vê uma ilustração de cada local que acompanha a
+   história. Esta fase já funciona.
+2. **Point & click**, no estilo de *Monkey Island*: personagem andando na tela, verbos, inventário
+   com ícones e diálogos com escolhas. Ainda não começou.
 
 > 🚧 **Em desenvolvimento.** A parte de texto funciona de ponta a ponta; o point & click e
 > várias telas do editor ainda são experimentais. Veja [`TODO.md`](TODO.md).
@@ -228,6 +232,42 @@ RECOMEÇAR inicia um jogo novo.
 
 A escolha entre nuvem e local fica em **Configurações → API Keys → Fonte das imagens**. Como fizemos,
 com exemplos e o que deu errado no caminho: [`docs/IMAGENS.md`](docs/IMAGENS.md).
+
+## Estilo clássico (fase 1)
+
+![Modo retrô: a Praia e a Casa do Faroleiro](docs/images/flux-kontext/retro.png)
+
+O player tem dois botões no topo:
+
+- **CLÁSSICO / PAINÉIS**:
+  - CLÁSSICO põe a ilustração em cima e o texto embaixo, com fonte de terminal (VT323) e uma linha
+    de comando, como nos adventures de 8 bits;
+  - PAINÉIS é o layout com inventário e texto nas laterais.
+- **RETRÔ**: a ilustração vira pixel art em 384×216, com 125 cores e pontilhado (Bayer). Antes disso
+  o brilho é corrigido, para as cenas escuras não perderem detalhe. Cenário e sprites passam pelo
+  mesmo filtro, e por isso os itens se integram melhor à cena.
+
+O texto também pode seguir o formato clássico:
+
+```
+📍 Praia. Areia fria e destroços por toda parte. A tempestade passou, mas o seu barco não.
+Vejo: garrafa, barco, gaivota.
+Saídas: norte.
+> PEG GARRAFA
+Você pegou garrafa.
+```
+
+O parser aceita abreviações de 3 letras, como nos jogos da época: `PEG CHAVE`, `EXA PORTA`, `ABR
+GAVETA`. Também aceita `N`, `S`, `L`, `O`, `I`, imperativos (`pega`, `abre`) e maiúsculas.
+
+O autor escolhe o padrão do jogo em `project.json`:
+
+```json
+"presentation": {"style": "classico", "layout": "classico", "retro": false}
+```
+
+O Diretor faz isso com a ferramenta `set_presentation`. O jogador pode trocar o layout e o modo retrô
+no próprio player; a escolha fica salva no navegador.
 
 ## Testes
 
