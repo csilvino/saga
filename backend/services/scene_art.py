@@ -482,7 +482,7 @@ async def clear_parts(root: Path, rel: str, obj: dict) -> tuple:
               f"separately: {what}. Where they were, paint the back of the object that was behind them, in the "
               f"object's own material and colour (for a wooden clock: the dark wooden back board of the case, seen "
               f"through the glass), solid and empty - never the light grey of the background, which stays only "
-              f"outside the object. Keep everything else exactly the same: the clock face or dial, the object's "
+              f"outside the object. Keep everything else exactly the same: the clock face or dial with its hands, the object's "
               f"shape, size, position, colours and style, and the plain light grey background around it.")
     k = 1024 / max(canvas.size)                     # the local editor wants sizes in steps of 16
     w, h = (max(256, int(canvas.width * k) // 16 * 16), max(256, int(canvas.height * k) // 16 * 16))

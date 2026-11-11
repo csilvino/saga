@@ -59,7 +59,10 @@ def grade(sprite: Image.Image, background: Image.Image, box, strength=0.8) -> Im
     reg = B[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad].reshape(-1, 3)
     sm, ss = rgb[m].mean(0), rgb[m].std(0) + 1e-3
     bm, bs = reg.mean(0), reg.std(0) + 1e-3
-    matched = np.clip((rgb - sm) / ss * (bs * 1.6) + bm * 1.25, 0, 1)
+    # towards the scene's light and tint, but the object keeps its own colours and contrast: a flat
+    # surrounding (a plain wall) once turned a dark wooden clock into a grey, flat one
+    scale = np.clip(bs * 1.6 / ss, 0.75, 1.25)
+    matched = np.clip((rgb - sm) * scale + sm + 0.5 * (bm * 1.25 - sm), 0, 1)
     out = rgb * (1 - strength) + matched * strength
     return Image.fromarray((np.concatenate([out, a], -1) * 255).astype(np.uint8))
 

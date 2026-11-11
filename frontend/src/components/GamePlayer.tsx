@@ -96,6 +96,11 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
     backgroundRepeat: 'no-repeat',
     ...(painted ? {} : motionStyle(obj.effect, obj.size.height, obj.id)),
   };
+  // a hanging thing (with moving parts, or swinging) casts a soft shadow on the wall behind it: it reads
+  // as fixed to the wall instead of floating in front of it. The shadow follows the parts as they move.
+  if (!painted && spriteUrl && (obj.parts?.length || obj.effect?.type === 'swing')) {
+    art.filter = 'drop-shadow(0.5vmin 0.9vmin 0.7vmin rgba(0,0,0,0.45))';
+  }
   if (placeholder) {
     art.display = 'flex';
     art.alignItems = 'center';
