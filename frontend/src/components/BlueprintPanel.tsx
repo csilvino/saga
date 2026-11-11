@@ -5,7 +5,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { X, CheckCircle2, AlertTriangle, XCircle, Hammer, SearchCheck, Image as ImageIcon, Loader2, Music } from 'lucide-react';
 import api from '../services/api';
-import SceneArtList, { SceneArt } from './SceneArtList';
+import SceneArtList from './SceneArtList';
+import type { SceneArt } from './SceneArtList';
 
 interface Problem { nivel: 'erro' | 'aviso'; msg: string; onde?: string }
 interface TestResult { teste: string; ok: boolean; comandos: number; fim: string; motivo?: string; comandos_recusados?: string[] }
