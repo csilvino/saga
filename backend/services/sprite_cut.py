@@ -74,6 +74,25 @@ def fit_box(sprite: Image.Image, box):
     return sprite.resize((w, h), Image.LANCZOS), [int(cx - w / 2), int(y1 - h), int(cx + w / 2), int(y1)]
 
 
+def fit_part(part: Image.Image, parent_box, at: dict, height: float,
+             background: Optional[Image.Image] = None) -> tuple:
+    """A moving part (a clock's pendulum) on its object: hung by its top centre at `at` (fractions of
+    the object's picture), `height` of the object's height. -> (picture, rect as fractions of the object)."""
+    x0, y0, x1, y1 = parent_box
+    pw, ph = max(1, x1 - x0), max(1, y1 - y0)
+    h = max(4, height * ph)
+    w = max(2, part.width * h / part.height)
+    rect = {"x": at["x"] - w / pw / 2, "y": at["y"], "w": w / pw, "h": h / ph}
+    k = min(1.0, (h * 2) / part.height)              # twice the scene size: sharp on big screens
+    if k < 1:
+        part = part.resize((max(1, int(part.width * k)), max(1, int(part.height * k))), Image.LANCZOS)
+    if background is not None:
+        sx, sy = background.width / 1920, background.height / 1080
+        px, py = x0 + rect["x"] * pw, y0 + rect["y"] * ph
+        part = grade(part, background, [px * sx, py * sy, (px + w) * sx, (py + h) * sy], strength=0.5)
+    return part, {k_: round(v, 4) for k_, v in rect.items()}
+
+
 def make_sprites(sheet: Image.Image, count: int, background: Optional[Image.Image] = None,
                  boxes: Optional[list] = None) -> dict:
     """{"sprites": [{"png" (base64), "box" (scene units), "size"}]} or {"error", "found"}.

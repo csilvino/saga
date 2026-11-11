@@ -32,3 +32,39 @@ body, html, #root {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 92, 246, 0.5);
 }
+
+/* Looping effects from the ficha's 'animacao' (GamePlayer: effectStyle). --amt and --dur per element. */
+@keyframes saga-swing {
+  0%, 100% { transform: rotate(var(--amt)); }
+  50% { transform: rotate(calc(-1 * var(--amt))); }
+}
+@keyframes saga-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(calc(-0.5 * var(--amt))) rotate(0.6deg); }
+  50% { transform: translateY(calc(-1 * var(--amt))) rotate(0deg); }
+  75% { transform: translateY(calc(-0.5 * var(--amt))) rotate(-0.6deg); }
+}
+@keyframes saga-scene-bob {
+  0%, 100% { transform: scale(1.05) translateY(0) rotate(0deg); }
+  25% { transform: scale(1.05) translateY(calc(-0.5 * var(--amt))) rotate(0.4deg); }
+  50% { transform: scale(1.05) translateY(calc(-1 * var(--amt))) rotate(0deg); }
+  75% { transform: scale(1.05) translateY(calc(-0.5 * var(--amt))) rotate(-0.4deg); }
+}
+@keyframes saga-flicker {
+  0% { opacity: calc(var(--amt) * 0.8); }
+  11% { opacity: calc(var(--amt) * 0.45); }
+  19% { opacity: var(--amt); }
+  33% { opacity: calc(var(--amt) * 0.6); }
+  47% { opacity: calc(var(--amt) * 0.95); }
+  58% { opacity: calc(var(--amt) * 0.5); }
+  71% { opacity: calc(var(--amt) * 0.85); }
+  86% { opacity: calc(var(--amt) * 0.4); }
+  100% { opacity: calc(var(--amt) * 0.8); }
+}
+@keyframes saga-pulse {
+  0%, 100% { opacity: calc(var(--amt) * 0.25); transform: scale(0.85); }
+  50% { opacity: var(--amt); transform: scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .saga-fx { animation: none !important; }
+}

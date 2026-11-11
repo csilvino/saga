@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, X, Package, MapPin, Volume2, VolumeX, Maximize2, Minimize2, Send, Type, Notebook } from 'lucide-react';
 import { useGameAudio, type ObjectSound } from './useGameAudio';
-import type { Project, GameObject } from '../types';
+import type { Project, GameObject, Effect } from '../types';
 import api, { getAssetUrl, isPlaceholderSprite } from '../services/api';
 import { useResizable, useRightResizable } from '../hooks';
 import { ResizeHandle } from './ui';
@@ -14,6 +14,38 @@ interface GamePlayerProps {
   initialSceneId: string;
   onClose: () => void;
 }
+
+// Looping effects from the ficha's 'animacao' (backend/ses/animation.py); keyframes in index.css.
+// swing/sway/bob move the picture; flicker/pulse add a glow of colour on top (also on painted objects).
+const MOVING = new Set(['swing', 'sway', 'bob']);
+
+const phase = (key: string, period: number) => {       // two torches do not flicker in step
+  let h = 0;
+  for (const ch of key) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return `-${((h % 1000) / 1000) * period}s`;
+};
+
+const motionStyle = (e: Effect | null | undefined, heightPx: number, key: string): React.CSSProperties => {
+  if (!e || !MOVING.has(e.type)) return {};
+  const amt = e.type === 'bob' ? `${(e.amount / Math.max(1, heightPx)) * 100}%` : `${e.amount}deg`;
+  return {
+    ['--amt' as any]: amt,
+    animation: `saga-${e.type === 'bob' ? 'bob' : 'swing'} ${e.period}s ease-in-out infinite`,
+    animationDelay: phase(key, e.period),
+    transformOrigin: e.type === 'swing' ? '50% 0%' : '50% 100%',   // hangs from the top / stands on its base
+  };
+};
+
+const Glow = ({ effect, id, inset = '-35%' }: { effect?: Effect | null; id: string; inset?: string }) => {
+  if (!effect || MOVING.has(effect.type)) return null;
+  return (
+    <div className="saga-fx absolute pointer-events-none"
+         style={{ inset, background: `radial-gradient(closest-side, ${effect.color || '#ffa040'}, transparent)`,
+                  mixBlendMode: 'screen', ['--amt' as any]: effect.amount,
+                  animation: `saga-${effect.type} ${effect.period}s ${effect.type === 'flicker' ? 'linear' : 'ease-in-out'} infinite`,
+                  animationDelay: phase(id, effect.period) }} />
+  );
+};
 
 // Componente para renderizar objetos animados ou estáticos
 const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj: GameObject, projectName: string, onClick: () => void, invisible?: boolean }) => {
@@ -47,7 +79,7 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
   const left = ((obj.position.x - obj.size.width / 2) / 1920) * 100;
   const top = ((obj.position.y - obj.size.height / 2) / 1080) * 100;
 
-  // Estilo base
+  // the clickable box
   const style: React.CSSProperties = {
     left: `${left}%`,
     top: `${top}%`,
@@ -55,31 +87,37 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
     height: `${height}%`,
     position: 'absolute',
     cursor: 'pointer',
+  };
+  // the picture inside it (this is what swings or bobs)
+  const art: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
     backgroundImage: spriteUrl ? `url("${spriteUrl}")` : undefined,
     backgroundRepeat: 'no-repeat',
+    ...(painted ? {} : motionStyle(obj.effect, obj.size.height, obj.id)),
   };
   if (placeholder) {
-    style.display = 'flex';
-    style.alignItems = 'center';
-    style.justifyContent = 'center';
-    style.fontSize = '2.5rem';
+    art.display = 'flex';
+    art.alignItems = 'center';
+    art.justifyContent = 'center';
+    art.fontSize = '2.5rem';
   }
 
   // Ajuste para Sprite Sheet
   if (obj.animation?.type === 'sprite_sheet') {
     const { frameCount } = obj.animation;
     // O tamanho da imagem de fundo é X vezes maior que a div
-    style.backgroundSize = `${frameCount * 100}% 100%`;
+    art.backgroundSize = `${frameCount * 100}% 100%`;
 
     // Avoid division by zero if frameCount is 1
     if (frameCount > 1) {
-      style.backgroundPosition = `${(currentFrame / (frameCount - 1)) * 100}% 0%`;
+      art.backgroundPosition = `${(currentFrame / (frameCount - 1)) * 100}% 0%`;
     } else {
-      style.backgroundPosition = '0% 0%';
+      art.backgroundPosition = '0% 0%';
     }
   } else {
-    style.backgroundSize = 'contain';
-    style.backgroundPosition = 'center';
+    art.backgroundSize = 'contain';
+    art.backgroundPosition = 'center';
   }
 
   return (
@@ -91,7 +129,23 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
         ? "group rounded-md hover:outline hover:outline-2 hover:outline-cyan-300/60"
         : "hover:scale-105 transition-transform duration-200 group"}
     >
-      {placeholder}
+      <div className="saga-fx" style={art}>
+        {placeholder}
+        {/* moving parts (a clock's pendulum), placed on the object's picture */}
+        {!painted && (obj.parts || []).map((part, i) => {
+          const url = part.rect ? getAssetUrl(projectName, part.sprite || '') : null;
+          return url && part.rect ? (
+            <div key={i} className="saga-fx absolute pointer-events-none"
+                 style={{ left: `${part.rect.x * 100}%`, top: `${part.rect.y * 100}%`,
+                          width: `${part.rect.w * 100}%`, height: `${part.rect.h * 100}%`,
+                          backgroundImage: `url("${url}")`, backgroundSize: '100% 100%',
+                          ...motionStyle(part.effect, part.rect.h * obj.size.height, `${obj.id}#${i}`) }}>
+              <Glow effect={part.effect} id={`${obj.id}#${i}`} />
+            </div>
+          ) : null;
+        })}
+      </div>
+      {!invisible && <Glow effect={obj.effect} id={obj.id} />}
       {/* Tooltip opcional */}
       <div className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-900 px-2 py-1 rounded z-10 pointer-events-none">
         {obj.name}
@@ -317,6 +371,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   const backgroundObj = currentScene?.objects.find(o => o.type === 'background' || o.name === 'Background');
   const backgroundUrl = getAssetUrl(project.name, view?.background || backgroundObj?.sprite || '') || '';
 
+  const sceneFx = currentScene?.effect;
   const visibleObjs = Object.values(allObjects).filter(o => visibleIds.has(o.id));
   const spriteOf = (o: GameObject) => (o.properties?.painted ? null : getAssetUrl(project.name, o.sprite));
   const retroSprites = pres.retro
@@ -327,10 +382,13 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
 
   // 16:9 stage: background and objects share the same 1920x1080 coordinates
   const stage = (
-    <div className="relative" style={{ width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
+    <div className="relative overflow-hidden" style={{ width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' }}>
       {backgroundUrl && (pres.retro
         ? <RetroStage background={backgroundUrl} sprites={retroSprites} />
-        : <img src={backgroundUrl} alt={view?.scene_name || ''} className="absolute inset-0 w-full h-full object-cover" />)}
+        : <img src={backgroundUrl} alt={view?.scene_name || ''} className="saga-fx absolute inset-0 w-full h-full object-cover"
+               style={sceneFx?.type === 'bob' ? { ['--amt' as any]: `${(sceneFx.amount / 1080) * 100}%`,
+                                                  animation: `saga-scene-bob ${sceneFx.period}s ease-in-out infinite` } : undefined} />)}
+      {sceneFx && !pres.retro && <Glow effect={sceneFx} id={currentScene?.id || ''} inset="-20%" />}
       {visibleObjs.map((obj) => (
         <AnimatedObject
           key={obj.id}

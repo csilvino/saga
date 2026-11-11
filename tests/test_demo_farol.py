@@ -1,4 +1,4 @@
-"""The demo project shipped in projects/O Farol must stay winnable."""
+"""The demo project O Farol (a copy in tests/fixtures; the game itself may be deleted) must stay winnable."""
 
 import json
 from pathlib import Path
@@ -14,7 +14,7 @@ def test_demo_is_winnable_and_scripts_are_valid():
     spec = importlib.util.spec_from_file_location("demo", ROOT / "tools" / "build_demo_farol.py")
     demo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(demo)
-    project = json.loads((ROOT / "projects" / "O Farol" / "project.json").read_text(encoding="utf-8"))
+    project = json.loads((ROOT / "tests" / "fixtures" / "o_farol_project.json").read_text(encoding="utf-8"))
     for scene in project["scenes"].values():
         assert validate(scene.get("ses", ""), project, "scene")["ok"]
         for obj in scene["objects"]:

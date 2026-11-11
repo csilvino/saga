@@ -34,7 +34,7 @@ from PIL import Image, ImageOps
 from backend.config.user_settings import get_gemini_key, get_gemini_model, get_generation_source
 from backend.services.local_image_generator import local_image_service
 from backend.services.project_service import project_service
-from backend.ses import director_tools
+from backend.ses import animation, director_tools
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,31 @@ def _no_web(scene: dict):
 def is_sprite(obj: dict) -> bool:
     """Objects that can leave or enter the picture get their own sprite; the rest is painted."""
     props = obj.get("properties") or {}
-    return bool(props.get("portable") or props.get("hidden") or obj.get("type") in SPRITE_KINDS)
+    return bool(props.get("portable") or props.get("hidden") or obj.get("type") in SPRITE_KINDS
+                or animation.moves(obj))          # a swinging/bobbing object, or one with moving parts
+
+
+def sheet_items(sprites: List[dict]) -> List[dict]:
+    """What goes on the sprite sheets: each loose object, then each of its moving parts (animation.py).
+    A part's id is "<object id>#<n>"; an object with parts is drawn without them."""
+    items = []
+    for o in sprites:
+        parts = o.get("parts") or []
+        desc = o.get("description", "")
+        if parts:
+            desc += (f" (Drawn WITHOUT its {', '.join(x['name'] for x in parts)}: they are separate pictures "
+                     f"laid on top later, so their place is empty.)")
+        items.append({"id": o["id"], "name": o.get("name"), "description": desc, "obj": o, "part": None})
+        for n, x in enumerate(parts):
+            pose = "hanging straight down" if (x.get("effect") or {}).get("type") == "swing" else "upright"
+            items.append({"id": f"{o['id']}#{n}", "name": f"{x['name']} ({o.get('name')})",
+                          "description": f"{x['description']} Alone, seen from the front, {pose}.",
+                          "obj": o, "part": n})
+    return items
+
+
+def part_missing(o: dict) -> bool:
+    return any(not x.get("sprite") for x in o.get("parts") or [])
 
 
 def scene_objects(scene: dict) -> List[dict]:
@@ -156,7 +180,7 @@ async def _ask_json(contents, schema_hint: str, model: Optional[str] = None) -> 
 
 
 async def plan_prompts(scene: dict, painted: List[dict], sprites: List[dict], style: str) -> dict:
-    def describe(o):
+    def describe(o):           # an object, or an item from sheet_items
         return {"id": o["id"], "name": o.get("name"), "description": o.get("description", "")}
     prompt = f"""You write prompts for an image model (FLUX) for one scene of an adventure game.
 Answer ONLY with JSON: {{"background_prompt": "...", "sprites": [{{"id": "...", "prompt": "..."}}]}}
@@ -319,7 +343,8 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
     sprites = [o for o in objs if is_sprite(o)]
     report: Dict[str, Any] = {"scene": scene.get("name"), "painted": [], "sprites": [], "problems": []}
 
-    plan = await plan_prompts(scene, painted, sprites, style)
+    items = sheet_items(sprites)
+    plan = await plan_prompts(scene, painted, items, style)
 
     ref_path = None
     if reference_scene:
@@ -359,10 +384,11 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
 
     # 3. sprites, a few per sheet, in the style of this scene's background
     made: Dict[str, dict] = {}
-    for i in range(0, len(sprites), SHEET_MAX):
-        group = sprites[i:i + SHEET_MAX]
-        say(f"gerando sprites: {', '.join(o.get('name', o['id']) for o in group)}")
-        group_boxes = [boxes.get(o["id"], {}).get("box") or default_box(o) for o in group]
+    for i in range(0, len(items), SHEET_MAX):
+        group = items[i:i + SHEET_MAX]
+        say(f"gerando sprites: {', '.join(o.get('name') or o['id'] for o in group)}")
+        group_boxes = [None if o["part"] is not None else boxes.get(o["id"], {}).get("box") or default_box(o["obj"])
+                       for o in group]
         err = None
         for attempt in range(2):           # a sheet occasionally merges two objects: try once more
             sheet = await generate(sheet_prompt([plan["sprites"][o["id"]] for o in group]), 1456, 720, bg_path)
@@ -381,6 +407,9 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
             report["problems"].append(f"sprites de {[o.get('name') for o in group]}: {err}")
             continue
         for o, cut in zip(group, cuts):
+            if o["part"] is not None:              # placed on its object below, once that is placed
+                made[o["id"]] = {"png": cut["png"]}
+                continue
             rel = f"sprites/Sprite_{o['id']}_{uuid.uuid4().hex[:6]}.png"
             (root / rel).write_bytes(base64.b64decode(cut["png"]))
             made[o["id"]] = {"sprite": rel, "box": cut["box"]}
@@ -398,6 +427,12 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
             props.pop("painted", None)
             place(o, made[oid]["box"])
             report["sprites"].append(o.get("name"))
+            for n, part in enumerate(o.get("parts") or []):
+                cut = made.get(f"{oid}#{n}")
+                if cut:
+                    part["sprite"], part["rect"] = save_part(root, f"{oid}_{n}", cut["png"], made[oid]["box"],
+                                                             part, bg_path)
+                    report["sprites"].append(f"{o.get('name')}/{part['name']}")
         elif not is_sprite(o):
             found = boxes.get(oid)
             o["sprite"] = ""
@@ -409,6 +444,15 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
                 report["problems"].append(f"'{o.get('name')}' não aparece no cenário (gere de novo a cena)")
     project_service.save_project_data(project_name, project)
     return report
+
+
+def save_part(root: Path, key: str, png_b64: str, parent_box: list, part: dict, bg_path: Path) -> tuple:
+    from backend.services import sprite_cut
+    with Image.open(io.BytesIO(base64.b64decode(png_b64))) as im, Image.open(bg_path) as bg:
+        img, rect = sprite_cut.fit_part(im.convert("RGBA"), parent_box, part["at"], part["height"], bg.copy())
+    rel = f"sprites/Part_{key}_{uuid.uuid4().hex[:6]}.png"
+    img.save(root / rel, "PNG")
+    return rel, rect
 
 
 def default_box(o: dict) -> list:
@@ -830,7 +874,9 @@ def scene_art_list(project: dict) -> List[dict]:
         variants = s.get("variants") or []
         out.append({"id": sid, "name": s.get("name"), "source": art_source(s),
                     "background": background_path(s),
-                    "sprites": len(sprites), "sprites_done": sum(1 for o in sprites if o.get("sprite")),
+                    "sprites": len(sheet_items(sprites)),
+                    "sprites_done": sum(1 for o in sprites if o.get("sprite"))
+                    + sum(1 for o in sprites for x in o.get("parts") or [] if x.get("sprite")),
                     "variants": len(variants), "variants_done": sum(1 for v in variants if v.get("background"))})
     return out
 
@@ -838,7 +884,8 @@ def scene_art_list(project: dict) -> List[dict]:
 def _web_key(scene: dict) -> str:
     """Changes when the text the prompts come from changes."""
     import hashlib
-    parts = [scene.get("description") or ""] + [f"{o.get('name')}|{o.get('description')}|{is_sprite(o)}"
+    parts = [scene.get("description") or ""] + [f"{o.get('name')}|{o.get('description')}|{is_sprite(o)}|"
+                                                f"{[(x['name'], x['description']) for x in o.get('parts') or []]}"
                                                 for o in scene_objects(scene)]
     return hashlib.md5("\n".join(parts).encode("utf-8")).hexdigest()[:12]
 
@@ -852,7 +899,7 @@ async def web_prompts(project_name: str, scene_ref: str) -> dict:
     sprites = [o for o in scene_objects(scene) if is_sprite(o)]
     plan = scene.get("web_art") or {}
     if not plan.get("background_prompt") or plan.get("key") != _web_key(scene):
-        p = await plan_prompts(scene, painted, sprites, (project.get("art") or {}).get("style", ""))
+        p = await plan_prompts(scene, painted, sheet_items(sprites), (project.get("art") or {}).get("style", ""))
         project = project_service.load_project(project_name)
         wa = project["scenes"][sid].setdefault("web_art", {})
         wa.update({"background_prompt": p["background_prompt"], "sprites": p["sprites"], "key": _web_key(scene)})
@@ -862,14 +909,15 @@ async def web_prompts(project_name: str, scene_ref: str) -> dict:
     from backend.ses.world import World
     ref_id = World(project).find_scene((project.get("art") or {}).get("reference", "")) or project.get("start_scene")
     style_ref = background_path(project["scenes"].get(ref_id) or {}) if ref_id != sid else None
-    descs = [(plan.get("sprites") or {}).get(o["id"]) or o.get("name") for o in sprites]
+    items = sheet_items(sprites)
+    descs = [(plan.get("sprites") or {}).get(o["id"]) or o.get("name") for o in items]
     return {
         "scene": scene.get("name"),
         "background": background_path(scene),
         "style_reference": style_ref,
         "background_prompt": plan["background_prompt"].rstrip(". ")
         + ". Wide landscape picture, 16:9 (1920x1080). No text, no people, no frame, no border.",
-        "sprites": [o.get("name") for o in sprites],
+        "sprites": [o.get("name") for o in items],
         "sprites_prompt": (sheet_prompt(descs) + " Wide landscape picture.") if sprites else "",
         "variants": [{"index": i, "when": v.get("when"), "done": bool(v.get("background")),
                       "prompt": f"Edite a imagem anexada: {v.get('change') or v.get('when')}. Mantenha exatamente o "
@@ -938,19 +986,23 @@ async def web_upload(project_name: str, scene_ref: str, kind: str, data: bytes) 
         if not sprites:
             raise ArtError(f"a cena '{name}' não tem objetos soltos (sprites)")
         known = (scene.get("web_art") or {}).get("boxes") or {}
-        boxes_list = [known.get(o["id"]) or default_box(o) for o in sprites]
+        items = sheet_items(sprites)
+        boxes_list = [None if o["part"] is not None else known.get(o["id"]) or default_box(o["obj"]) for o in items]
         sheet = root / "sprites" / f"_sheet_web_{uuid.uuid4().hex[:8]}.png"
         sheet.parent.mkdir(exist_ok=True)
         img.convert("RGB").save(sheet, "PNG")
         try:
-            cuts = await cut_sprites(sheet, len(sprites), root / bg, boxes_list)
+            cuts = await cut_sprites(sheet, len(items), root / bg, boxes_list)
         except ArtError as e:
-            raise ArtError(f"{e}: a imagem precisa ter os {len(sprites)} objetos separados, um ao lado do "
-                           f"outro, na ordem do prompt ({', '.join(o.get('name') for o in sprites)})")
+            raise ArtError(f"{e}: a imagem precisa ter os {len(items)} objetos separados, um ao lado do "
+                           f"outro, na ordem do prompt ({', '.join(o.get('name') for o in items)})")
         finally:
             sheet.unlink(missing_ok=True)
         made = {}
-        for o, cut in zip(sprites, cuts):
+        for o, cut in zip(items, cuts):
+            if o["part"] is not None:
+                made[o["id"]] = cut["png"]
+                continue
             rel = f"sprites/Sprite_{o['id']}_{uuid.uuid4().hex[:6]}.png"
             (root / rel).write_bytes(base64.b64decode(cut["png"]))
             made[o["id"]] = (rel, cut["box"])
@@ -961,6 +1013,10 @@ async def web_upload(project_name: str, scene_ref: str, kind: str, data: bytes) 
                 o.setdefault("properties", {}).pop("painted", None)
                 place(o, box)
                 report["sprites"].append(o.get("name"))
+                for n, part in enumerate(o.get("parts") or []):
+                    part["sprite"], part["rect"] = save_part(root, f"{o['id']}_{n}", made[f"{o['id']}#{n}"], box,
+                                                             part, root / bg)
+                    report["sprites"].append(f"{o.get('name')}/{part['name']}")
         project_service.save_project_data(project_name, project)
 
     elif kind.startswith("variant:"):

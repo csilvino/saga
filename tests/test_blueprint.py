@@ -135,7 +135,7 @@ def test_a_rebuild_keeps_ids_and_art():
 
 
 def test_export_and_rebuild_of_the_demo_is_still_winnable():
-    project = json.loads((ROOT / "projects" / "O Farol" / "project.json").read_text(encoding="utf-8"))
+    project = json.loads((ROOT / "tests" / "fixtures" / "o_farol_project.json").read_text(encoding="utf-8"))
     b = bp.load(bp.dump(bp.export(project)))
     import importlib.util
     spec = importlib.util.spec_from_file_location("demo", ROOT / "tools" / "build_demo_farol.py")

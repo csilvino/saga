@@ -234,6 +234,59 @@ mostra os prompts para copiar e recebe as imagens:
 A escolha fica na cena e sobrevive a montar o jogo de novo. O recorte dos objetos roda no próprio
 backend, sem GPU (na primeira vez ele baixa o modelo de recorte, 179 MB).
 
+## Animação (em looping)
+
+Um objeto, ou a cena inteira, ganha movimento com uma linha:
+
+```yaml
+objetos:
+  - nome: placa da taverna
+    descricao: Uma placa de madeira pendurada por correntes.
+    animacao: balanco                                  # com os valores padrão
+  - nome: tochas
+    descricao: Duas tochas acesas nas paredes.
+    animacao: {tipo: tremular, cor: laranja, intensidade: 0.6}
+```
+
+| Tipo | Efeito | Valor | Padrão |
+| --- | --- | --- | --- |
+| `balanco` | vai e volta preso pelo alto (pêndulo, lustre, placa) | `angulo` (graus) | 8°, 2 s |
+| `oscilar` | balança preso pela base (planta, bandeira, mastro) | `angulo` (graus) | 3°, 4 s |
+| `flutuar` | sobe e desce (barco, boia) | `amplitude` (pixels da cena) | 6, 3,5 s |
+| `tremular` | brilho irregular por cima (tocha, vela, fogo) | `intensidade` (0 a 1) e `cor` | 0,5, 0,9 s, laranja |
+| `pulsar` | brilho que cresce e some devagar (cristal, magia, tela) | `intensidade` (0 a 1) e `cor` | 0,5, 2,5 s, azul |
+
+`periodo` é a duração de um ciclo, em segundos. Cores: laranja, amarelo, azul, verde, vermelho, roxo,
+branco, rosa, ou `#rrggbb`.
+
+`tremular` e `pulsar` só acendem luz por cima: funcionam em objetos pintados no cenário. `balanco`,
+`oscilar` e `flutuar` mexem os pixels do objeto, então o objeto vira um **objeto solto** (sprite), feito
+à parte e encaixado na cena.
+
+**Na cena inteira**, `animacao` fica na cena: `flutuar` faz a imagem balançar como num barco;
+`tremular` e `pulsar` dão uma luz que pisca no centro da imagem.
+
+**Partes que se mexem.** Quando só um pedaço se move (o pêndulo de um relógio), o objeto ganha `partes`.
+Cada parte é desenhada à parte e colocada sobre o objeto:
+
+```yaml
+  - nome: relógio de pêndulo
+    descricao: Um relógio de pêndulo alto, de madeira escura, com mostrador de marfim.
+    partes:
+      - nome: pêndulo
+        descricao: Um pêndulo de latão com um disco dourado na ponta.
+        animacao: {tipo: balanco, angulo: 10, periodo: 2}
+        onde: [0.5, 0.48]   # onde ela se prende: frações do desenho do objeto (x, y a partir do alto)
+        altura: 0.4         # a altura dela, como fração da altura do objeto
+```
+
+O objeto é pedido "sem o pêndulo" (lugar vazio) e a parte vem na mesma folha de objetos soltos. Na fonte
+Web, a folha tem o objeto e depois cada parte, na ordem do prompt. Ao montar o jogo de novo, a imagem da
+parte fica enquanto o nome e a descrição dela não mudam.
+
+O jogador desenha os efeitos com CSS (e respeita "reduzir movimento" do sistema). No modo RETRÔ as
+animações não aparecem.
+
 ## Onde usar
 
 **No editor:** o botão **Ficha** no topo abre a ficha do projeto. Num projeto que ainda não tem

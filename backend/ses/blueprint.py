@@ -29,6 +29,7 @@ from backend.ses import director_tools as dt
 from backend.ses.engine import GameEngine, INV, playtest
 from backend.ses.language import If, SESError, Stmt, parse, parse_condition, walk, walk_conds
 from backend.ses.world import World, slug, sound_key
+from backend.ses import animation
 
 FILE_NAME = "ficha.yaml"
 
@@ -113,6 +114,10 @@ def shape_problems(bp: dict) -> List[dict]:
                 out.append(problem("erro", f"dois objetos com o nome {o['nome']!r} "
                                            f"({objects[k]} e {s['nome']}); use nomes diferentes", s["nome"]))
             objects[k] = s["nome"]
+            where = f"{o['nome']}: "
+            out += [problem("erro", m, s["nome"]) for m in animation.parse_effect(o.get("animacao"), where)[1]]
+            out += [problem("erro", m, s["nome"]) for m in animation.parse_parts(o.get("partes"), where)[1]]
+        out += [problem("erro", m, s["nome"]) for m in animation.parse_effect(s.get("animacao"))[1]]
         for v in _list(s.get("variantes")):
             if not isinstance(v, dict) or not v.get("quando") or not v.get("mudanca"):
                 out.append(problem("erro", "variante precisa de 'quando' (condição SES) e 'mudanca'", s["nome"]))
@@ -213,6 +218,7 @@ def assemble(bp: dict, previous: Optional[dict] = None) -> Tuple[dict, List[dict
                 out.append(problem("aviso", f"script de {o['nome']}: linha {w['line']}: {w['message']}", s["nome"]))
         sid = World(p).find_scene(s["nome"])
         if sid:
+            apply_animation(s, p["scenes"][sid])
             p["scenes"][sid]["variants"] = [{"when": str(v["quando"]), "change": str(v["mudanca"])}
                                             for v in _list(s.get("variantes"))]
     if bp.get("inicio"):
@@ -222,6 +228,24 @@ def assemble(bp: dict, previous: Optional[dict] = None) -> Tuple[dict, List[dict
         p = carry_art(previous, p)
         carry_sounds(previous, p)
     return p, out
+
+
+def apply_animation(bp_scene: dict, scene: dict):
+    """The ficha's 'animacao' and 'partes' on the built scene and its objects (see animation.py)."""
+    effect = animation.parse_effect(bp_scene.get("animacao"))[0]
+    if effect:
+        scene["effect"] = effect
+    by_name = {slug(o.get("name")): o for o in scene.get("objects", [])}
+    for o in _list(bp_scene.get("objetos")):
+        obj = by_name.get(slug(o.get("nome")))
+        if not obj:
+            continue
+        effect = animation.parse_effect(o.get("animacao"))[0]
+        parts = animation.parse_parts(o.get("partes"))[0]
+        if effect:
+            obj["effect"] = effect
+        if parts:
+            obj["parts"] = parts
 
 
 def carry_art(old: dict, new: dict) -> dict:
@@ -262,6 +286,11 @@ def carry_art(old: dict, new: dict) -> dict:
             for f in VISUAL_PROPS:
                 if f in (prev.get("properties") or {}):
                     o.setdefault("properties", {})[f] = prev["properties"][f]
+            old_parts = {slug(x.get("name")): x for x in prev.get("parts") or []}
+            for part in o.get("parts") or []:          # a part's picture, while it keeps its name
+                was = old_parts.get(slug(part["name"]))
+                if was and was.get("sprite") and was.get("description") == part["description"]:
+                    part["sprite"], part["rect"] = was["sprite"], copy.deepcopy(was.get("rect"))
     scenes = {}
     for sid, s in new["scenes"].items():
         nid = rename.get(sid, sid)
@@ -905,8 +934,17 @@ def export(project: dict) -> dict:
                 entry["som"] = osnd["desc"] if simple else {
                     "descricao": osnd["desc"], "repete": "sempre" if osnd.get("mode") == "loop" else "as vezes",
                     "intervalo": osnd.get("every") or [20, 60], **({"quando": osnd["when"]} if osnd.get("when") else {})}
+            if o.get("effect"):
+                entry["animacao"] = animation.to_ficha(o["effect"])
+            if o.get("parts"):
+                entry["partes"] = [{"nome": x["name"], "descricao": x["description"],
+                                    **({"animacao": animation.to_ficha(x["effect"])} if x.get("effect") else {}),
+                                    "onde": [x["at"]["x"], x["at"]["y"]], "altura": x["height"]}
+                                   for x in o["parts"]]
             objs.append(entry)
         entry = {"nome": s.get("name"), "descricao": (s.get("description") or "").strip()}
+        if s.get("effect"):
+            entry["animacao"] = animation.to_ficha(s["effect"])
         if (s.get("ses") or "").strip():
             entry["script"] = s["ses"].strip() + "\n"
         if exits:

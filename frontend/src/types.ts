@@ -23,6 +23,26 @@ export interface GameObject {
   ses?: string;
   description?: string;      // what the player reads on "examinar"
   animation?: Animation;
+  effect?: Effect;           // a looping effect from the ficha's 'animacao' (backend/ses/animation.py)
+  parts?: ObjectPart[];      // moving parts drawn on top of the object (a clock's pendulum)
+}
+
+// swing/sway: amount in degrees; bob: scene pixels; flicker/pulse: glow strength 0-1
+export interface Effect {
+  type: 'swing' | 'sway' | 'bob' | 'flicker' | 'pulse';
+  amount: number;
+  period: number;            // seconds per cycle
+  color?: string;
+}
+
+export interface ObjectPart {
+  name: string;
+  description: string;
+  effect?: Effect | null;
+  at: Point;                 // where it hangs from, fractions of the object's picture
+  height: number;
+  sprite?: string;
+  rect?: { x: number; y: number; w: number; h: number };   // fractions of the object's picture
 }
 
 export type Animation = SpriteSheetAnimation | TransformAnimation;
@@ -71,6 +91,7 @@ export interface Scene {
   description?: string;            // what the player reads on entering
   exits?: Record<string, string>;  // direction -> scene id
   ses?: string;
+  effect?: Effect;                 // the whole picture: bob = rocks (at sea), flicker/pulse = light
 }
 
 export interface Project {
