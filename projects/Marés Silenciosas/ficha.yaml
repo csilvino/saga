@@ -42,8 +42,8 @@ cenas:
     - nome: pêndulo de latão
       descricao: Um pêndulo de latão comprido e fino, com um disco dourado redondo na ponta de baixo.
       animacao: {tipo: balanco, angulo: 9, periodo: 2}
-      onde: [0.5, 0.4]
-      altura: 0.42
+      onde: [0.5, 0.46]
+      altura: 0.36
     script: |
       on examine {
         say "O pêndulo vai e vem, tique, taque. Alguém continua dando corda nele. Os ponteiros marcam a hora certa, mas o calendário da parede parou há três semanas."

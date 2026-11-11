@@ -151,9 +151,53 @@ def test_an_uploaded_sheet_places_the_part_on_its_object(tmp_path, monkeypatch):
     import io
     buf = io.BytesIO()
     sheet.save(buf, "PNG")
+    cleared = []
+
+    async def clear(root, rel, o):              # the image model's edit (tested below)
+        cleared.append(o["name"])
+        return rel, None
+    monkeypatch.setattr(scene_art, "clear_parts", clear)
     r = asyncio.run(scene_art.web_upload("T", sid, "sprites", buf.getvalue()))
+    assert cleared == ["relógio de pêndulo"]                            # only the object with parts
     assert r["sprites"] == ["relógio de pêndulo", "relógio de pêndulo/pêndulo", "placa"]
     clock = objs(state["p"])["relógio de pêndulo"]
     part = clock["parts"][0]
     assert (tmp_path / part["sprite"]).exists() and part["rect"]["y"] == 0.5
     assert scene_art.scene_art_list(state["p"])[0]["sprites_done"] == 3
+
+
+def test_the_still_part_is_taken_out_of_the_object_and_the_size_kept(tmp_path, monkeypatch):
+    (tmp_path / "sprites").mkdir()
+    Image.new("RGBA", (60, 120), (120, 60, 20, 255)).save(tmp_path / "sprites" / "clock.png")
+    clock = {"id": "c1", "name": "relógio", "parts": [{"name": "pêndulo", "description": "um pêndulo"}]}
+    asked = {}
+
+    def edit(prompt, width, height, reference_image_path, edit):
+        asked.update(prompt=prompt, w=width, h=height, edit=edit)
+        img = Image.new("RGB", (width, height), (200, 200, 200))
+        ImageDraw.Draw(img).rectangle([width // 4, height // 6, 3 * width // 4, 5 * height // 6], fill=(120, 60, 20))
+        return img
+
+    def remove_bg(img):
+        a = np.asarray(img.convert("RGB")).astype(int)
+        alpha = (np.abs(a - 200).sum(-1) > 60).astype(np.uint8) * 255
+        return Image.fromarray(np.dstack([a.astype(np.uint8), alpha]))
+    monkeypatch.setattr(scene_art.local_image_service, "generate_image", edit)
+    monkeypatch.setattr(sprite_cut, "_remove_bg", remove_bg)
+    rel, problem = asyncio.run(scene_art.clear_parts(tmp_path, "sprites/clock.png", clock))
+    assert problem is None and rel != "sprites/clock.png" and not (tmp_path / "sprites" / "clock.png").exists()
+    assert Image.open(tmp_path / rel).size == (60, 120)
+    assert asked["edit"] and "pêndulo" in asked["prompt"] and asked["w"] % 16 == 0 and asked["h"] % 16 == 0
+
+
+def test_when_the_edit_fails_the_object_keeps_its_picture_and_says_so(tmp_path, monkeypatch):
+    (tmp_path / "sprites").mkdir()
+    Image.new("RGBA", (60, 120), (120, 60, 20, 255)).save(tmp_path / "sprites" / "clock.png")
+    clock = {"id": "c1", "name": "relógio", "parts": [{"name": "pêndulo", "description": "um pêndulo"}]}
+
+    def down(**kw):
+        raise RuntimeError("worker fora do ar")
+    monkeypatch.setattr(scene_art.local_image_service, "generate_image", down)
+    rel, problem = asyncio.run(scene_art.clear_parts(tmp_path, "sprites/clock.png", clock))
+    assert rel == "sprites/clock.png" and "pêndulo" in problem and (tmp_path / rel).exists()
+    assert not [f for f in (tmp_path / "sprites").iterdir() if f.name.startswith("_clear")]

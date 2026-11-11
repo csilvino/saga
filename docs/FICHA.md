@@ -280,7 +280,7 @@ Cada parte é desenhada à parte e colocada sobre o objeto:
         altura: 0.4         # a altura dela, como fração da altura do objeto
 ```
 
-O objeto é pedido "sem o pêndulo" (lugar vazio) e a parte vem na mesma folha de objetos soltos. Na fonte
+O objeto é pedido "sem o pêndulo" e a parte vem na mesma folha de objetos soltos. Como os geradores de imagem costumam desenhar o pêndulo mesmo assim, depois do recorte o Saga pede ao editor de imagem (o local, ou o da Gemini se a cena usa a API Gemini) que tire a parte do desenho do objeto; se a edição falhar, ele avisa que o objeto ainda mostra a parte parada. Na fonte
 Web, a folha tem o objeto e depois cada parte, na ordem do prompt. Ao montar o jogo de novo, a imagem da
 parte fica enquanto o nome e a descrição dela não mudam.
 

@@ -414,6 +414,14 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
             (root / rel).write_bytes(base64.b64decode(cut["png"]))
             made[o["id"]] = {"sprite": rel, "box": cut["box"]}
 
+    # the image model draws the moving parts inside their object too: take them out of it
+    for o in sprites:
+        if o.get("parts") and o["id"] in made:
+            say(f"tirando {', '.join(x['name'] for x in o['parts'])} do desenho de '{o.get('name')}'")
+            made[o["id"]]["sprite"], problem = await clear_parts(root, made[o["id"]]["sprite"], o)
+            if problem:
+                report["problems"].append(problem)
+
     # 4. apply to the project (reload: generation took minutes)
     project = project_service.load_project(project_name)
     scene = project["scenes"][sid]
@@ -453,6 +461,45 @@ def save_part(root: Path, key: str, png_b64: str, parent_box: list, part: dict, 
     rel = f"sprites/Part_{key}_{uuid.uuid4().hex[:6]}.png"
     img.save(root / rel, "PNG")
     return rel, rect
+
+
+async def clear_parts(root: Path, rel: str, obj: dict) -> tuple:
+    """Image models draw the moving part inside its object even when told not to (the clock comes with
+    a still pendulum, and the swinging one is laid over it). The Gemini image model takes it out of the
+    object's picture; the new cutout keeps the old size, so the parts stay where they hang.
+    -> (the object's new picture, or the old one; a problem or None)."""
+    from backend.services import sprite_cut
+    parts = obj.get("parts") or []
+    with Image.open(root / rel) as im:
+        sp = im.convert("RGBA")
+    pad = int(max(sp.size) * 0.12)
+    canvas = Image.new("RGB", (sp.width + 2 * pad, sp.height + 2 * pad), (200, 200, 200))
+    canvas.paste(sp, (pad, pad), sp)
+    tmp = root / "sprites" / f"_clear_{uuid.uuid4().hex[:8]}.png"
+    canvas.resize((canvas.width * 3, canvas.height * 3), Image.LANCZOS).save(tmp, "PNG")
+    what = "; ".join(f"{x['name']} ({x['description']})" for x in parts)
+    prompt = (f"Edit the attached picture: remove these moving parts from the object, they will be animated "
+              f"separately: {what}. Where they were, show only the plain surface that was behind them, smooth and "
+              f"empty (for a clock: the plain back panel behind the glass, with nothing inside - no pendulum, no "
+              f"second dial, no ornament, no new object). Keep everything else exactly the same: the "
+              f"object's shape, size, position, colours, style and the plain light grey background.")
+    k = 1024 / max(canvas.size)                     # the local editor wants sizes in steps of 16
+    w, h = (max(256, int(canvas.width * k) // 16 * 16), max(256, int(canvas.height * k) // 16 * 16))
+    try:
+        if _source() == "gemini":
+            img = await _gemini_image(prompt, w, h, tmp, edit=True)
+        else:                                       # local, and web scenes too (the creator's own GPU)
+            img = await asyncio.to_thread(local_image_service.generate_image, prompt=prompt, width=w, height=h,
+                                          reference_image_path=str(tmp), edit=True)
+        cut = (await asyncio.to_thread(sprite_cut.cut_sheet, img, 1))[0]
+    except Exception as e:                          # noqa: BLE001 - the old picture stays
+        return rel, f"'{obj.get('name')}' ainda mostra {', '.join(x['name'] for x in parts)} parado: {str(e)[:150]}"
+    finally:
+        tmp.unlink(missing_ok=True)
+    new_rel = f"sprites/Sprite_{obj['id']}_{uuid.uuid4().hex[:6]}.png"
+    cut.resize(sp.size, Image.LANCZOS).save(root / new_rel, "PNG")
+    (root / rel).unlink(missing_ok=True)
+    return new_rel, None
 
 
 def default_box(o: dict) -> list:
@@ -1006,6 +1053,12 @@ async def web_upload(project_name: str, scene_ref: str, kind: str, data: bytes) 
             rel = f"sprites/Sprite_{o['id']}_{uuid.uuid4().hex[:6]}.png"
             (root / rel).write_bytes(base64.b64decode(cut["png"]))
             made[o["id"]] = (rel, cut["box"])
+        for o in sprites:                            # the moving parts out of their object's picture
+            if o.get("parts") and o["id"] in made:
+                rel, problem = await clear_parts(root, made[o["id"]][0], o)
+                made[o["id"]] = (rel, made[o["id"]][1])
+                if problem:
+                    report["problems"].append(problem)
         project = project_service.load_project(project_name)
         for o in scene_objects(project["scenes"][sid]):
             if o["id"] in made:

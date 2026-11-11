@@ -112,7 +112,7 @@
           "id": "obj_relogio_de_pendulo_3287",
           "name": "relógio de pêndulo",
           "type": "movel",
-          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_d22db5.png",
+          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_bd1692.png",
           "position": {
             "x": 905,
             "y": 535
@@ -150,15 +150,15 @@
               },
               "at": {
                 "x": 0.5,
-                "y": 0.4
+                "y": 0.46
               },
-              "height": 0.42,
+              "height": 0.36,
               "sprite": "sprites/Part_obj_relogio_de_pendulo_3287_0_3d6f67.png",
               "rect": {
-                "x": 0.3866,
-                "y": 0.4,
-                "w": 0.2268,
-                "h": 0.42
+                "x": 0.4028,
+                "y": 0.46,
+                "w": 0.1944,
+                "h": 0.36
               }
             }
           ],
