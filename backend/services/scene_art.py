@@ -479,10 +479,11 @@ async def clear_parts(root: Path, rel: str, obj: dict) -> tuple:
     canvas.resize((canvas.width * 3, canvas.height * 3), Image.LANCZOS).save(tmp, "PNG")
     what = "; ".join(f"{x['name']} ({x['description']})" for x in parts)
     prompt = (f"Edit the attached picture: remove these moving parts from the object, they will be animated "
-              f"separately: {what}. Where they were, show only the plain surface that was behind them, smooth and "
-              f"empty (for a clock: the plain back panel behind the glass, with nothing inside - no pendulum, no "
-              f"second dial, no ornament, no new object). Keep everything else exactly the same: the "
-              f"object's shape, size, position, colours, style and the plain light grey background.")
+              f"separately: {what}. Where they were, paint the back of the object that was behind them, in the "
+              f"object's own material and colour (for a wooden clock: the dark wooden back board of the case, seen "
+              f"through the glass), solid and empty - never the light grey of the background, which stays only "
+              f"outside the object. Keep everything else exactly the same: the clock face or dial, the object's "
+              f"shape, size, position, colours and style, and the plain light grey background around it.")
     k = 1024 / max(canvas.size)                     # the local editor wants sizes in steps of 16
     w, h = (max(256, int(canvas.width * k) // 16 * 16), max(256, int(canvas.height * k) // 16 * 16))
     try:

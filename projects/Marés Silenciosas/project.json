@@ -51,12 +51,12 @@
           "type": "movel",
           "sprite": "",
           "position": {
-            "x": 464,
+            "x": 460,
             "y": 713
           },
           "size": {
-            "width": 541,
-            "height": 476
+            "width": 549,
+            "height": 480
           },
           "scale": {
             "x": 1,
@@ -81,14 +81,14 @@
           "id": "obj_chave_de_latao_f2e2",
           "name": "chave de latão",
           "type": "item",
-          "sprite": "sprites/Sprite_obj_chave_de_latao_f2e2_7f08d3.png",
+          "sprite": "sprites/Sprite_obj_chave_de_latao_f2e2_ac7c27.png",
           "position": {
             "x": 512,
             "y": 640
           },
           "size": {
-            "width": 27,
-            "height": 37
+            "width": 33,
+            "height": 39
           },
           "scale": {
             "x": 1,
@@ -112,14 +112,14 @@
           "id": "obj_relogio_de_pendulo_3287",
           "name": "relógio de pêndulo",
           "type": "movel",
-          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_bd1692.png",
+          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_604198.png",
           "position": {
             "x": 905,
-            "y": 535
+            "y": 360
           },
           "size": {
-            "width": 220,
-            "height": 470
+            "width": 226,
+            "height": 420
           },
           "scale": {
             "x": 1,
@@ -127,7 +127,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Um relógio de pêndulo alto, de pé no chão e encostado na parede, em madeira escura, com mostrador de marfim no alto e uma portinhola de vidro comprida na frente.",
+          "description": "Um relógio de pêndulo de parede, pendurado alto na parede azul, numa caixa de madeira escura com mostrador de marfim em cima e, embaixo dele, uma portinhola de vidro comprida.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -150,15 +150,15 @@
               },
               "at": {
                 "x": 0.5,
-                "y": 0.46
+                "y": 0.45
               },
-              "height": 0.36,
-              "sprite": "sprites/Part_obj_relogio_de_pendulo_3287_0_3d6f67.png",
+              "height": 0.42,
+              "sprite": "sprites/Part_obj_relogio_de_pendulo_3287_0_6c2a8b.png",
               "rect": {
-                "x": 0.4028,
-                "y": 0.46,
-                "w": 0.1944,
-                "h": 0.36
+                "x": 0.4064,
+                "y": 0.45,
+                "w": 0.1872,
+                "h": 0.42
               }
             }
           ],

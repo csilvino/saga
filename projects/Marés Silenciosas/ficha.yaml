@@ -34,7 +34,7 @@ cenas:
     escondido: true
     apelidos: [chave pequena, chave do bau]
   - nome: relógio de pêndulo
-    descricao: Um relógio de pêndulo alto, de pé no chão e encostado na parede, em madeira escura, com mostrador de marfim no alto e uma portinhola de vidro comprida na frente.
+    descricao: Um relógio de pêndulo de parede, pendurado alto na parede azul, numa caixa de madeira escura com mostrador de marfim em cima e, embaixo dele, uma portinhola de vidro comprida.
     tipo: movel
     apelidos: [relogio, pendulo, pêndulo]
     som: tique-taque lento e grave de relógio de pêndulo de madeira
@@ -42,8 +42,8 @@ cenas:
     - nome: pêndulo de latão
       descricao: Um pêndulo de latão comprido e fino, com um disco dourado redondo na ponta de baixo.
       animacao: {tipo: balanco, angulo: 9, periodo: 2}
-      onde: [0.5, 0.46]
-      altura: 0.36
+      onde: [0.5, 0.45]
+      altura: 0.42
     script: |
       on examine {
         say "O pêndulo vai e vem, tique, taque. Alguém continua dando corda nele. Os ponteiros marcam a hora certa, mas o calendário da parede parou há três semanas."
