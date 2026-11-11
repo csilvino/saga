@@ -5,6 +5,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { X, CheckCircle2, AlertTriangle, XCircle, Hammer, SearchCheck, Image as ImageIcon, Loader2, Music } from 'lucide-react';
 import api from '../services/api';
+import SceneArtList, { SceneArt } from './SceneArtList';
 
 interface Problem { nivel: 'erro' | 'aviso'; msg: string; onde?: string }
 interface TestResult { teste: string; ok: boolean; comandos: number; fim: string; motivo?: string; comandos_recusados?: string[] }
@@ -18,7 +19,8 @@ interface Report {
                  cenas_nao_visitadas: string[]; finais: { texto: string; comandos: number }[]; esgotou: boolean };
   arte?: { cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean; arte_revisar?: string[] };
 }
-interface ArtStatus { running: boolean; log: string[]; cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean; arte_revisar?: string[] }
+interface ArtStatus { running: boolean; log: string[]; cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean; arte_revisar?: string[];
+                    na_web?: string[]; cenas?: SceneArt[] }
 interface SoundStatus { running: boolean; log: string[]; sons_sem_arquivo: string[]; sons: number; som_pronto: boolean; result?: { falhas?: string[] } | null }
 
 const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBuilt: () => void }> = ({ projectName, onClose, onBuilt }) => {
@@ -122,7 +124,7 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
                 {busy === 'build' ? <Loader2 size={16} className="animate-spin" /> : <Hammer size={16} />} Montar o jogo
               </button>
               <button onClick={startArt} disabled={!!busy || art?.running || art?.pronta}
-                      title="Gera as cenas e variantes que faltam, em segundo plano (horas)"
+                      title="Gera as cenas e variantes que faltam, em segundo plano (horas); as cenas marcadas 'Web' ficam com você"
                       className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 disabled:opacity-50 rounded-lg flex items-center gap-2">
                 {art?.running ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />} Gerar arte
               </button>
@@ -185,6 +187,19 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
                       : `Faltam ${art.cenas_sem_arte.length} cena(s) e ${art.variantes_sem_arte.length} variante(s).`}
                     {art.running && ' Gerando…'}
                   </div>
+                  {(art.na_web?.length ?? 0) > 0 && (
+                    <div className="text-cyan-300 text-xs mt-1">Esperando imagens da web: {art.na_web!.join(', ')}.</div>
+                  )}
+                  {(art.cenas?.length ?? 0) > 0 && (
+                    <details className="mt-2" open={(art.na_web?.length ?? 0) > 0}>
+                      <summary className="cursor-pointer text-gray-400 text-xs">
+                        Fonte da arte por cena (GPU local, API Gemini ou Web)
+                      </summary>
+                      <div className="mt-1">
+                        <SceneArtList projectName={projectName} scenes={art.cenas!} busy={!!art.running} onChanged={pollArt} />
+                      </div>
+                    </details>
+                  )}
                   {(art.arte_revisar?.length ?? 0) > 0 && (
                     <div className="mt-1">
                       <div className="text-amber-300">A revisão ainda vê {art.arte_revisar!.length} problema(s) na arte:</div>

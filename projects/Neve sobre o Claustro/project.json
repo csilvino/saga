@@ -1271,6 +1271,12 @@
         "ambient": "sala de pedra silenciosa, ar parado, vento muito distante",
         "variants": [],
         "file": "audio/Sound_sala_de_pedra_silenciosa_ar_para_929761.ogg"
+      },
+      "art_source": "web",
+      "web_art": {
+        "background_prompt": "Hand-painted 2D digital painting for a point-and-click adventure game, visible brushstrokes. Wide shot, empty floor space in the foreground. Inside a gothic monastery's scriptorium set in snow-covered mountains during a blizzard at night. Wooden work tables covered in dried-up parchment scrolls and empty dried inkwells. A twisting iron spiral staircase descending into gloomy darkness. Cold bluish tones contrast with warm candlelight and distant fireplace glow. Dark horror atmosphere. No people, no animals, no text.",
+        "sprites": {},
+        "key": "6fd5093a6b0c"
       }
     },
     "scene_2810dff1": {

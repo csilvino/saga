@@ -210,6 +210,30 @@ python tools/review_art.py "Neve sobre o Claustro" --corrigir         # também 
 
 O Diretor tem a mesma revisão na ferramenta `review_scene_art`.
 
+## De onde vêm as imagens (por cena)
+
+Cada cena escolhe a fonte da sua arte, no painel da ficha (Arte → "Fonte da arte por cena"):
+
+| Fonte | Quem faz | Custo |
+| --- | --- | --- |
+| **GPU local** | o gerador local (FLUX) na placa de vídeo do criador | energia |
+| **API Gemini** | o modelo de imagem da Gemini (`gemini_image_model`), com a chave do criador | pago por imagem |
+| **Web** | o criador, numa IA da web (Gemini, ChatGPT...) com a própria conta | o da conta dele |
+
+"Gerar arte" faz as cenas GPU local e API Gemini e pula as cenas Web. Numa cena Web, o botão do globo
+mostra os prompts para copiar e recebe as imagens:
+
+1. **Cenário**: cole o prompt (anexe a imagem de referência do jogo, para o estilo) e envie a imagem. O
+   Saga corta para 1920x1080, acha os objetos pintados (as áreas de clique) e escolhe onde os objetos
+   soltos vão ficar. Se algum objeto não aparecer na imagem, ele avisa.
+2. **Objetos soltos** (os que podem ser pegos ou aparecer: os sprites): uma imagem com todos eles lado a
+   lado, na ordem do prompt, sobre fundo cinza liso. O Saga recorta (fundo transparente), ajusta a cor
+   à cena e encaixa cada um no seu lugar. Uma imagem com outro número de objetos é recusada.
+3. **Variantes**: anexe o cenário e peça a edição do prompt; envie o resultado.
+
+A escolha fica na cena e sobrevive a montar o jogo de novo. O recorte dos objetos roda no próprio
+backend, sem GPU (na primeira vez ele baixa o modelo de recorte, 179 MB).
+
 ## Onde usar
 
 **No editor:** o botão **Ficha** no topo abre a ficha do projeto. Num projeto que ainda não tem

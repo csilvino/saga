@@ -239,6 +239,9 @@ def carry_art(old: dict, new: dict) -> dict:
             continue
         old_sid, old_s = match
         rename[sid] = old_sid
+        for f in ("art_source", "web_art"):         # where its pictures come from (scene_art)
+            if f in old_s:
+                s[f] = copy.deepcopy(old_s[f])
         old_bg, bg = _scene_bg(old_s), _scene_bg(s)
         if old_bg and bg:
             s["objects"][s["objects"].index(bg)] = copy.deepcopy(old_bg)
@@ -859,8 +862,11 @@ def art_status(project: dict) -> dict:
         review += [f"{s.get('name')}: {p}" for p in (bg.get("review") or {}).get("problems", [])]
         for v in s.get("variants") or []:
             review += [f"{s.get('name')} [{v.get('when')}]: {p}" for p in (v.get("review") or {}).get("problems", [])]
+    web = [s.get("name") for s in scenes.values() if s.get("art_source") == "web"
+           and (not has_art(s) or any(not v.get("background") for v in s.get("variants") or []))]
     return {"cenas_sem_arte": missing, "variantes_sem_arte": variants,
-            "pronta": not missing and not variants, "arte_revisar": review}
+            "pronta": not missing and not variants, "arte_revisar": review,
+            "na_web": web}               # scenes whose missing pictures the creator uploads (not GERAR ARTE)
 
 
 def export(project: dict) -> dict:
@@ -985,7 +991,11 @@ async def make_art(project_name: str, progress: Optional[Callable[[str], None]] 
         if not scene or has_art(scene):
             continue
         name = scene.get("name")
-        ref_name = "" if sid == ref_id else world.scene_name(ref_id)
+        if scene_art.art_source(scene) == "web":
+            say(f"cena {name}: imagens feitas na web (envie pelo painel)")
+            continue
+        ref_scene = project_service.load_project(project_name)["scenes"].get(ref_id) or {}
+        ref_name = "" if sid == ref_id or not has_art(ref_scene) else world.scene_name(ref_id)
         for attempt in (1, 2, 3):
             say(f"cena {name} (tentativa {attempt})")
             try:
@@ -1003,7 +1013,7 @@ async def make_art(project_name: str, progress: Optional[Callable[[str], None]] 
     for sid in order:
         scene = project_service.load_project(project_name)["scenes"].get(sid) or {}
         for i, v in enumerate(scene.get("variants") or []):
-            if v.get("background") or not has_art(scene):
+            if v.get("background") or not has_art(scene) or scene_art.art_source(scene) == "web":
                 continue
             say(f"variante {scene.get('name')}: {v['when']}")
             try:

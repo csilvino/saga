@@ -20,6 +20,8 @@ it in the inventory, so "pegar garrafa" makes the bottle leave the picture.
 
 import asyncio
 import base64
+import contextvars
+import io
 import json
 import logging
 import time
@@ -27,11 +29,10 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-import httpx
-from PIL import Image
+from PIL import Image, ImageOps
 
 from backend.config.user_settings import get_gemini_key, get_gemini_model, get_generation_source
-from backend.services.local_image_generator import WORKER_URL, local_image_service
+from backend.services.local_image_generator import local_image_service
 from backend.services.project_service import project_service
 from backend.ses import director_tools
 
@@ -46,6 +47,37 @@ STYLE_HINT = ("hand-painted 2D digital painting for a point-and-click adventure 
 
 class ArtError(RuntimeError):
     pass
+
+
+# --- where a scene's pictures come from (chosen per scene: scene["art_source"]) ----------------
+#   local  - the local worker (FLUX on the creator's GPU)
+#   gemini - the Gemini image API (the creator's key; paid per image)
+#   web    - the creator makes them on a web AI with his own account and uploads them
+#            (web_prompts gives the prompts, web_upload takes the files)
+ART_SOURCES = ("local", "gemini", "web")
+_SOURCE: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar("art_source", default=None)
+
+
+def art_source(scene: Optional[dict] = None) -> str:
+    s = (scene or {}).get("art_source") or ("gemini" if get_generation_source() == "cloud" else "local")
+    return s if s in ART_SOURCES else "local"
+
+
+def _use_source_of(scene: dict) -> str:
+    """The pictures made from here on (in this task) come from this scene's source."""
+    src = art_source(scene)
+    _SOURCE.set(src)
+    return src
+
+
+def _source() -> str:
+    return _SOURCE.get() or art_source()
+
+
+def _no_web(scene: dict):
+    if art_source(scene) == "web":
+        raise ArtError(f"a cena '{scene.get('name')}' faz as imagens na web: copie os prompts e envie as "
+                       f"imagens (ou troque a fonte da arte dela)")
 
 
 def is_sprite(obj: dict) -> bool:
@@ -194,19 +226,61 @@ Items: {json.dumps(items, ensure_ascii=False)}"""
 # --- images ------------------------------------------------------------------------------------
 
 async def generate(prompt: str, width: int, height: int, reference: Optional[Path]) -> Image.Image:
-    if get_generation_source() == "cloud":
-        from backend.services.gemini_imagen import GeminiImagenExtractor
-        extractor = GeminiImagenExtractor(get_gemini_key())
-        return await asyncio.to_thread(extractor.generate_image, prompt=prompt, negative_prompt="",
-                                       width=width, height=height,
-                                       reference_image_path=str(reference) if reference else None)
+    src = _source()
+    if src == "web":
+        raise ArtError("esta cena faz as imagens na web: envie a imagem")
+    if src == "gemini":
+        return await _gemini_image(prompt, width, height, reference)
     return await asyncio.to_thread(local_image_service.generate_image, prompt=prompt, width=width, height=height,
                                    reference_image_path=str(reference) if reference else None)
 
 
+def fit_scene(img: Image.Image) -> Image.Image:
+    """Any picture -> a 1920x1080 RGB scene (cropped to 16:9 around the centre, not stretched)."""
+    img = ImageOps.exif_transpose(img)
+    return ImageOps.fit(img.convert("RGB"), (SCENE_W, SCENE_H), Image.LANCZOS)
+
+
+async def _gemini_image(prompt: str, width: int, height: int, reference: Optional[Path],
+                        edit: bool = False) -> Image.Image:
+    """The Gemini image model (gemini_image_model). `edit`: change the attached picture;
+    otherwise the attached picture is only a style reference."""
+    from google.genai import types
+    from backend.config.user_settings import get_image_model
+    ratio = width / height
+    aspect = "16:9" if ratio > 1.5 else "4:3" if ratio > 1.15 else "1:1" if ratio > 0.87 else "9:16"
+    if reference and not edit:
+        prompt = ("Use the attached image only as a reference for the art style, palette and lighting; "
+                  f"make a new image: {prompt}")
+    contents: list = [prompt]
+    if reference:
+        contents.insert(0, types.Part.from_bytes(data=Path(reference).read_bytes(),
+                                                 mime_type="image/jpeg" if str(reference).lower().endswith(
+                                                     (".jpg", ".jpeg")) else "image/png"))
+    config = types.GenerateContentConfig(response_modalities=["IMAGE"],
+                                         image_config=types.ImageConfig(aspect_ratio=aspect))
+    model = get_image_model()
+    for attempt in range(4):
+        try:
+            r = await _client().aio.models.generate_content(model=model, contents=contents, config=config)
+            break
+        except Exception as e:
+            if any(k in str(e) for k in ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE")) and attempt < 3:
+                await asyncio.sleep(20 * (attempt + 1))
+                continue
+            raise ArtError(f"a API de imagem da Gemini ({model}) recusou: {str(e)[:300]}")
+    for cand in r.candidates or []:
+        for part in (cand.content.parts if cand.content else None) or []:
+            if part.inline_data and part.inline_data.data:
+                img = Image.open(io.BytesIO(part.inline_data.data))
+                return fit_scene(img) if (width, height) == (SCENE_W, SCENE_H) else img.convert("RGB")
+    raise ArtError(f"a API de imagem da Gemini ({model}) não devolveu imagem")
+
+
 def sheet_prompt(descriptions: List[str]) -> str:
     n = len(descriptions)
-    order = ["leftmost", "second from the left", "third from the left", "rightmost"] if n == 4 else \
+    order = [f"number {i + 1} from the left" for i in range(n)] if n > 4 else \
+        ["leftmost", "second from the left", "third from the left", "rightmost"] if n == 4 else \
         ["left", "middle", "right"] if n == 3 else ["left", "right"] if n == 2 else ["center"]
     items = " ".join(f"{pos.capitalize()}: {d}." for pos, d in zip(order, descriptions))
     return (f"{'One single object' if n == 1 else f'{n} separate objects'} for an adventure game, {STYLE_HINT}, "
@@ -216,13 +290,13 @@ def sheet_prompt(descriptions: List[str]) -> str:
 
 
 async def cut_sprites(sheet: Path, count: int, background: Path, boxes: List[list]) -> List[dict]:
-    async with httpx.AsyncClient(timeout=600) as client:
-        try:
-            r = await client.post(f"{WORKER_URL}/sprites", json={
-                "sheet": str(sheet), "count": count, "background": str(background), "boxes": boxes})
-        except httpx.ConnectError:
-            raise ArtError("o recorte de sprites usa o gerador local (local_image_worker), que não está rodando")
-    data = r.json()
+    """Cut on the CPU, here (backend/services/sprite_cut.py): no GPU and no worker needed."""
+    from backend.services import sprite_cut
+
+    def work():
+        with Image.open(sheet) as sh, Image.open(background) as bg:
+            return sprite_cut.make_sprites(sh.copy(), count, bg.copy(), boxes)
+    data = await asyncio.to_thread(work)
     if "error" in data:
         raise ArtError(data["error"])
     return data["sprites"]
@@ -238,6 +312,8 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
     root = project_service.load_project_path(project_name)
     sid = director_tools._scene(project, scene_ref)
     scene = project["scenes"][sid]
+    _no_web(scene)
+    _use_source_of(scene)
     objs = scene_objects(scene)
     painted = [o for o in objs if not is_sprite(o)]
     sprites = [o for o in objs if is_sprite(o)]
@@ -561,8 +637,11 @@ async def _apply_edit(root: Path, base: str, instruction: str) -> Image.Image:
     prompt = instruction.rstrip(". ")
     if "keep everything else" not in prompt.lower():
         prompt += ". Keep the exact same composition, camera, style and lighting; change nothing else"
-    if get_generation_source() == "cloud":
-        return await generate(prompt + ".", SCENE_W, SCENE_H, root / base)
+    src = _source()
+    if src == "web":
+        raise ArtError("esta cena faz as imagens na web: envie a imagem")
+    if src == "gemini":
+        return await _gemini_image(prompt + ".", SCENE_W, SCENE_H, root / base, edit=True)
     return await asyncio.to_thread(local_image_service.generate_image, prompt=prompt + ".", width=SCENE_W,
                                    height=SCENE_H, reference_image_path=str(root / base), edit=True)
 
@@ -582,6 +661,8 @@ async def create_variant(project_name: str, scene_ref: str, when: str, change: s
     root = project_service.load_project_path(project_name)
     sid = director_tools._scene(project, scene_ref)
     scene = project["scenes"][sid]
+    _no_web(scene)
+    _use_source_of(scene)
     base = background_path(scene)
     if not base:
         raise ArtError("a cena ainda não tem cenário; crie a arte dela primeiro (create_scene_art)")
@@ -620,6 +701,8 @@ async def edit_background(project_name: str, scene_ref: str, change: str) -> dic
     root = project_service.load_project_path(project_name)
     sid = director_tools._scene(project, scene_ref)
     scene = project["scenes"][sid]
+    _no_web(scene)
+    _use_source_of(scene)
     base = background_path(scene)
     if not base:
         raise ArtError("a cena ainda não tem cenário; crie a arte dela primeiro (create_scene_art)")
@@ -651,6 +734,9 @@ async def review_scene(project_name: str, scene_ref: str, fix: bool = False,
     if not base:
         raise ArtError("a cena ainda não tem cenário")
     name = scene.get("name")
+    if fix:
+        _no_web(scene)
+        _use_source_of(scene)
     out: Dict[str, Any] = {"scene": name, "background": [], "variants": {}, "fixed": []}
 
     async def check_bg(r):
@@ -714,3 +800,186 @@ async def _report_only(check, rel, say) -> Optional[List[str]]:
     except Exception as e:                           # noqa: BLE001 - not reviewed; the run goes on
         say(f"revisão indisponível: {str(e)[:160]}")
         return None
+
+
+# --- choosing the source, and pictures made on a web AI (art_source "web") -----------------------
+#
+# The creator copies the prompts (web_prompts), makes the pictures on a web AI with his own account
+# (Gemini, ChatGPT...) and uploads them (web_upload). The Saga does the rest, as for its own pictures:
+#   background - cropped to 1920x1080; Gemini finds the painted objects (their clickable areas) and
+#                picks where the sprites will stand;
+#   sprites    - one sheet with the scene's loose objects side by side on a plain background: cut out
+#                (transparent), colour-matched and placed, left to right in the prompt's order;
+#   variant:N  - the scene's picture edited for variant N (door open...), same framing.
+
+def set_art_source(project_name: str, scene_ref: str, source: str) -> dict:
+    if source not in ART_SOURCES:
+        raise ArtError(f"fonte de arte desconhecida {source!r}; use {', '.join(ART_SOURCES)}")
+    project = project_service.load_project(project_name)
+    sid = director_tools._scene(project, scene_ref)
+    project["scenes"][sid]["art_source"] = source
+    project_service.save_project_data(project_name, project)
+    return {"scene": project["scenes"][sid].get("name"), "source": source}
+
+
+def scene_art_list(project: dict) -> List[dict]:
+    """Every scene with its source and how much of its art is done (for the panel)."""
+    out = []
+    for sid, s in (project.get("scenes") or {}).items():
+        sprites = [o for o in scene_objects(s) if is_sprite(o)]
+        variants = s.get("variants") or []
+        out.append({"id": sid, "name": s.get("name"), "source": art_source(s),
+                    "background": background_path(s),
+                    "sprites": len(sprites), "sprites_done": sum(1 for o in sprites if o.get("sprite")),
+                    "variants": len(variants), "variants_done": sum(1 for v in variants if v.get("background"))})
+    return out
+
+
+def _web_key(scene: dict) -> str:
+    """Changes when the text the prompts come from changes."""
+    import hashlib
+    parts = [scene.get("description") or ""] + [f"{o.get('name')}|{o.get('description')}|{is_sprite(o)}"
+                                                for o in scene_objects(scene)]
+    return hashlib.md5("\n".join(parts).encode("utf-8")).hexdigest()[:12]
+
+
+async def web_prompts(project_name: str, scene_ref: str) -> dict:
+    """The prompts to paste on a web AI for this scene (written once, kept until its text changes)."""
+    project = project_service.load_project(project_name)
+    sid = director_tools._scene(project, scene_ref)
+    scene = project["scenes"][sid]
+    painted = [o for o in scene_objects(scene) if not is_sprite(o)]
+    sprites = [o for o in scene_objects(scene) if is_sprite(o)]
+    plan = scene.get("web_art") or {}
+    if not plan.get("background_prompt") or plan.get("key") != _web_key(scene):
+        p = await plan_prompts(scene, painted, sprites, (project.get("art") or {}).get("style", ""))
+        project = project_service.load_project(project_name)
+        wa = project["scenes"][sid].setdefault("web_art", {})
+        wa.update({"background_prompt": p["background_prompt"], "sprites": p["sprites"], "key": _web_key(scene)})
+        project_service.save_project_data(project_name, project)
+        scene, plan = project["scenes"][sid], wa
+    # the game's look: the art reference scene's picture (or this scene's own, when it is the reference)
+    from backend.ses.world import World
+    ref_id = World(project).find_scene((project.get("art") or {}).get("reference", "")) or project.get("start_scene")
+    style_ref = background_path(project["scenes"].get(ref_id) or {}) if ref_id != sid else None
+    descs = [(plan.get("sprites") or {}).get(o["id"]) or o.get("name") for o in sprites]
+    return {
+        "scene": scene.get("name"),
+        "background": background_path(scene),
+        "style_reference": style_ref,
+        "background_prompt": plan["background_prompt"].rstrip(". ")
+        + ". Wide landscape picture, 16:9 (1920x1080). No text, no people, no frame, no border.",
+        "sprites": [o.get("name") for o in sprites],
+        "sprites_prompt": (sheet_prompt(descs) + " Wide landscape picture.") if sprites else "",
+        "variants": [{"index": i, "when": v.get("when"), "done": bool(v.get("background")),
+                      "prompt": f"Edite a imagem anexada: {v.get('change') or v.get('when')}. Mantenha exatamente o "
+                                f"mesmo enquadramento, a mesma câmera, o mesmo estilo, a mesma luz e todo o resto "
+                                f"da cena; mude só isso. Formato paisagem 16:9."}
+                     for i, v in enumerate(scene.get("variants") or [])],
+    }
+
+
+async def web_upload(project_name: str, scene_ref: str, kind: str, data: bytes) -> dict:
+    """Takes a picture made on a web AI: kind 'background', 'sprites' or 'variant:N'."""
+    try:
+        img = Image.open(io.BytesIO(data))
+        img.load()
+    except Exception:
+        raise ArtError("o arquivo enviado não é uma imagem")
+    project = project_service.load_project(project_name)
+    root = project_service.load_project_path(project_name)
+    sid = director_tools._scene(project, scene_ref)
+    scene = project["scenes"][sid]
+    name = scene.get("name")
+    painted = [o for o in scene_objects(scene) if not is_sprite(o)]
+    sprites = [o for o in scene_objects(scene) if is_sprite(o)]
+    report: Dict[str, Any] = {"scene": name, "kind": kind, "painted": [], "sprites": [], "problems": []}
+
+    if kind == "background":
+        rel = f"backgrounds/Scene_{uuid.uuid4().hex[:8]}.png"
+        (root / "backgrounds").mkdir(exist_ok=True)
+        fit_scene(img).save(root / rel, "PNG")
+        boxes: Dict[str, dict] = {}
+        if painted or sprites:
+            try:
+                boxes = await locate(root / rel, painted, sprites)
+            except Exception as e:                   # noqa: BLE001 - the picture stays; places later
+                report["problems"].append(f"não localizei os objetos (Gemini: {str(e)[:120]}); "
+                                          f"envie a imagem de novo mais tarde")
+        project = project_service.load_project(project_name)
+        scene = project["scenes"][sid]
+        set_background(scene, rel)
+        wa = scene.setdefault("web_art", {})
+        wa["boxes"] = {o["id"]: boxes[o["id"]]["box"] for o in sprites
+                       if boxes.get(o["id"], {}).get("found")}
+        from backend.services import sprite_cut
+        for o in scene_objects(scene):
+            found = boxes.get(o["id"])
+            if is_sprite(o):                         # a sprite already made moves to its new place
+                if o.get("sprite") and found and found["found"] and (root / o["sprite"]).exists():
+                    with Image.open(root / o["sprite"]) as sp:
+                        place(o, sprite_cut.fit_box(sp, found["box"])[1])
+                continue
+            o["sprite"] = ""
+            o.setdefault("properties", {})["painted"] = True
+            if found and found["found"]:
+                place(o, found["box"])
+                report["painted"].append(o.get("name"))
+            elif boxes:
+                report["problems"].append(f"'{o.get('name')}' não aparece na imagem: peça para a IA incluir "
+                                          f"e envie de novo")
+        project_service.save_project_data(project_name, project)
+        report["background"] = rel
+
+    elif kind == "sprites":
+        bg = background_path(scene)
+        if not bg:
+            raise ArtError("envie primeiro a imagem do cenário: os objetos são encaixados nela")
+        if not sprites:
+            raise ArtError(f"a cena '{name}' não tem objetos soltos (sprites)")
+        known = (scene.get("web_art") or {}).get("boxes") or {}
+        boxes_list = [known.get(o["id"]) or default_box(o) for o in sprites]
+        sheet = root / "sprites" / f"_sheet_web_{uuid.uuid4().hex[:8]}.png"
+        sheet.parent.mkdir(exist_ok=True)
+        img.convert("RGB").save(sheet, "PNG")
+        try:
+            cuts = await cut_sprites(sheet, len(sprites), root / bg, boxes_list)
+        except ArtError as e:
+            raise ArtError(f"{e}: a imagem precisa ter os {len(sprites)} objetos separados, um ao lado do "
+                           f"outro, na ordem do prompt ({', '.join(o.get('name') for o in sprites)})")
+        finally:
+            sheet.unlink(missing_ok=True)
+        made = {}
+        for o, cut in zip(sprites, cuts):
+            rel = f"sprites/Sprite_{o['id']}_{uuid.uuid4().hex[:6]}.png"
+            (root / rel).write_bytes(base64.b64decode(cut["png"]))
+            made[o["id"]] = (rel, cut["box"])
+        project = project_service.load_project(project_name)
+        for o in scene_objects(project["scenes"][sid]):
+            if o["id"] in made:
+                o["sprite"], box = made[o["id"]]
+                o.setdefault("properties", {}).pop("painted", None)
+                place(o, box)
+                report["sprites"].append(o.get("name"))
+        project_service.save_project_data(project_name, project)
+
+    elif kind.startswith("variant:"):
+        try:
+            i = int(kind.split(":", 1)[1])
+            variant = (scene.get("variants") or [])[i]
+        except (ValueError, IndexError):
+            raise ArtError(f"variante {kind!r} não existe nesta cena")
+        if not background_path(scene):
+            raise ArtError("envie primeiro a imagem do cenário: a variante é uma edição dela")
+        rel = f"backgrounds/Variant_{uuid.uuid4().hex[:8]}.png"
+        fit_scene(img).save(root / rel, "PNG")
+        project = project_service.load_project(project_name)
+        v = project["scenes"][sid]["variants"][i]
+        v["background"] = rel
+        v.pop("review", None)                        # it was about another picture
+        project_service.save_project_data(project_name, project)
+        report["variant"] = variant.get("when")
+        report["background"] = rel
+    else:
+        raise ArtError(f"tipo de envio desconhecido {kind!r}: background, sprites ou variant:N")
+    return report

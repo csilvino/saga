@@ -8,7 +8,7 @@ import logging
 import time
 from typing import Dict, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from backend.services.project_service import project_service
@@ -112,10 +112,56 @@ async def start_art(project_name: str):
 
 @router.get("/art/{project_name}")
 async def art_status(project_name: str):
+    from backend.services import scene_art
     job = ART_JOBS.get(project_name)
     try:
-        status = blueprint.art_status(project_service.load_project(project_name))
+        project = project_service.load_project(project_name)
+        status = blueprint.art_status(project)
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
     return {"running": bool(job and job["running"]), "log": (job or {}).get("log", [])[-40:],
-            "result": (job or {}).get("result"), **status}
+            "result": (job or {}).get("result"), "cenas": scene_art.scene_art_list(project), **status}
+
+
+# --- per scene: where its pictures come from; the web AI route (prompts out, pictures in) -------
+
+class ArtSource(BaseModel):
+    source: str                         # local | gemini | web
+
+
+def _art_call(project_name: str):
+    if ART_JOBS.get(project_name, {}).get("running"):
+        raise HTTPException(status_code=409, detail="a arte deste jogo está sendo gerada; espere terminar")
+
+
+@router.put("/art-source/{project_name}/{scene_id}")
+async def put_art_source(project_name: str, scene_id: str, req: ArtSource):
+    from backend.services import scene_art
+    _art_call(project_name)
+    try:
+        return scene_art.set_art_source(project_name, scene_id, req.source)
+    except (scene_art.ArtError, ValueError, KeyError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/web-art/{project_name}/{scene_id}")
+async def get_web_prompts(project_name: str, scene_id: str):
+    from backend.services import scene_art
+    try:
+        return await scene_art.web_prompts(project_name, scene_id)
+    except (scene_art.ArtError, ValueError, KeyError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/web-art/{project_name}/{scene_id}/{kind}")
+async def post_web_image(project_name: str, scene_id: str, kind: str, file: UploadFile = File(...)):
+    """kind: background | sprites | variant:N"""
+    from backend.services import scene_art
+    _art_call(project_name)
+    data = await file.read()
+    if len(data) > 25 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="imagem grande demais (máximo 25 MB)")
+    try:
+        return await scene_art.web_upload(project_name, scene_id, kind, data)
+    except (scene_art.ArtError, ValueError, KeyError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
