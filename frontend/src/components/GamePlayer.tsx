@@ -103,6 +103,7 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
 interface GameView {
   scene_id: string;
   scene_name: string;
+  description?: string;
   objects: { id: string; name: string }[];
   inventory: { id: string; name: string }[];
   exits: Record<string, string>;
@@ -439,6 +440,16 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
         <div className="relative bg-black overflow-hidden flex items-center justify-center flex-shrink-0 border-b-4 border-gray-800"
              style={{ containerType: 'size', height: '58%' }}>
           {stage}
+          {/* the way out and what is here, always in sight: a black glass band across the picture */}
+          {view && (
+            <div className="absolute inset-x-0 bottom-0 px-6 py-2 bg-black/60 backdrop-blur-sm border-t border-white/10 pointer-events-none"
+                 style={{ fontFamily: retroFont, fontSize: `${fontSize + 6}px`, textShadow: '0 1px 2px #000' }}>
+              <div className="text-purple-300 truncate">SAÍDAS: {Object.keys(view.exits).join(', ') || 'nenhuma'}</div>
+              {view.objects.length > 0 && (
+                <div className="text-sky-300 truncate">VEJO: {view.objects.map(o => o.name).join(', ')}</div>
+              )}
+            </div>
+          )}
         </div>
         <div ref={logRef} className="flex-1 overflow-y-auto px-6 py-3 leading-snug"
              style={{ fontFamily: retroFont, scrollBehavior: 'smooth' }}>
@@ -551,9 +562,48 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
           className="bg-gray-950 border-l border-gray-800 flex flex-col flex-shrink-0"
           style={{ width: rightPanel.width }}
         >
+          {/* the place, always in sight: the history below scrolls, this does not */}
           <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-center gap-2">
-            <Notebook className="w-5 h-5 text-yellow-400" />
-            <span className="font-bold text-white" style={{ fontSize: `${fontSize}px` }}>DESCRIÇÃO DO LOCAL</span>
+            <MapPin className="w-5 h-5 text-yellow-400" />
+            <span className="font-bold text-white" style={{ fontSize: `${fontSize}px` }}>LOCAL</span>
+          </div>
+          {view && (
+            <div className="px-4 py-3 border-b-2 border-gray-800 overflow-y-auto space-y-2 flex-shrink-0"
+                 style={{ maxHeight: '55%', fontSize: `${fontSize}px` }}>
+              <div className="text-green-400 font-bold">{view.scene_name}</div>
+              {view.description && <div className="text-gray-300 leading-relaxed">{view.description}</div>}
+              {view.objects.length > 0 && (
+                <div>
+                  <div className="text-gray-500 font-bold mb-1" style={{ fontSize: `${fontSize - 2}px` }}>VOCÊ VÊ</div>
+                  <div className="flex flex-wrap gap-1">
+                    {view.objects.map(o => (
+                      <button key={o.id} onClick={() => processCommand(`examinar ${o.name}`)} disabled={busy}
+                        className="px-2 py-0.5 rounded bg-blue-950/60 border border-blue-900 text-blue-300 hover:bg-blue-900">
+                        {o.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <div className="text-gray-500 font-bold mb-1" style={{ fontSize: `${fontSize - 2}px` }}>SAÍDAS</div>
+                {Object.keys(view.exits).length ? (
+                  <div className="flex flex-wrap gap-1">
+                    {Object.keys(view.exits).map(d => (
+                      <button key={d} onClick={() => processCommand(`ir ${d}`)} disabled={busy || !!view.ended}
+                        className="px-2 py-0.5 rounded bg-purple-950/60 border border-purple-900 text-purple-300 hover:bg-purple-900">
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                ) : <div className="text-gray-600">nenhuma à vista</div>}
+              </div>
+            </div>
+          )}
+
+          <div className="px-4 py-2 border-b border-gray-800 flex items-center justify-center gap-2">
+            <Notebook className="w-4 h-4 text-yellow-400" />
+            <span className="font-bold text-gray-400" style={{ fontSize: `${fontSize - 2}px` }}>HISTÓRICO</span>
           </div>
 
           <div
