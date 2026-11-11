@@ -78,3 +78,26 @@ async def create_project(project_create: ProjectCreate):
         return {"status": "success", "message": f"Projeto '{project_create.name}' criado com sucesso."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao criar o projeto: {e}")
+
+
+TRASH_DIR = ROOT_DIR / ".lixeira"       # deleted projects go here, not to oblivion
+
+
+@router.delete("/{project_name}")
+async def delete_project(project_name: str):
+    """Moves the project's folder to .lixeira/<name>__<date> (recoverable by moving it back)."""
+    import shutil
+    import time
+    projects_dir = (ROOT_DIR / "projects").resolve()
+    folder = (projects_dir / project_name).resolve()
+    if folder.parent != projects_dir or not folder.is_dir() or project_name in ("", ".", ".."):
+        raise HTTPException(status_code=404, detail=f"Projeto '{project_name}' não encontrado.")
+    TRASH_DIR.mkdir(exist_ok=True)
+    target = TRASH_DIR / f"{project_name}__{time.strftime('%Y%m%d-%H%M%S')}"
+    try:
+        shutil.move(str(folder), str(target))
+    except Exception as e:
+        logger.error(f"Erro ao mover o projeto para a lixeira: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Não foi possível mover o projeto para a lixeira: {e}")
+    logger.info(f"Projeto '{project_name}' movido para {target}")
+    return {"status": "success", "trash": str(target.relative_to(ROOT_DIR))}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
-import { Folder, Bot, PlusCircle, Loader2 } from 'lucide-react';
+import { Folder, Bot, PlusCircle, Loader2, Trash2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import {
   DndContext,
@@ -26,7 +26,7 @@ import { useResizable, useRightResizable } from './hooks';
 const LAST_PROJECT_KEY = 'saga_last_open_project';
 const PLAYING_KEY = 'saga_playing_project';     // sessionStorage: reload goes back into the game
 
-const WelcomeScreen = ({ onOpenProject, onCreateProject, projects, hasAiKey, onOpenApiKey, onOpenSettings, isOpeningProject }) => (
+const WelcomeScreen = ({ onOpenProject, onCreateProject, onDeleteProject, projects, hasAiKey, onOpenApiKey, onOpenSettings, isOpeningProject }) => (
   <div className="w-full h-screen bg-gray-950 text-white flex flex-col">
     <Header projectName={null} onSave={() => { }} onOpen={() => { }} hasAiKey={hasAiKey} onOpenApiKey={onOpenApiKey} onOpenSettings={onOpenSettings} />
     <div className="flex-1 flex flex-col items-center justify-center p-4">
@@ -39,11 +39,11 @@ const WelcomeScreen = ({ onOpenProject, onCreateProject, projects, hasAiKey, onO
         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-purple-400/80 mb-4 text-center">Abrir Projeto Existente</h2>
         <div className="bg-gray-900/50 border border-white/5 rounded-xl p-2 space-y-1 max-h-60 overflow-y-auto custom-scrollbar">
           {projects.length > 0 ? projects.map(p => (
+            <div key={p} className="group/row flex items-center gap-1">
             <button
-              key={p}
               disabled={!!isOpeningProject}
               onClick={() => onOpenProject(p)}
-              className="group w-full text-left flex items-center justify-between p-3 hover:bg-white/5 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group flex-1 min-w-0 text-left flex items-center justify-between p-3 hover:bg-white/5 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center gap-3">
                 <Folder size={18} className="text-purple-400 group-hover:text-purple-300 transition-colors" />
@@ -55,6 +55,15 @@ const WelcomeScreen = ({ onOpenProject, onCreateProject, projects, hasAiKey, onO
                 <span className="text-[10px] font-bold text-gray-600 group-hover:text-purple-400 transition-colors">ABRIR</span>
               )}
             </button>
+            <button
+              disabled={!!isOpeningProject}
+              onClick={() => onDeleteProject(p)}
+              title={`Mover "${p}" para a lixeira`}
+              className="p-3 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50 opacity-60 group-hover/row:opacity-100"
+            >
+              <Trash2 size={16} />
+            </button>
+            </div>
           )) : (
             <p className="py-8 text-center text-gray-500 italic">Nenhum projeto encontrado.</p>
           )}
@@ -83,6 +92,7 @@ export default function App() {
   const [hasAiKey, setHasAiKey] = useState(false);
   const [settingsTab, setSettingsTab] = useState<string | undefined>(undefined);
   const [deletionTarget, setDeletionTarget] = useState<{ type: string; id: string; sceneId?: string } | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false); // Estado para controlar o modo de jogo
   const [showBlueprint, setShowBlueprint] = useState(false);
@@ -572,6 +582,25 @@ export default function App() {
 
   useEffect(() => { refreshAiKeyStatus(); }, [refreshAiKeyStatus]);
 
+  // start screen trash: the backend moves the project folder to .lixeira/ (recoverable)
+  const handleDeleteProject = async () => {
+    const name = projectToDelete;
+    setProjectToDelete(null);
+    if (!name) return;
+    try {
+      await api.delete(`/api/projects/${encodeURIComponent(name)}`);
+      try {
+        localStorage.removeItem(`saga_autosave:${name}`);
+        localStorage.removeItem(`saga_presentation:${name}`);
+        if (localStorage.getItem(LAST_PROJECT_KEY) === name) localStorage.removeItem(LAST_PROJECT_KEY);
+      } catch { /* storage blocked */ }
+      toast.success(`"${name}" foi para a lixeira.`);
+      loadProjectList();
+    } catch (e: any) {
+      toast.error(e.response?.data?.detail || `Não foi possível excluir "${name}".`);
+    }
+  };
+
   const openSettings = (tab?: string) => {
     setSettingsTab(tab);
     setIsSettingsOpen(true);
@@ -619,6 +648,7 @@ export default function App() {
         <WelcomeScreen
           onOpenProject={openProject}
           onCreateProject={handleCreateProject}
+          onDeleteProject={setProjectToDelete}
           projects={projects}
           hasAiKey={hasAiKey}
           onOpenApiKey={() => openSettings('api')}
@@ -633,6 +663,14 @@ export default function App() {
             initialTab={settingsTab}
           />
         )}
+
+        <ConfirmModal
+          isOpen={!!projectToDelete}
+          onClose={() => setProjectToDelete(null)}
+          onConfirm={handleDeleteProject}
+          title="Mover projeto para a lixeira"
+          message={`O projeto "${projectToDelete}" sai da lista e vai para a pasta .lixeira do Saga, de onde pode ser recuperado. Continuar?`}
+        />
 
         <ConfirmModal
           isOpen={!!deletionTarget}

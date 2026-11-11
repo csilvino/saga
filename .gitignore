@@ -46,3 +46,6 @@ diretorios.txt
 local_image_worker/*.log
 local_image_worker/.venv/
 projects/*/project.json.bak
+
+# deleted projects (the start screen trash button moves them here)
+.lixeira/
