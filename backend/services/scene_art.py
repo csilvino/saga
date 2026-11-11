@@ -85,7 +85,7 @@ async def _ask_json(contents, schema_hint: str) -> Any:
             if attempt == 3:
                 raise ArtError(f"a Gemini não devolveu JSON válido ({schema_hint})")
         except Exception as e:
-            if ("429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)) and attempt < 3:
+            if any(k in str(e) for k in ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE")) and attempt < 3:
                 await asyncio.sleep(20 * (attempt + 1))
                 continue
             raise

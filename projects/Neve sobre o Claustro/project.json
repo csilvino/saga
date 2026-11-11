@@ -907,8 +907,8 @@
       "variants": [
         {
           "when": "flag(estante_movida)",
-          "background": "backgrounds/Variant_d40be010.png",
-          "change": "a grande estante foi empurrada para o lado, revelando uma passagem escura de pedra"
+          "background": "backgrounds/Variant_072eab61.png",
+          "change": "o armário-estante de madeira foi afastado para a esquerda e, no fundo da sala ao norte, abriu-se uma passagem secreta escura em arco de pedra, com degraus"
         }
       ]
     },

@@ -240,7 +240,7 @@ cenas:
       }
   variantes:
   - quando: flag(estante_movida)
-    mudanca: a grande estante foi empurrada para o lado, revelando uma passagem escura de pedra
+    mudanca: o armário-estante de madeira foi afastado para a esquerda e, no fundo da sala ao norte, abriu-se uma passagem secreta escura em arco de pedra, com degraus
 - nome: Sacristia
   descricao: Pequena sala escondida nos fundos, com paramentos litúrgicos rasgados e objetos de prata macabra.
   saidas:
