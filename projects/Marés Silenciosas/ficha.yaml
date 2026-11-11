@@ -1,0 +1,466 @@
+nome: Marés Silenciosas
+descricao: O oceanógrafo Tomás Albuquerque sumiu de casa sem deixar rastro. A irmã dele contratou você para descobrir para onde ele foi, e a resposta começa numa máquina escondida sob a mansão.
+inicio: Escritório de Tomás
+apresentacao: {estilo: classico, layout: classico, retro: false}
+arte:
+  estilo: pintura digital colorida de adventure point-and-click, ilustração detalhada, luz quente em interiores e trópico vibrante nas ilhas
+  referencia: Colina da Chegada
+requisitos: {cenas: 20, puzzles: 14, mortes: 3}
+
+cenas:
+- nome: Escritório de Tomás
+  descricao: Paredes azuis, um tapete gasto e o cheiro de papel velho. Tudo está arrumado demais, como se o dono tivesse saído com pressa e alguém tivesse guardado tudo depois. Uma escada estreita sobe para o sótão.
+  som: sala silenciosa de casa antiga, relógio distante, chuva fina na janela
+  script: |
+    on first_enter {
+      say "Lúcia Albuquerque deixou a chave com você: 'Meu irmão sumiu há três semanas. A polícia desistiu. Eu não.'"
+    }
+  saidas:
+    norte: Biblioteca
+    cima: Sótão
+  objetos:
+  - nome: escrivaninha
+    descricao: Uma escrivaninha de tampo corrido em madeira escura, com um lampião aceso em cima. A tampa está abaixada.
+    tipo: movel
+    apelidos: [mesa, tampa]
+    script: |
+      on open {
+        if flag(escrivaninha_aberta) { say "Já está aberta. Só papéis de contas lá dentro." }
+        else { set escrivaninha_aberta; show "chave de latão"; play "tampa de madeira de escrivaninha rolando e abrindo"; say "A tampa corre com um ruído seco. Entre contas de luz, uma pequena chave de latão." }
+      }
+  - nome: chave de latão
+    descricao: Uma chave pequena de latão, com uma etiqueta escrita à mão - 'baú'.
+    pegavel: true
+    escondido: true
+    apelidos: [chave pequena, chave do bau]
+  - nome: relógio de pêndulo
+    descricao: Um relógio de pêndulo alto, de pé no chão e encostado na parede, em madeira escura, com mostrador de marfim no alto e uma portinhola de vidro comprida na frente.
+    tipo: movel
+    apelidos: [relogio, pendulo, pêndulo]
+    som: tique-taque lento e grave de relógio de pêndulo de madeira
+    partes:
+    - nome: pêndulo de latão
+      descricao: Um pêndulo de latão comprido e fino, com um disco dourado redondo na ponta de baixo.
+      animacao: {tipo: balanco, angulo: 9, periodo: 2}
+      onde: [0.5, 0.4]
+      altura: 0.42
+    script: |
+      on examine {
+        say "O pêndulo vai e vem, tique, taque. Alguém continua dando corda nele. Os ponteiros marcam a hora certa, mas o calendário da parede parou há três semanas."
+      }
+
+- nome: Sótão
+  descricao: O telhado inclinado deixa pouco espaço para ficar em pé. Poeira grossa no assoalho, caixas de papelão e, encostado na parede, um baú antigo com ferragens.
+  som: sótão abafado, madeira do telhado estalando, vento leve nas telhas
+  objetos:
+  - nome: baú de Tomás
+    descricao: Um baú de madeira com cantos de latão e uma fechadura pequena.
+    tipo: movel
+    apelidos: [bau, baú, bau de tomas]
+    script: |
+      on open {
+        if flag(bau_aberto) { say "Já está aberto." }
+        else { say "Trancado. A fechadura é pequena, de latão." }
+      }
+      on use with "chave de latão" {
+        if flag(bau_aberto) { say "Já está aberto." }
+        else {
+          set bau_aberto; show "cartão perfurado"; show "carta das marés"; show lanterna
+          play "fechadura de latão girando e tampa de baú de madeira rangendo"
+          say "A chave gira. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna."
+        }
+      }
+  - nome: cartão perfurado
+    descricao: Um cartão de papelão grosso, cheio de furos em fileiras. No canto, a lápis - 'coordenadas, maré morta'.
+    pegavel: true
+    escondido: true
+    apelidos: [cartao, cartão]
+  - nome: carta das marés
+    descricao: Uma carta náutica antiga de um arquipélago sem nome, com horários de maré anotados à mão e um círculo em volta de uma ilhota.
+    pegavel: true
+    escondido: true
+    apelidos: [carta nautica, carta náutica, mapa, mapa das mares]
+  - nome: lanterna
+    descricao: Uma lanterna de metal, pesada, com pilhas novas.
+    pegavel: true
+    escondido: true
+
+- nome: Biblioteca
+  descricao: Estantes do chão ao teto, uma escada em caracol para o mezanino e uma escrivaninha sob a luz de um abajur. Num canto, uma porta baixa dá para os degraus do porão.
+  som: biblioteca silenciosa, papel virando, madeira estalando de leve
+  saidas:
+    baixo: Porão
+  objetos:
+  - nome: diário de Tomás
+    descricao: Um caderno de capa de couro, aberto sobre a escrivaninha.
+    tipo: livro
+    apelidos: [diario, diário, caderno]
+    script: |
+      on examine {
+        set leu_diario
+        say "A última página, com letra apressada: 'A ilha só existe na maré morta. A máquina leva até lá, mas só com o cartão de coordenadas, que guardei no baú do sótão. A passagem para o laboratório fica atrás da estante do porão: é só empurrar a lateral esquerda.'"
+      }
+
+- nome: Porão
+  descricao: Chão de cimento rachado, uma lâmpada pendurada e prateleiras cheias de caixas. A escada de madeira sobe de volta à biblioteca. Uma das estantes está estranhamente afastada da parede.
+  som: porão úmido, lâmpada zumbindo, gotas de água pingando
+  objetos:
+  - nome: estante do porão
+    descricao: Uma estante alta de madeira, cheia de caixas e potes. Há marcas de arrasto no chão em frente a ela.
+    tipo: movel
+    apelidos: [estante, prateleira]
+    script: |
+      on push {
+        if flag(estante_movida) { say "A passagem já está aberta, a leste." }
+        else if flag(leu_diario) {
+          set estante_movida; link leste to "Passagem Secreta"; link oeste to "Porão" in "Passagem Secreta"
+          play "estante pesada de madeira deslizando sobre piso de cimento"
+          say "Você empurra a lateral esquerda. A estante gira sobre um eixo escondido e revela um corredor de pedra, a leste."
+        }
+        else { say "Ela não se mexe. As marcas no chão dizem que já se moveu muitas vezes; deve haver um jeito certo." }
+      }
+      on pull { say "Ela não sai do lugar puxando." }
+
+- nome: Passagem Secreta
+  descricao: Um corredor de pedra antiga, muito mais velho que a casa, iluminado por tochas que alguém mantém acesas. No fundo, ao norte, uma luz azulada pulsa.
+  som: corredor de pedra, tochas crepitando, eco de passos, zumbido elétrico distante
+  saidas:
+    norte: Laboratório
+  objetos:
+  - nome: tocha da parede
+    descricao: A tocha acesa mais próxima, presa num suporte de ferro na parede da direita.
+    tipo: movel
+    apelidos: [tocha, fogo]
+    animacao: {tipo: tremular, cor: laranja, intensidade: 0.7}
+    script: |
+      on take { say "Está chumbada no suporte. E alguém a acendeu há pouco: o óleo ainda está fresco." }
+  - nome: tocha do arco
+    descricao: Uma tocha acesa num suporte de ferro, na coluna de pedra do arco, mais ao fundo.
+    tipo: movel
+    apelidos: [tochas]
+    animacao: {tipo: tremular, cor: laranja, intensidade: 0.6}
+
+- nome: Laboratório
+  descricao: Painéis cheios de mostradores, cabos grossos pelo chão e, no centro, um grande anel de metal sobre uma plataforma. O ar vibra e cheira a ozônio.
+  som: laboratório com máquinas zumbindo, estalos elétricos, bipes de painéis
+  variantes:
+  - quando: flag(portal_ativo)
+    mudanca: o anel de metal no centro está aceso por dentro com um redemoinho de luz azul brilhante
+  objetos:
+  - nome: alavanca de energia
+    descricao: Uma alavanca grande num dos painéis, marcada 'ENERGIA'. Está para baixo.
+    tipo: movel
+    apelidos: [alavanca, energia]
+    script: |
+      on pull {
+        if flag(energia) { say "Já está ligada." }
+        else { set energia; play "alavanca de metal puxada e máquinas elétricas ganhando força, zumbido crescente"; say "Você puxa a alavanca. As luzes piscam, os mostradores sobem e o anel começa a zumbir." }
+      }
+      on push { say "Ela está para baixo; teria de puxar." }
+  - nome: painel de controle
+    descricao: Um console à esquerda, com telas azuis, teclas e uma fenda estreita do tamanho de um cartão.
+    tipo: movel
+    apelidos: [painel, fenda]
+    script: |
+      on use with "cartão perfurado" {
+        if flag(painel_programado) { say "O cartão já está no painel." }
+        else { set painel_programado; remove "cartão perfurado"; play "cartão de papel entrando numa leitora mecânica, cliques e bipes"; say "O painel engole o cartão, estala por um tempo e mostra uma linha de números. Coordenadas gravadas." }
+      }
+  - nome: anel de energia
+    descricao: Um anel de metal com mais de dois metros, coberto de bobinas. Seja o que for, Tomás construiu isso para ir a algum lugar.
+    tipo: maquina
+    apelidos: [anel, maquina, máquina, portal]
+    animacao: {tipo: pulsar, cor: azul, intensidade: 0.45, periodo: 3}
+    script: |
+      on use {
+        if flag(portal_ativo) { say "O anel está aberto. É só entrar." }
+        else if not flag(energia) { say "Nada acontece. A máquina está sem energia." }
+        else if not flag(painel_programado) {
+          play "descarga elétrica violenta e estrondo de energia"
+          end "O anel se acende sem destino nenhum. A luz azul puxa você para dentro e espalha cada pedaço seu entre lugar nenhum e coisa nenhuma. Sem coordenadas, a máquina de Tomás não leva a lugar algum."
+        }
+        else {
+          set portal_ativo; link entrar to "Colina da Chegada"
+          play "zumbido elétrico crescendo até um redemoinho de energia se abrir"
+          say "O anel acende por dentro: um redemoinho de luz azul, com cheiro de mar. Dá para entrar."
+        }
+      }
+
+- nome: Colina da Chegada
+  descricao: Uma trilha sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. Atrás de você, um círculo de pedras ainda zumbe. Ao longe, ruínas aparecem entre as árvores.
+  som: selva tropical de dia, pássaros exóticos, insetos, brisa nas palmeiras
+  script: |
+    on first_enter {
+      say "Você atravessa a luz e cai de joelhos numa trilha quente. O ar é salgado. Não há sinal de casa, nem de ninguém."
+    }
+  saidas:
+    leste: Posto do Capitão Rocha
+    sul: Pântano
+    norte: Selva Densa
+    entrar: {para: Laboratório, volta: false}
+
+- nome: Posto do Capitão Rocha
+  descricao: Um armazém de madeira atulhado de baús, moedas, mapas e bugigangas do mundo inteiro. Uma bola de cristal brilha sobre a mesa. Ninguém compra ou vende aqui há muito tempo. Uma porta trancada leva aos fundos.
+  som: interior de cabana de madeira, tábuas rangendo, sinos de vento lá fora, mar distante
+  objetos:
+  - nome: bola de cristal
+    descricao: Uma bola de cristal azulada, acesa por dentro, sobre um suporte no meio da mesa.
+    tipo: movel
+    apelidos: [bola, cristal]
+    animacao: {tipo: pulsar, cor: azul, intensidade: 0.6, periodo: 2.5}
+    script: |
+      on examine { say "Uma luz azul gira dentro do vidro, lenta como uma maré. Por um instante você vê uma ilhota branca e um templo. Depois, só o seu rosto." }
+      on take { say "Está quente demais para segurar." }
+  - nome: livro de contas
+    descricao: Um livro grosso de capa vermelha, numa das pilhas de livros sobre a mesa grande.
+    tipo: livro
+    apelidos: [livro, contas]
+    script: |
+      on examine {
+        say "Contas do Capitão Rocha, contrabandista. A última anotação: 'Guardei a bússola, o remo e a bomba no depósito. A chave ficou no tronco oco do pântano, onde nenhum ladrão mete a mão. Quem quiser a ilhota que espere a maré morta e leve a carta.'"
+      }
+  - nome: porta dos fundos
+    descricao: Uma porta de tábuas grossas, com um cadeado de ferro.
+    tipo: porta
+    apelidos: [porta, cadeado]
+    script: |
+      on open {
+        if flag(deposito_aberto) { say "Já está aberta. O depósito fica ao norte." }
+        else { say "O cadeado de ferro não cede." }
+      }
+      on use with "chave de ferro" {
+        if flag(deposito_aberto) { say "Já está aberta." }
+        else { set deposito_aberto; link norte to "Depósito dos Fundos"; link sul to "Posto do Capitão Rocha" in "Depósito dos Fundos"; play "cadeado de ferro enferrujado abrindo e porta de madeira rangendo"; say "O cadeado abre com um estalo. A porta dá para o depósito, ao norte." }
+      }
+  saidas:
+    oeste: Colina da Chegada
+
+- nome: Depósito dos Fundos
+  descricao: Um quarto de tábuas com uma janela pequena e uma lâmpada fraca. Cordas, garrafas e caixas pelo chão. Contra a parede, um baú com ferragens pesadas.
+  som: depósito de madeira abafado, lâmpada zumbindo, ondas lá fora
+  objetos:
+  - nome: baú do capitão
+    descricao: Um baú grande, reforçado com ferro, sem tranca.
+    tipo: movel
+    apelidos: [bau, baú, bau do capitao]
+    script: |
+      on open {
+        if flag(bau_capitao_aberto) { say "Já está aberto." }
+        else { set bau_capitao_aberto; show bússola; show remo; show "bomba de ar"; play "tampa pesada de baú com ferragens abrindo"; say "A tampa é pesada. Dentro: uma bússola de latão, um remo curto e uma bomba de ar de pé." }
+      }
+  - nome: bússola
+    descricao: Uma bússola de latão. A agulha treme mas aponta firme para o norte.
+    pegavel: true
+    escondido: true
+    apelidos: [bussola]
+  - nome: remo
+    descricao: Um remo curto de madeira, de bote.
+    pegavel: true
+    escondido: true
+  - nome: bomba de ar
+    descricao: Uma bomba de ar de pé, com uma mangueira de borracha.
+    pegavel: true
+    escondido: true
+    apelidos: [bomba]
+
+- nome: Pântano
+  descricao: Árvores retorcidas e cobertas de musgo saem de uma água escura e parada. A névoa não deixa ver longe. Um tronco caído, oco por dentro, atravessa a margem.
+  som: pântano com sapos coaxando, insetos, água borbulhando, névoa parada
+  saidas:
+    leste: Galpão de Barcos
+  objetos:
+  - nome: tronco oco
+    descricao: Um tronco grosso, caído e oco, coberto de musgo.
+    tipo: movel
+    apelidos: [tronco]
+    script: |
+      on open {
+        if flag(tronco_revirado) { say "Não há mais nada lá dentro." }
+        else { set tronco_revirado; show "chave de ferro"; play "mão revirando folhas molhadas e madeira podre"; say "Você enfia a mão no oco, entre folhas podres, e toca em metal: uma chave de ferro." }
+      }
+      on use { say "Talvez dê para revirar o oco dele." }
+  - nome: chave de ferro
+    descricao: Uma chave de ferro grande e enferrujada.
+    pegavel: true
+    escondido: true
+    apelidos: [chave grande]
+
+- nome: Galpão de Barcos
+  descricao: Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote inflável vermelho, murcho. Uma trilha segue para o norte, até o mar.
+  som: galpão de madeira rangendo, vento entre as tábuas, mar próximo
+  saidas:
+    norte: Praia do Barco Velho
+  variantes:
+  - quando: flag(bote_na_praia)
+    mudanca: o bote inflável que estava no chão sumiu; só o assoalho de madeira vazio onde ele estava
+  objetos:
+  - nome: bote inflável
+    descricao: Um bote de borracha vermelho, murcho, com dois assentos de madeira.
+    tipo: movel
+    apelidos: [bote, barco inflavel]
+    script: |
+      on examine {
+        if flag(bote_cheio) { say "Cheio e firme. Pesado, mas dá para arrastar." }
+        else { say "Murcho, mas sem furos. Precisa de ar." }
+      }
+      on use with "bomba de ar" {
+        if flag(bote_cheio) { say "Já está cheio." }
+        else { set bote_cheio; play "bomba de ar de pé bombeando e bote de borracha enchendo"; say "Você bombeia até o braço doer. O bote endurece, inteiro." }
+      }
+      on push {
+        if not flag(bote_cheio) { say "Murcho assim, não vai flutuar." }
+        else { set bote_na_praia; hide self; show "bote vermelho"; play "bote de borracha sendo arrastado sobre areia"; say "Você arrasta o bote pela trilha, até a beira da água na praia, ao norte." }
+      }
+      on pull { say "Melhor empurrar: a trilha para a praia é ao norte." }
+
+- nome: Selva Densa
+  descricao: Árvores imensas fecham o céu e raízes grossas cruzam o chão. A luz chega verde, em manchas. A leste, entre as pedras, abre-se uma fenda escura.
+  som: selva densa e úmida, pássaros, macacos ao longe, folhas pingando
+  saidas:
+    leste: Fenda Escura
+
+- nome: Fenda Escura
+  descricao: Uma rachadura enorme na rocha, molhada e coberta de musgo. A água escorre pelas paredes e some num buraco sem fundo no meio do chão.
+  som: caverna escura, água escorrendo pelas paredes, gotas ecoando
+  script: |
+    on enter {
+      if not has(lanterna) {
+        play "escorregão em pedra molhada e queda no escuro, eco"
+        end "Sem luz, você dá dois passos no escuro, pisa no musgo e escorrega para o buraco no meio da fenda. Ninguém nunca vai saber onde você caiu."
+      } else {
+        say "A luz da lanterna desenha a borda do buraco no meio do chão. Você contorna devagar."
+      }
+    }
+  objetos:
+  - nome: medalhão de coral
+    descricao: Um disco de coral vermelho, do tamanho da palma da mão, entalhado com ondas. Alguém o deixou cair aqui.
+    pegavel: true
+    apelidos: [medalhao, medalhão, coral, disco]
+
+- nome: Praia do Barco Velho
+  descricao: Areia clara, água transparente e a sombra das árvores. Um barco de madeira apodrece na areia, com o casco rachado. Ao norte, só mar.
+  som: praia tranquila, ondas pequenas na areia, gaivotas, brisa
+  objetos:
+  - nome: barco velho
+    descricao: Um barco de madeira com o casco rachado de ponta a ponta. Não flutuaria nem um minuto.
+    tipo: movel
+    apelidos: [barco de madeira]
+  - nome: bote vermelho
+    descricao: O bote inflável, cheio, na beira da água.
+    tipo: movel
+    escondido: true
+    apelidos: [bote]
+    script: |
+      on use with remo {
+        if flag(bote_na_agua) { say "O bote já está na água. É só remar para o norte." }
+        else {
+          set bote_na_agua; link norte to "Mar Aberto"
+          play "bote de borracha sendo empurrado para a água, remo batendo no mar"
+          say "Você empurra o bote para a água e sobe nele com o remo. O mar aberto fica ao norte."
+        }
+      }
+      on push { say "Na água, sem remo, ele só ia ficar boiando." }
+
+- nome: Mar Aberto
+  descricao: Só água azul em volta, calma e funda. O bote balança devagar. A praia ficou para trás, ao sul.
+  animacao: {tipo: flutuar, amplitude: 12, periodo: 5}
+  som: mar aberto, ondas suaves batendo num bote de borracha, vento
+  script: |
+    on enter {
+      if not has(bússola) {
+        play "neblina densa, vento uivando e ondas grandes"
+        end "Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote vermelho some na neblina."
+      } else {
+        say "Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte."
+      }
+    }
+  saidas:
+    norte: Mar da Ilhota
+    sul: {para: Praia do Barco Velho, volta: false}
+
+- nome: Mar da Ilhota
+  descricao: A névoa se abre. Ao norte, uma ilhota verde surge do mar, como se tivesse acabado de nascer. A água está baixa, quase parada.
+  som: mar calmo, ondas distantes, gaivotas sobre uma ilha
+  saidas:
+    norte: Praia Branca
+
+- nome: Praia Branca
+  descricao: Uma faixa de areia muito branca entre coqueiros e flores vermelhas. A maré está tão baixa que pedras escuras aparecem na água. Uma trilha entra na mata ao norte; a oeste, a praia vira uma enseada.
+  som: praia tropical, ondas suaves, coqueiros balançando, pássaros
+  saidas:
+    oeste: Enseada Verde
+    norte: Clareira das Pedras
+
+- nome: Enseada Verde
+  descricao: Uma enseada fechada entre rochas, com água verde e parada. Um barco a remo está encalhado na areia. No fundo, uma gruta brilha com uma luz verde, fraca.
+  som: enseada calma, água batendo nas rochas, eco suave de gruta
+  objetos:
+  - nome: barco de Tomás
+    descricao: Um barco a remo vermelho, encalhado. No banco, o nome pintado - 'Lúcia'. Debaixo dele, um caderno molhado diz, numa letra que você já conhece - 'Perdi o medalhão na fenda escura. Sem ele a porta não abre, e a maré não espera.'
+    tipo: movel
+    apelidos: [barco, barco vermelho, caderno molhado]
+  - nome: gruta verde
+    descricao: Uma gruta rasa, com água verde e fria até a canela. A luz vem de algas que brilham sozinhas. Não leva a lugar nenhum.
+    tipo: movel
+    apelidos: [gruta, luz verde]
+
+- nome: Clareira das Pedras
+  descricao: Raios de sol atravessam árvores altas e caem sobre um santuário de pedra coberto de musgo, com degraus gastos. Luzes verdes flutuam no ar.
+  som: clareira de floresta, raios de sol, zumbido místico suave, pássaros
+  objetos:
+  - nome: santuário
+    descricao: Um santuário pequeno de pedra. Na soleira, um sulco raso e comprido, como se esperasse uma folha de papel, e ondas entalhadas em volta.
+    tipo: movel
+    apelidos: [santuario, sulco, soleira]
+    script: |
+      on use with "carta das marés" {
+        if flag(mare_baixa) { say "O caminho ao norte já está aberto." }
+        else {
+          set mare_baixa; remove "carta das marés"; link norte to "Templo da Maré"
+          play "ronco grave de pedra e água recuando, ondas se afastando"
+          say "Você deita a carta no sulco. As ondas entalhadas acendem uma a uma, e um ronco vem do chão. Ao norte, a mata se abre: uma trilha de pedras que antes estava debaixo d'água."
+        }
+      }
+
+- nome: Templo da Maré
+  descricao: Um templo de pedra engolido pela mata, coberto de raízes e musgo. Uma porta escura, fechada, guarda a entrada; no centro dela, um encaixe redondo.
+  som: templo antigo na selva, vento entre pedras, zumbido grave vindo de dentro
+  objetos:
+  - nome: porta do templo
+    descricao: Uma porta de pedra lisa, sem maçaneta. No centro, um encaixe redondo com ondas entalhadas em volta.
+    tipo: porta
+    apelidos: [porta, encaixe]
+    script: |
+      on open { say "Não há maçaneta. Só o encaixe redondo no centro." }
+      on use with "medalhão de coral" {
+        play "porta de pedra pesada se abrindo com estrondo grave"
+        end "O medalhão encaixa com um clique. A porta afunda no chão e, lá dentro, à luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa."
+      }
+
+testes:
+  vitoria: Tomás Albuquerque levanta a cabeça
+  solucao: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar cartão perfurado,
+            pegar carta das marés, pegar lanterna, baixo, norte, ler diário, baixo, empurrar estante, leste, norte,
+            puxar alavanca, usar cartão perfurado no painel, usar anel, entrar,
+            sul, abrir tronco, pegar chave de ferro, norte, leste, usar chave de ferro na porta, norte,
+            abrir baú, pegar bússola, pegar remo, pegar bomba de ar, sul, oeste,
+            norte, leste, pegar medalhão de coral, oeste, sul,
+            sul, leste, usar bomba de ar no bote, empurrar bote, norte, usar remo no bote,
+            norte, norte, norte, norte, usar carta das marés no santuário, norte, usar medalhão de coral na porta]
+  mortes:
+  - nome: anel sem coordenadas
+    comandos: [norte, ler diário, baixo, empurrar estante, leste, norte, puxar alavanca, usar anel]
+    fim: espalha cada pedaço seu
+  - nome: fenda sem luz
+    comandos: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar cartão perfurado,
+               baixo, norte, ler diário, baixo, empurrar estante, leste, norte, puxar alavanca,
+               usar cartão perfurado no painel, usar anel, entrar, norte, leste]
+    fim: escorrega para o buraco
+  - nome: mar sem bússola
+    comandos: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar cartão perfurado,
+               baixo, norte, ler diário, baixo, empurrar estante, leste, norte, puxar alavanca,
+               usar cartão perfurado no painel, usar anel, entrar,
+               sul, abrir tronco, pegar chave de ferro, norte, leste, usar chave de ferro na porta, norte,
+               abrir baú, pegar remo, pegar bomba de ar, sul, oeste, sul, leste,
+               usar bomba de ar no bote, empurrar bote, norte, usar remo no bote, norte]
+    fim: rema em círculos

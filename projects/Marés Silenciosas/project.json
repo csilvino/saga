@@ -1,0 +1,2083 @@
+{
+  "name": "Marés Silenciosas",
+  "version": "1.0.0",
+  "start_scene": "scene_54fc0d3c",
+  "navigation_mode": "text",
+  "metadata": {
+    "action_history": [],
+    "deleted_objects": [],
+    "narrative_directives": ""
+  },
+  "scenes": {
+    "scene_54fc0d3c": {
+      "id": "scene_54fc0d3c",
+      "name": "Escritório de Tomás",
+      "description": "Paredes azuis, um tapete gasto e o cheiro de papel velho. Tudo está arrumado demais, como se o dono tivesse saído com pressa e alguém tivesse guardado tudo depois. Uma escada estreita sobe para o sótão.",
+      "exits": {
+        "norte": "scene_37d2b3e6",
+        "cima": "scene_0156886a"
+      },
+      "objects": [
+        {
+          "id": "background_c79cba66",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_n_322aa0.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_escrivaninha_5f6d",
+          "name": "escrivaninha",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 464,
+            "y": 713
+          },
+          "size": {
+            "width": 541,
+            "height": 476
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma escrivaninha de tampo corrido em madeira escura, com um lampião aceso em cima. A tampa está abaixada.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "mesa",
+              "tampa"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(escrivaninha_aberta) { say \"Já está aberta. Só papéis de contas lá dentro.\" }\n  else { set escrivaninha_aberta; show \"chave de latão\"; play \"tampa de madeira de escrivaninha rolando e abrindo\"; say \"A tampa corre com um ruído seco. Entre contas de luz, uma pequena chave de latão.\" }\n}\n"
+        },
+        {
+          "id": "obj_chave_de_latao_f2e2",
+          "name": "chave de latão",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_chave_de_latao_f2e2_7f08d3.png",
+          "position": {
+            "x": 512,
+            "y": 640
+          },
+          "size": {
+            "width": 27,
+            "height": 37
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma chave pequena de latão, com uma etiqueta escrita à mão - 'baú'.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "chave pequena",
+              "chave do bau"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_relogio_de_pendulo_3287",
+          "name": "relógio de pêndulo",
+          "type": "movel",
+          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_d22db5.png",
+          "position": {
+            "x": 905,
+            "y": 535
+          },
+          "size": {
+            "width": 220,
+            "height": 470
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um relógio de pêndulo alto, de pé no chão e encostado na parede, em madeira escura, com mostrador de marfim no alto e uma portinhola de vidro comprida na frente.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "relogio",
+              "pendulo",
+              "pêndulo"
+            ]
+          },
+          "actions": [],
+          "ses": "on examine {\n  say \"O pêndulo vai e vem, tique, taque. Alguém continua dando corda nele. Os ponteiros marcam a hora certa, mas o calendário da parede parou há três semanas.\"\n}\n",
+          "parts": [
+            {
+              "name": "pêndulo de latão",
+              "description": "Um pêndulo de latão comprido e fino, com um disco dourado redondo na ponta de baixo.",
+              "effect": {
+                "type": "swing",
+                "amount": 9.0,
+                "period": 2.0
+              },
+              "at": {
+                "x": 0.5,
+                "y": 0.4
+              },
+              "height": 0.42,
+              "sprite": "sprites/Part_obj_relogio_de_pendulo_3287_0_3d6f67.png",
+              "rect": {
+                "x": 0.3866,
+                "y": 0.4,
+                "w": 0.2268,
+                "h": 0.42
+              }
+            }
+          ],
+          "sound": {
+            "desc": "tique-taque lento e grave de relógio de pêndulo de madeira",
+            "mode": "loop",
+            "every": [
+              20.0,
+              60.0
+            ],
+            "file": "audio/Sound_tique_taque_lento_e_grave_de_rel_cd6dce.ogg"
+          }
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on first_enter {\n  say \"Lúcia Albuquerque deixou a chave com você: 'Meu irmão sumiu há três semanas. A polícia desistiu. Eu não.'\"\n}\n",
+      "variants": [],
+      "sound": {
+        "ambient": "sala silenciosa de casa antiga, relógio distante, chuva fina na janela",
+        "variants": [],
+        "file": "audio/Sound_sala_silenciosa_de_casa_antiga_r_262633.ogg"
+      }
+    },
+    "scene_0156886a": {
+      "id": "scene_0156886a",
+      "name": "Sótão",
+      "description": "O telhado inclinado deixa pouco espaço para ficar em pé. Poeira grossa no assoalho, caixas de papelão e, encostado na parede, um baú antigo com ferragens.",
+      "exits": {
+        "baixo": "scene_54fc0d3c"
+      },
+      "objects": [
+        {
+          "id": "background_2a824f2c",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_hyzw8phy.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_bau_de_tomas_0aa4",
+          "name": "baú de Tomás",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 808,
+            "y": 614
+          },
+          "size": {
+            "width": 371,
+            "height": 315
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um baú de madeira com cantos de latão e uma fechadura pequena.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "bau",
+              "baú",
+              "bau de tomas"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else { say \"Trancado. A fechadura é pequena, de latão.\" }\n}\non use with \"chave de latão\" {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else {\n    set bau_aberto; show \"cartão perfurado\"; show \"carta das marés\"; show lanterna\n    play \"fechadura de latão girando e tampa de baú de madeira rangendo\"\n    say \"A chave gira. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna.\"\n  }\n}\n"
+        },
+        {
+          "id": "obj_cartao_perfurado_46dc",
+          "name": "cartão perfurado",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_cartao_perfurado_46dc_e342e6.png",
+          "position": {
+            "x": 1084,
+            "y": 902
+          },
+          "size": {
+            "width": 172,
+            "height": 164
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um cartão de papelão grosso, cheio de furos em fileiras. No canto, a lápis - 'coordenadas, maré morta'.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "cartao",
+              "cartão"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_carta_das_mares_858a",
+          "name": "carta das marés",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_carta_das_mares_858a_61e84e.png",
+          "position": {
+            "x": 1468,
+            "y": 758
+          },
+          "size": {
+            "width": 143,
+            "height": 149
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma carta náutica antiga de um arquipélago sem nome, com horários de maré anotados à mão e um círculo em volta de uma ilhota.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "carta nautica",
+              "carta náutica",
+              "mapa",
+              "mapa das mares"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_lanterna_a067",
+          "name": "lanterna",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_lanterna_a067_96a3d1.png",
+          "position": {
+            "x": 844,
+            "y": 822
+          },
+          "size": {
+            "width": 56,
+            "height": 89
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma lanterna de metal, pesada, com pilhas novas.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": []
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "sótão abafado, madeira do telhado estalando, vento leve nas telhas",
+        "variants": [],
+        "file": "audio/Sound_sotao_abafado_madeira_do_telhado_26cff5.ogg"
+      }
+    },
+    "scene_37d2b3e6": {
+      "id": "scene_37d2b3e6",
+      "name": "Biblioteca",
+      "description": "Estantes do chão ao teto, uma escada em caracol para o mezanino e uma escrivaninha sob a luz de um abajur. Num canto, uma porta baixa dá para os degraus do porão.",
+      "exits": {
+        "sul": "scene_54fc0d3c",
+        "baixo": "scene_cb0dfc72"
+      },
+      "objects": [
+        {
+          "id": "background_6427cafa",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_8f3abaaf.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_diario_de_tomas_4984",
+          "name": "diário de Tomás",
+          "type": "livro",
+          "sprite": "",
+          "position": {
+            "x": 1100,
+            "y": 693
+          },
+          "size": {
+            "width": 127,
+            "height": 30
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um caderno de capa de couro, aberto sobre a escrivaninha.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "diario",
+              "diário",
+              "caderno"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  set leu_diario\n  say \"A última página, com letra apressada: 'A ilha só existe na maré morta. A máquina leva até lá, mas só com o cartão de coordenadas, que guardei no baú do sótão. A passagem para o laboratório fica atrás da estante do porão: é só empurrar a lateral esquerda.'\"\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "biblioteca silenciosa, papel virando, madeira estalando de leve",
+        "variants": [],
+        "file": "audio/Sound_biblioteca_silenciosa_papel_vira_22fceb.ogg"
+      }
+    },
+    "scene_cb0dfc72": {
+      "id": "scene_cb0dfc72",
+      "name": "Porão",
+      "description": "Chão de cimento rachado, uma lâmpada pendurada e prateleiras cheias de caixas. A escada de madeira sobe de volta à biblioteca. Uma das estantes está estranhamente afastada da parede.",
+      "exits": {
+        "cima": "scene_37d2b3e6"
+      },
+      "objects": [
+        {
+          "id": "background_9af12029",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_8deeede1.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_estante_do_porao_ec1c",
+          "name": "estante do porão",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1342,
+            "y": 496
+          },
+          "size": {
+            "width": 414,
+            "height": 577
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma estante alta de madeira, cheia de caixas e potes. Há marcas de arrasto no chão em frente a ela.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "estante",
+              "prateleira"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on push {\n  if flag(estante_movida) { say \"A passagem já está aberta, a leste.\" }\n  else if flag(leu_diario) {\n    set estante_movida; link leste to \"Passagem Secreta\"; link oeste to \"Porão\" in \"Passagem Secreta\"\n    play \"estante pesada de madeira deslizando sobre piso de cimento\"\n    say \"Você empurra a lateral esquerda. A estante gira sobre um eixo escondido e revela um corredor de pedra, a leste.\"\n  }\n  else { say \"Ela não se mexe. As marcas no chão dizem que já se moveu muitas vezes; deve haver um jeito certo.\" }\n}\non pull { say \"Ela não sai do lugar puxando.\" }\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "porão úmido, lâmpada zumbindo, gotas de água pingando",
+        "variants": [],
+        "file": "audio/Sound_porao_umido_lampada_zumbindo_got_934070.ogg"
+      }
+    },
+    "scene_bda57d51": {
+      "id": "scene_bda57d51",
+      "name": "Passagem Secreta",
+      "description": "Um corredor de pedra antiga, muito mais velho que a casa, iluminado por tochas que alguém mantém acesas. No fundo, ao norte, uma luz azulada pulsa.",
+      "exits": {
+        "norte": "scene_dc4d935d"
+      },
+      "objects": [
+        {
+          "id": "background_5ef6aa99",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_cc7f2cce.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_tocha_da_parede_b4bd",
+          "name": "tocha da parede",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1628,
+            "y": 392
+          },
+          "size": {
+            "width": 129,
+            "height": 297
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "A tocha acesa mais próxima, presa num suporte de ferro na parede da direita.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "tocha",
+              "fogo"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on take { say \"Está chumbada no suporte. E alguém a acendeu há pouco: o óleo ainda está fresco.\" }\n",
+          "effect": {
+            "type": "flicker",
+            "amount": 0.7,
+            "period": 0.9,
+            "color": "#ffa040"
+          }
+        },
+        {
+          "id": "obj_tocha_do_arco_b207",
+          "name": "tocha do arco",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1010,
+            "y": 452
+          },
+          "size": {
+            "width": 71,
+            "height": 171
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma tocha acesa num suporte de ferro, na coluna de pedra do arco, mais ao fundo.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "tochas"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "",
+          "effect": {
+            "type": "flicker",
+            "amount": 0.6,
+            "period": 0.9,
+            "color": "#ffa040"
+          }
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "corredor de pedra, tochas crepitando, eco de passos, zumbido elétrico distante",
+        "variants": [],
+        "file": "audio/Sound_corredor_de_pedra_tochas_crepita_5edb0b.ogg"
+      }
+    },
+    "scene_dc4d935d": {
+      "id": "scene_dc4d935d",
+      "name": "Laboratório",
+      "description": "Painéis cheios de mostradores, cabos grossos pelo chão e, no centro, um grande anel de metal sobre uma plataforma. O ar vibra e cheira a ozônio.",
+      "exits": {
+        "sul": "scene_bda57d51"
+      },
+      "objects": [
+        {
+          "id": "background_62c522cf",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_b1e4e810.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_alavanca_de_energia_6b02",
+          "name": "alavanca de energia",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1001,
+            "y": 970
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma alavanca grande num dos painéis, marcada 'ENERGIA'. Está para baixo.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "alavanca",
+              "energia"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on pull {\n  if flag(energia) { say \"Já está ligada.\" }\n  else { set energia; play \"alavanca de metal puxada e máquinas elétricas ganhando força, zumbido crescente\"; say \"Você puxa a alavanca. As luzes piscam, os mostradores sobem e o anel começa a zumbir.\" }\n}\non push { say \"Ela está para baixo; teria de puxar.\" }\n"
+        },
+        {
+          "id": "obj_painel_de_controle_a109",
+          "name": "painel de controle",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 370,
+            "y": 695
+          },
+          "size": {
+            "width": 403,
+            "height": 360
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um console à esquerda, com telas azuis, teclas e uma fenda estreita do tamanho de um cartão.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "painel",
+              "fenda"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use with \"cartão perfurado\" {\n  if flag(painel_programado) { say \"O cartão já está no painel.\" }\n  else { set painel_programado; remove \"cartão perfurado\"; play \"cartão de papel entrando numa leitora mecânica, cliques e bipes\"; say \"O painel engole o cartão, estala por um tempo e mostra uma linha de números. Coordenadas gravadas.\" }\n}\n"
+        },
+        {
+          "id": "obj_anel_de_energia_920a",
+          "name": "anel de energia",
+          "type": "maquina",
+          "sprite": "",
+          "position": {
+            "x": 1124,
+            "y": 602
+          },
+          "size": {
+            "width": 758,
+            "height": 603
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um anel de metal com mais de dois metros, coberto de bobinas. Seja o que for, Tomás construiu isso para ir a algum lugar.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "anel",
+              "maquina",
+              "máquina",
+              "portal"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use {\n  if flag(portal_ativo) { say \"O anel está aberto. É só entrar.\" }\n  else if not flag(energia) { say \"Nada acontece. A máquina está sem energia.\" }\n  else if not flag(painel_programado) {\n    play \"descarga elétrica violenta e estrondo de energia\"\n    end \"O anel se acende sem destino nenhum. A luz azul puxa você para dentro e espalha cada pedaço seu entre lugar nenhum e coisa nenhuma. Sem coordenadas, a máquina de Tomás não leva a lugar algum.\"\n  }\n  else {\n    set portal_ativo; link entrar to \"Colina da Chegada\"\n    play \"zumbido elétrico crescendo até um redemoinho de energia se abrir\"\n    say \"O anel acende por dentro: um redemoinho de luz azul, com cheiro de mar. Dá para entrar.\"\n  }\n}\n",
+          "effect": {
+            "type": "pulse",
+            "amount": 0.45,
+            "period": 3.0,
+            "color": "#7fd4ff"
+          }
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [
+        {
+          "when": "flag(portal_ativo)",
+          "change": "o anel de metal no centro está aceso por dentro com um redemoinho de luz azul brilhante",
+          "background": "backgrounds/Variant_e4817509.png"
+        }
+      ],
+      "sound": {
+        "ambient": "laboratório com máquinas zumbindo, estalos elétricos, bipes de painéis",
+        "variants": [],
+        "file": "audio/Sound_laboratorio_com_maquinas_zumbind_c98912.ogg"
+      }
+    },
+    "scene_54ecade0": {
+      "id": "scene_54ecade0",
+      "name": "Colina da Chegada",
+      "description": "Uma trilha sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. Atrás de você, um círculo de pedras ainda zumbe. Ao longe, ruínas aparecem entre as árvores.",
+      "exits": {
+        "leste": "scene_eff3c38f",
+        "sul": "scene_3275efb2",
+        "norte": "scene_7b7791fe",
+        "entrar": "scene_dc4d935d"
+      },
+      "objects": [
+        {
+          "id": "background_d81284d6",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_a4d94814.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on first_enter {\n  say \"Você atravessa a luz e cai de joelhos numa trilha quente. O ar é salgado. Não há sinal de casa, nem de ninguém.\"\n}\n",
+      "variants": [],
+      "sound": {
+        "ambient": "selva tropical de dia, pássaros exóticos, insetos, brisa nas palmeiras",
+        "variants": [],
+        "file": "audio/Sound_selva_tropical_de_dia_passaros_e_de3f14.ogg"
+      }
+    },
+    "scene_eff3c38f": {
+      "id": "scene_eff3c38f",
+      "name": "Posto do Capitão Rocha",
+      "description": "Um armazém de madeira atulhado de baús, moedas, mapas e bugigangas do mundo inteiro. Uma bola de cristal brilha sobre a mesa. Ninguém compra ou vende aqui há muito tempo. Uma porta trancada leva aos fundos.",
+      "exits": {
+        "oeste": "scene_54ecade0"
+      },
+      "objects": [
+        {
+          "id": "background_fe76fa53",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_70e8af1d.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_bola_de_cristal_3feb",
+          "name": "bola de cristal",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1154,
+            "y": 532
+          },
+          "size": {
+            "width": 116,
+            "height": 85
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma bola de cristal azulada, acesa por dentro, sobre um suporte no meio da mesa.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "bola",
+              "cristal"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine { say \"Uma luz azul gira dentro do vidro, lenta como uma maré. Por um instante você vê uma ilhota branca e um templo. Depois, só o seu rosto.\" }\non take { say \"Está quente demais para segurar.\" }\n",
+          "effect": {
+            "type": "pulse",
+            "amount": 0.6,
+            "period": 2.5,
+            "color": "#7fd4ff"
+          }
+        },
+        {
+          "id": "obj_livro_de_contas_2f37",
+          "name": "livro de contas",
+          "type": "livro",
+          "sprite": "",
+          "position": {
+            "x": 1369,
+            "y": 776
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um livro grosso de capa vermelha, numa das pilhas de livros sobre a mesa grande.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "livro",
+              "contas"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  say \"Contas do Capitão Rocha, contrabandista. A última anotação: 'Guardei a bússola, o remo e a bomba no depósito. A chave ficou no tronco oco do pântano, onde nenhum ladrão mete a mão. Quem quiser a ilhota que espere a maré morta e leve a carta.'\"\n}\n"
+        },
+        {
+          "id": "obj_porta_dos_fundos_916b",
+          "name": "porta dos fundos",
+          "type": "porta",
+          "sprite": "",
+          "position": {
+            "x": 473,
+            "y": 623
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma porta de tábuas grossas, com um cadeado de ferro.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "porta",
+              "cadeado"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(deposito_aberto) { say \"Já está aberta. O depósito fica ao norte.\" }\n  else { say \"O cadeado de ferro não cede.\" }\n}\non use with \"chave de ferro\" {\n  if flag(deposito_aberto) { say \"Já está aberta.\" }\n  else { set deposito_aberto; link norte to \"Depósito dos Fundos\"; link sul to \"Posto do Capitão Rocha\" in \"Depósito dos Fundos\"; play \"cadeado de ferro enferrujado abrindo e porta de madeira rangendo\"; say \"O cadeado abre com um estalo. A porta dá para o depósito, ao norte.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "interior de cabana de madeira, tábuas rangendo, sinos de vento lá fora, mar distante",
+        "variants": [],
+        "file": "audio/Sound_interior_de_cabana_de_madeira_ta_103d95.ogg"
+      }
+    },
+    "scene_d36d5fa3": {
+      "id": "scene_d36d5fa3",
+      "name": "Depósito dos Fundos",
+      "description": "Um quarto de tábuas com uma janela pequena e uma lâmpada fraca. Cordas, garrafas e caixas pelo chão. Contra a parede, um baú com ferragens pesadas.",
+      "exits": {},
+      "objects": [
+        {
+          "id": "background_0164d1d5",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_7d443a10.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_bau_do_capitao_0e55",
+          "name": "baú do capitão",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1428,
+            "y": 616
+          },
+          "size": {
+            "width": 407,
+            "height": 360
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um baú grande, reforçado com ferro, sem tranca.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "bau",
+              "baú",
+              "bau do capitao"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(bau_capitao_aberto) { say \"Já está aberto.\" }\n  else { set bau_capitao_aberto; show bússola; show remo; show \"bomba de ar\"; play \"tampa pesada de baú com ferragens abrindo\"; say \"A tampa é pesada. Dentro: uma bússola de latão, um remo curto e uma bomba de ar de pé.\" }\n}\n"
+        },
+        {
+          "id": "obj_bussola_c0fa",
+          "name": "bússola",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_bussola_c0fa_0a6ba0.png",
+          "position": {
+            "x": 1734,
+            "y": 745
+          },
+          "size": {
+            "width": 262,
+            "height": 246
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma bússola de latão. A agulha treme mas aponta firme para o norte.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "bussola"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_remo_d497",
+          "name": "remo",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_remo_d497_eb26c2.png",
+          "position": {
+            "x": 765,
+            "y": 576
+          },
+          "size": {
+            "width": 110,
+            "height": 111
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um remo curto de madeira, de bote.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": []
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_bomba_de_ar_aeea",
+          "name": "bomba de ar",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_bomba_de_ar_aeea_c3ad33.png",
+          "position": {
+            "x": 522,
+            "y": 596
+          },
+          "size": {
+            "width": 61,
+            "height": 81
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma bomba de ar de pé, com uma mangueira de borracha.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "bomba"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "depósito de madeira abafado, lâmpada zumbindo, ondas lá fora",
+        "variants": [],
+        "file": "audio/Sound_deposito_de_madeira_abafado_lamp_d116e6.ogg"
+      }
+    },
+    "scene_3275efb2": {
+      "id": "scene_3275efb2",
+      "name": "Pântano",
+      "description": "Árvores retorcidas e cobertas de musgo saem de uma água escura e parada. A névoa não deixa ver longe. Um tronco caído, oco por dentro, atravessa a margem.",
+      "exits": {
+        "norte": "scene_54ecade0",
+        "leste": "scene_14bff028"
+      },
+      "objects": [
+        {
+          "id": "background_d7dcf938",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_583f9a3e.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_tronco_oco_fb78",
+          "name": "tronco oco",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 492,
+            "y": 594
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um tronco grosso, caído e oco, coberto de musgo.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "tronco"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(tronco_revirado) { say \"Não há mais nada lá dentro.\" }\n  else { set tronco_revirado; show \"chave de ferro\"; play \"mão revirando folhas molhadas e madeira podre\"; say \"Você enfia a mão no oco, entre folhas podres, e toca em metal: uma chave de ferro.\" }\n}\non use { say \"Talvez dê para revirar o oco dele.\" }\n"
+        },
+        {
+          "id": "obj_chave_de_ferro_048d",
+          "name": "chave de ferro",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_chave_de_ferro_048d_c13b11.png",
+          "position": {
+            "x": 470,
+            "y": 920
+          },
+          "size": {
+            "width": 100,
+            "height": 84
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma chave de ferro grande e enferrujada.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "chave grande"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "pântano com sapos coaxando, insetos, água borbulhando, névoa parada",
+        "variants": [],
+        "file": "audio/Sound_pantano_com_sapos_coaxando_inset_c838b5.ogg"
+      }
+    },
+    "scene_14bff028": {
+      "id": "scene_14bff028",
+      "name": "Galpão de Barcos",
+      "description": "Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote inflável vermelho, murcho. Uma trilha segue para o norte, até o mar.",
+      "exits": {
+        "oeste": "scene_3275efb2",
+        "norte": "scene_f222a110"
+      },
+      "objects": [
+        {
+          "id": "background_82baa046",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_caf2a1b8.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_bote_inflavel_c877",
+          "name": "bote inflável",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 752,
+            "y": 872
+          },
+          "size": {
+            "width": 843,
+            "height": 299
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um bote de borracha vermelho, murcho, com dois assentos de madeira.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "bote",
+              "barco inflavel"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(bote_cheio) { say \"Cheio e firme. Pesado, mas dá para arrastar.\" }\n  else { say \"Murcho, mas sem furos. Precisa de ar.\" }\n}\non use with \"bomba de ar\" {\n  if flag(bote_cheio) { say \"Já está cheio.\" }\n  else { set bote_cheio; play \"bomba de ar de pé bombeando e bote de borracha enchendo\"; say \"Você bombeia até o braço doer. O bote endurece, inteiro.\" }\n}\non push {\n  if not flag(bote_cheio) { say \"Murcho assim, não vai flutuar.\" }\n  else { set bote_na_praia; hide self; show \"bote vermelho\"; play \"bote de borracha sendo arrastado sobre areia\"; say \"Você arrasta o bote pela trilha, até a beira da água na praia, ao norte.\" }\n}\non pull { say \"Melhor empurrar: a trilha para a praia é ao norte.\" }\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [
+        {
+          "when": "flag(bote_na_praia)",
+          "change": "o bote inflável que estava no chão sumiu; só o assoalho de madeira vazio onde ele estava",
+          "background": "backgrounds/Variant_b59732d4.png"
+        }
+      ],
+      "sound": {
+        "ambient": "galpão de madeira rangendo, vento entre as tábuas, mar próximo",
+        "variants": [],
+        "file": "audio/Sound_galpao_de_madeira_rangendo_vento_aa23e1.ogg"
+      }
+    },
+    "scene_7b7791fe": {
+      "id": "scene_7b7791fe",
+      "name": "Selva Densa",
+      "description": "Árvores imensas fecham o céu e raízes grossas cruzam o chão. A luz chega verde, em manchas. A leste, entre as pedras, abre-se uma fenda escura.",
+      "exits": {
+        "sul": "scene_54ecade0",
+        "leste": "scene_13871910"
+      },
+      "objects": [
+        {
+          "id": "background_d00f92f6",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_cee999a5.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "selva densa e úmida, pássaros, macacos ao longe, folhas pingando",
+        "variants": [],
+        "file": "audio/Sound_selva_densa_e_umida_passaros_mac_77f991.ogg"
+      }
+    },
+    "scene_13871910": {
+      "id": "scene_13871910",
+      "name": "Fenda Escura",
+      "description": "Uma rachadura enorme na rocha, molhada e coberta de musgo. A água escorre pelas paredes e some num buraco sem fundo no meio do chão.",
+      "exits": {
+        "oeste": "scene_7b7791fe"
+      },
+      "objects": [
+        {
+          "id": "background_fabb7984",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_9ff4d279.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_medalhao_de_coral_16e0",
+          "name": "medalhão de coral",
+          "type": "item",
+          "sprite": "❓",
+          "position": {
+            "x": 929,
+            "y": 743
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um disco de coral vermelho, do tamanho da palma da mão, entalhado com ondas. Alguém o deixou cair aqui.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "medalhao",
+              "medalhão",
+              "coral",
+              "disco"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on enter {\n  if not has(lanterna) {\n    play \"escorregão em pedra molhada e queda no escuro, eco\"\n    end \"Sem luz, você dá dois passos no escuro, pisa no musgo e escorrega para o buraco no meio da fenda. Ninguém nunca vai saber onde você caiu.\"\n  } else {\n    say \"A luz da lanterna desenha a borda do buraco no meio do chão. Você contorna devagar.\"\n  }\n}\n",
+      "variants": [],
+      "sound": {
+        "ambient": "caverna escura, água escorrendo pelas paredes, gotas ecoando",
+        "variants": [],
+        "file": "audio/Sound_caverna_escura_agua_escorrendo_p_84c52e.ogg"
+      }
+    },
+    "scene_f222a110": {
+      "id": "scene_f222a110",
+      "name": "Praia do Barco Velho",
+      "description": "Areia clara, água transparente e a sombra das árvores. Um barco de madeira apodrece na areia, com o casco rachado. Ao norte, só mar.",
+      "exits": {
+        "sul": "scene_14bff028"
+      },
+      "objects": [
+        {
+          "id": "background_fc33a5cf",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_c2c94922.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_barco_velho_35a4",
+          "name": "barco velho",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 820,
+            "y": 710
+          },
+          "size": {
+            "width": 476,
+            "height": 209
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um barco de madeira com o casco rachado de ponta a ponta. Não flutuaria nem um minuto.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "barco de madeira"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_bote_vermelho_e505",
+          "name": "bote vermelho",
+          "type": "movel",
+          "sprite": "sprites/Sprite_obj_bote_vermelho_e505_7549b3.png",
+          "position": {
+            "x": 757,
+            "y": 752
+          },
+          "size": {
+            "width": 246,
+            "height": 127
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "O bote inflável, cheio, na beira da água.",
+          "properties": {
+            "portable": false,
+            "hidden": true,
+            "aliases": [
+              "bote"
+            ]
+          },
+          "actions": [],
+          "ses": "on use with remo {\n  if flag(bote_na_agua) { say \"O bote já está na água. É só remar para o norte.\" }\n  else {\n    set bote_na_agua; link norte to \"Mar Aberto\"\n    play \"bote de borracha sendo empurrado para a água, remo batendo no mar\"\n    say \"Você empurra o bote para a água e sobe nele com o remo. O mar aberto fica ao norte.\"\n  }\n}\non push { say \"Na água, sem remo, ele só ia ficar boiando.\" }\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "praia tranquila, ondas pequenas na areia, gaivotas, brisa",
+        "variants": [],
+        "file": "audio/Sound_praia_tranquila_ondas_pequenas_n_b5ac76.ogg"
+      }
+    },
+    "scene_2421e7f8": {
+      "id": "scene_2421e7f8",
+      "name": "Mar Aberto",
+      "description": "Só água azul em volta, calma e funda. O bote balança devagar. A praia ficou para trás, ao sul.",
+      "exits": {
+        "norte": "scene_be680d24",
+        "sul": "scene_f222a110"
+      },
+      "objects": [
+        {
+          "id": "background_ebab5fd2",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_366c31e1.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on enter {\n  if not has(bússola) {\n    play \"neblina densa, vento uivando e ondas grandes\"\n    end \"Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote vermelho some na neblina.\"\n  } else {\n    say \"Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte.\"\n  }\n}\n",
+      "effect": {
+        "type": "bob",
+        "amount": 12.0,
+        "period": 5.0
+      },
+      "variants": [],
+      "sound": {
+        "ambient": "mar aberto, ondas suaves batendo num bote de borracha, vento",
+        "variants": [],
+        "file": "audio/Sound_mar_aberto_ondas_suaves_batendo__df3b47.ogg"
+      }
+    },
+    "scene_be680d24": {
+      "id": "scene_be680d24",
+      "name": "Mar da Ilhota",
+      "description": "A névoa se abre. Ao norte, uma ilhota verde surge do mar, como se tivesse acabado de nascer. A água está baixa, quase parada.",
+      "exits": {
+        "sul": "scene_2421e7f8",
+        "norte": "scene_91a92135"
+      },
+      "objects": [
+        {
+          "id": "background_ecab6da5",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_8f8e2c59.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "mar calmo, ondas distantes, gaivotas sobre uma ilha",
+        "variants": [],
+        "file": "audio/Sound_mar_calmo_ondas_distantes_gaivot_42b65c.ogg"
+      }
+    },
+    "scene_91a92135": {
+      "id": "scene_91a92135",
+      "name": "Praia Branca",
+      "description": "Uma faixa de areia muito branca entre coqueiros e flores vermelhas. A maré está tão baixa que pedras escuras aparecem na água. Uma trilha entra na mata ao norte; a oeste, a praia vira uma enseada.",
+      "exits": {
+        "sul": "scene_be680d24",
+        "oeste": "scene_43837f94",
+        "norte": "scene_4508b915"
+      },
+      "objects": [
+        {
+          "id": "background_83fbae01",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_5b835e8f.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "praia tropical, ondas suaves, coqueiros balançando, pássaros",
+        "variants": [],
+        "file": "audio/Sound_praia_tropical_ondas_suaves_coqu_3b9dd7.ogg"
+      }
+    },
+    "scene_43837f94": {
+      "id": "scene_43837f94",
+      "name": "Enseada Verde",
+      "description": "Uma enseada fechada entre rochas, com água verde e parada. Um barco a remo está encalhado na areia. No fundo, uma gruta brilha com uma luz verde, fraca.",
+      "exits": {
+        "leste": "scene_91a92135"
+      },
+      "objects": [
+        {
+          "id": "background_f60d60ea",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_1a8a5be8.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_barco_de_tomas_3013",
+          "name": "barco de Tomás",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 783,
+            "y": 540
+          },
+          "size": {
+            "width": 484,
+            "height": 268
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um barco a remo vermelho, encalhado. No banco, o nome pintado - 'Lúcia'. Debaixo dele, um caderno molhado diz, numa letra que você já conhece - 'Perdi o medalhão na fenda escura. Sem ele a porta não abre, e a maré não espera.'",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "barco",
+              "barco vermelho",
+              "caderno molhado"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_gruta_verde_80b4",
+          "name": "gruta verde",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 1450,
+            "y": 263
+          },
+          "size": {
+            "width": 265,
+            "height": 224
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma gruta rasa, com água verde e fria até a canela. A luz vem de algas que brilham sozinhas. Não leva a lugar nenhum.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "gruta",
+              "luz verde"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "enseada calma, água batendo nas rochas, eco suave de gruta",
+        "variants": [],
+        "file": "audio/Sound_enseada_calma_agua_batendo_nas_r_3c5bac.ogg"
+      }
+    },
+    "scene_4508b915": {
+      "id": "scene_4508b915",
+      "name": "Clareira das Pedras",
+      "description": "Raios de sol atravessam árvores altas e caem sobre um santuário de pedra coberto de musgo, com degraus gastos. Luzes verdes flutuam no ar.",
+      "exits": {
+        "sul": "scene_91a92135"
+      },
+      "objects": [
+        {
+          "id": "background_90b51a30",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_31385947.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_santuario_bfde",
+          "name": "santuário",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 969,
+            "y": 554
+          },
+          "size": {
+            "width": 724,
+            "height": 513
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um santuário pequeno de pedra. Na soleira, um sulco raso e comprido, como se esperasse uma folha de papel, e ondas entalhadas em volta.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "santuario",
+              "sulco",
+              "soleira"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use with \"carta das marés\" {\n  if flag(mare_baixa) { say \"O caminho ao norte já está aberto.\" }\n  else {\n    set mare_baixa; remove \"carta das marés\"; link norte to \"Templo da Maré\"\n    play \"ronco grave de pedra e água recuando, ondas se afastando\"\n    say \"Você deita a carta no sulco. As ondas entalhadas acendem uma a uma, e um ronco vem do chão. Ao norte, a mata se abre: uma trilha de pedras que antes estava debaixo d'água.\"\n  }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "clareira de floresta, raios de sol, zumbido místico suave, pássaros",
+        "variants": [],
+        "file": "audio/Sound_clareira_de_floresta_raios_de_so_9ca1e0.ogg"
+      }
+    },
+    "scene_e26bc425": {
+      "id": "scene_e26bc425",
+      "name": "Templo da Maré",
+      "description": "Um templo de pedra engolido pela mata, coberto de raízes e musgo. Uma porta escura, fechada, guarda a entrada; no centro dela, um encaixe redondo.",
+      "exits": {},
+      "objects": [
+        {
+          "id": "background_34cdf27b",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_0be1a176.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_porta_do_templo_d21d",
+          "name": "porta do templo",
+          "type": "porta",
+          "sprite": "",
+          "position": {
+            "x": 975,
+            "y": 678
+          },
+          "size": {
+            "width": 142,
+            "height": 294
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma porta de pedra lisa, sem maçaneta. No centro, um encaixe redondo com ondas entalhadas em volta.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "porta",
+              "encaixe"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open { say \"Não há maçaneta. Só o encaixe redondo no centro.\" }\non use with \"medalhão de coral\" {\n  play \"porta de pedra pesada se abrindo com estrondo grave\"\n  end \"O medalhão encaixa com um clique. A porta afunda no chão e, lá dentro, à luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa.\"\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [],
+      "sound": {
+        "ambient": "templo antigo na selva, vento entre pedras, zumbido grave vindo de dentro",
+        "variants": [],
+        "file": "audio/Sound_templo_antigo_na_selva_vento_ent_df4e5f.ogg"
+      }
+    }
+  },
+  "assets": {
+    "sprites": {},
+    "items": {},
+    "audio": {}
+  },
+  "presentation": {
+    "style": "classico",
+    "layout": "classico",
+    "retro": false
+  },
+  "launcher": {
+    "title": "Marés Silenciosas",
+    "description": "O oceanógrafo Tomás Albuquerque sumiu de casa sem deixar rastro. A irmã dele contratou você para descobrir para onde ele foi, e a resposta começa numa máquina escondida sob a mansão.",
+    "version": "1.0.0"
+  },
+  "art": {
+    "style": "pintura digital colorida de adventure point-and-click, ilustração detalhada, luz quente em interiores e trópico vibrante nas ilhas",
+    "reference": "Colina da Chegada"
+  },
+  "sounds": {
+    "tampa_de_madeira_de_escrivaninha_rolando_e_abrindo": {
+      "text": "tampa de madeira de escrivaninha rolando e abrindo",
+      "file": "audio/Sound_tampa_de_madeira_de_escrivaninha_ee83a1.ogg"
+    },
+    "fechadura_de_latao_girando_e_tampa_de_bau_de_madeira_rangendo": {
+      "text": "fechadura de latão girando e tampa de baú de madeira rangendo",
+      "file": "audio/Sound_fechadura_de_latao_girando_e_tam_449d5f.ogg"
+    },
+    "estante_pesada_de_madeira_deslizando_sobre_piso_de_cimento": {
+      "text": "estante pesada de madeira deslizando sobre piso de cimento",
+      "file": "audio/Sound_estante_pesada_de_madeira_desliz_ff5a6b.ogg"
+    },
+    "alavanca_de_metal_puxada_e_maquinas_eletricas_ganhando_forca_zumbido_crescente": {
+      "text": "alavanca de metal puxada e máquinas elétricas ganhando força, zumbido crescente",
+      "file": "audio/Sound_alavanca_de_metal_puxada_e_maqui_c3fa3b.ogg"
+    },
+    "cartao_de_papel_entrando_numa_leitora_mecanica_cliques_e_bipes": {
+      "text": "cartão de papel entrando numa leitora mecânica, cliques e bipes",
+      "file": "audio/Sound_cartao_de_papel_entrando_numa_le_2108be.ogg"
+    },
+    "descarga_eletrica_violenta_e_estrondo_de_energia": {
+      "text": "descarga elétrica violenta e estrondo de energia",
+      "file": "audio/Sound_descarga_eletrica_violenta_e_est_d3a019.ogg"
+    },
+    "zumbido_eletrico_crescendo_ate_um_redemoinho_de_energia_se_abrir": {
+      "text": "zumbido elétrico crescendo até um redemoinho de energia se abrir",
+      "file": "audio/Sound_zumbido_eletrico_crescendo_ate_u_5f3c4b.ogg"
+    },
+    "cadeado_de_ferro_enferrujado_abrindo_e_porta_de_madeira_rangendo": {
+      "text": "cadeado de ferro enferrujado abrindo e porta de madeira rangendo",
+      "file": "audio/Sound_cadeado_de_ferro_enferrujado_abr_3613b3.ogg"
+    },
+    "tampa_pesada_de_bau_com_ferragens_abrindo": {
+      "text": "tampa pesada de baú com ferragens abrindo",
+      "file": "audio/Sound_tampa_pesada_de_bau_com_ferragen_d735b6.ogg"
+    },
+    "mao_revirando_folhas_molhadas_e_madeira_podre": {
+      "text": "mão revirando folhas molhadas e madeira podre",
+      "file": "audio/Sound_mao_revirando_folhas_molhadas_e__580be1.ogg"
+    },
+    "bomba_de_ar_de_pe_bombeando_e_bote_de_borracha_enchendo": {
+      "text": "bomba de ar de pé bombeando e bote de borracha enchendo",
+      "file": "audio/Sound_bomba_de_ar_de_pe_bombeando_e_bo_f0259f.ogg"
+    },
+    "bote_de_borracha_sendo_arrastado_sobre_areia": {
+      "text": "bote de borracha sendo arrastado sobre areia",
+      "file": "audio/Sound_bote_de_borracha_sendo_arrastado_56b375.ogg"
+    },
+    "escorregao_em_pedra_molhada_e_queda_no_escuro_eco": {
+      "text": "escorregão em pedra molhada e queda no escuro, eco",
+      "file": "audio/Sound_escorregao_em_pedra_molhada_e_qu_69fac5.ogg"
+    },
+    "bote_de_borracha_sendo_empurrado_para_a_agua_remo_batendo_no_mar": {
+      "text": "bote de borracha sendo empurrado para a água, remo batendo no mar",
+      "file": "audio/Sound_bote_de_borracha_sendo_empurrado_11fe36.ogg"
+    },
+    "neblina_densa_vento_uivando_e_ondas_grandes": {
+      "text": "neblina densa, vento uivando e ondas grandes",
+      "file": "audio/Sound_neblina_densa_vento_uivando_e_on_357edc.ogg"
+    },
+    "ronco_grave_de_pedra_e_agua_recuando_ondas_se_afastando": {
+      "text": "ronco grave de pedra e água recuando, ondas se afastando",
+      "file": "audio/Sound_ronco_grave_de_pedra_e_agua_recu_0e6df2.ogg"
+    },
+    "porta_de_pedra_pesada_se_abrindo_com_estrondo_grave": {
+      "text": "porta de pedra pesada se abrindo com estrondo grave",
+      "file": "audio/Sound_porta_de_pedra_pesada_se_abrindo_c93354.ogg"
+    }
+  }
+}
