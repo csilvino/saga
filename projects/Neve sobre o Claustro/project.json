@@ -1,0 +1,1460 @@
+{
+  "name": "Neve sobre o Claustro",
+  "version": "1.0.0",
+  "start_scene": "scene_502df935",
+  "navigation_mode": "text",
+  "metadata": {
+    "action_history": [],
+    "deleted_objects": [],
+    "narrative_directives": ""
+  },
+  "scenes": {
+    "scene_502df935": {
+      "id": "scene_502df935",
+      "name": "Cabana do Guia",
+      "description": "Um chalé rangendo sob a nevasca intensa. Seu guia repousa na cama, frio e imóvel, com um símbolo queimado na palma da mão.",
+      "exits": {
+        "sul": "scene_fd544680"
+      },
+      "objects": [
+        {
+          "id": "background_d7ce8243",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_7795c51e.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_lanterna_4221",
+          "name": "lanterna",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_lanterna_4221_ec9455.png",
+          "position": {
+            "x": 778,
+            "y": 534
+          },
+          "size": {
+            "width": 44,
+            "height": 73
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma lamparina de metal gasta. Está completamente vazia de óleo.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": []
+          },
+          "actions": [],
+          "ses": "on examine { if flag(lanterna_acesa) { say \"A lanterna está acesa, projetando uma luz firme e amarelada ao seu redor.\" } else if flag(lanterna_com_oleo) { say \"A lanterna está cheia de óleo, pronta para ser acesa com fósforos.\" } else { say \"Uma lamparina de metal gasta. Está vazia de óleo.\" } }\non use with oleo {\n  if flag(lanterna_com_oleo) { say \"A lanterna já está cheia.\" }\n  else { set lanterna_com_oleo; remove oleo; say \"Você despeja o óleo dentro do reservatório da lanterna.\" }\n}\non use with fosforos {\n  if flag(lanterna_acesa) { say \"A lanterna já está acesa.\" }\n  else if flag(lanterna_com_oleo) { set lanterna_acesa; say \"Você risca um fósforo e acende o pavio da lanterna. A luz afasta as sombras.\" }\n  else { say \"Você tenta acender a lanterna, mas ela está vazia de óleo.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_fd544680": {
+      "id": "scene_fd544680",
+      "name": "Encosta Ventosa",
+      "description": "O vento uiva ferozmente entre pinheiros cobertos de gelo espesso. Uma trilha de pegadas frescas rasga a neve em direção à montanha.",
+      "exits": {
+        "norte": "scene_502df935",
+        "leste": "scene_9024b0eb"
+      },
+      "objects": [
+        {
+          "id": "background_86ffe604",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_6675726a.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_9024b0eb": {
+      "id": "scene_9024b0eb",
+      "name": "Trilha do Abismo",
+      "description": "Caminho estreito e traiçoeiro à beira do precipício. A neve aqui mantém pegadas profundas e arrastadas que parecem não pertencer a humanos.",
+      "exits": {
+        "oeste": "scene_fd544680",
+        "leste": "scene_350fddd9"
+      },
+      "objects": [
+        {
+          "id": "background_b1311b82",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_480c5f67.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_350fddd9": {
+      "id": "scene_350fddd9",
+      "name": "Portões do Mosteiro",
+      "description": "Imensos portões de ferro batido entreabertos em uma fachada de pedra gasta pelo tempo. Luzes trêmulas escapam pelas frestas das janelas góticas.",
+      "exits": {
+        "oeste": "scene_9024b0eb",
+        "leste": "scene_a9d4cee7"
+      },
+      "objects": [
+        {
+          "id": "background_dd3e3380",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_d11a699a.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_a9d4cee7": {
+      "id": "scene_a9d4cee7",
+      "name": "Portaria",
+      "description": "Guarita escura e abafada, coberta de poeira secular e teias de aranha. O ar tem um cheiro forte de cera de vela e mofo.",
+      "exits": {
+        "oeste": "scene_350fddd9",
+        "norte": "scene_dba96132"
+      },
+      "objects": [
+        {
+          "id": "background_2d7d7f86",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_bfd06424.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_balcao_01d3",
+          "name": "balcão",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 501,
+            "y": 538
+          },
+          "size": {
+            "width": 768,
+            "height": 841
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um balcão de madeira rústica e empoeirada.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  if flag(balcão_aberto) { say \"O balcão já foi examinado e aberto.\" }\n  else { set balcão_aberto; show fosforos; say \"Você abre uma gaveta emperrada no balcão e encontra uma caixinha de fósforos.\" }\n}\non examine {\n  if flag(balcão_aberto) { say \"Um balcão de madeira rústica com a gaveta aberta.\" }\n  else { say \"Um balcão de madeira rústica com uma gaveta fechada que parece emperrada.\" }\n}\n"
+        },
+        {
+          "id": "obj_fosforos_f018",
+          "name": "fosforos",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_fosforos_f018_d349fd.png",
+          "position": {
+            "x": 650,
+            "y": 624
+          },
+          "size": {
+            "width": 129,
+            "height": 111
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma caixinha de fósforos de madeira, úmida mas utilizável.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "caixa de fósforos",
+              "fósforos"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_livro_de_registros_8069",
+          "name": "livro de registros",
+          "type": "item",
+          "sprite": "",
+          "position": {
+            "x": 377,
+            "y": 590
+          },
+          "size": {
+            "width": 182,
+            "height": 35
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um livro de registros encadernado em couro carcomido.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  say \"Você folheia as páginas gastas. A última entrada escrita à mão diz: 'A luz que dorme sob o nicho dos mártires guiará aqueles que buscam a verdade no subsolo'.\"\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_dba96132": {
+      "id": "scene_dba96132",
+      "name": "Claustro Principal",
+      "description": "Pátio interno cercado por arcadas de pedra escura. No centro, uma fonte de água congelada em formato de cálice gótico.",
+      "exits": {
+        "sul": "scene_a9d4cee7",
+        "oeste": "scene_1d5a0c52",
+        "norte": "scene_3a0093b4",
+        "leste": "scene_d3ceb89c"
+      },
+      "objects": [
+        {
+          "id": "background_a62ccc1e",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_e955765e.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_1d5a0c52": {
+      "id": "scene_1d5a0c52",
+      "name": "Cozinha",
+      "description": "Cozinha ampla com panelas de ferro enferrujadas. O silêncio aqui é pesado e sufocante.",
+      "exits": {
+        "leste": "scene_dba96132",
+        "cima": "scene_2a7d221e"
+      },
+      "objects": [
+        {
+          "id": "background_63282b75",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_7341da09.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_pe_de_cabra_b058",
+          "name": "pe de cabra",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_pe_de_cabra_b058_ba356e.png",
+          "position": {
+            "x": 962,
+            "y": 799
+          },
+          "size": {
+            "width": 188,
+            "height": 118
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma barra de ferro pesada e robusta, ideal para alavancar portas e gavetas.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "pé de cabra",
+              "barra de ferro"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_lareira_2ec7",
+          "name": "lareira",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 963,
+            "y": 504
+          },
+          "size": {
+            "width": 448,
+            "height": 570
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma lareira de pedra enorme e escura, com cinzas frias no fundo.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(fogo_aceso) { say \"A lareira brilha com chamas intensas e calorosas, iluminando a cozinha e mantendo brasas vivas.\" }\n  else { say \"Uma lareira de pedra escura cheia de cinzas frias.\" }\n}\non use with fosforos {\n  if flag(fogo_aceso) { say \"A lareira já está acesa.\" }\n  else { set fogo_aceso; say \"Você risca um fósforo e acende as lenhas secas na lareira. O fogo crepita com força.\" }\n}\non use with incenso {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; say \"Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa.\" }\n  } else {\n    say \"Você precisa acender a lareira primeiro para ter brasas para o incenso.\"\n  }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [
+        {
+          "when": "flag(fogo_aceso)",
+          "background": "backgrounds/Variant_85af7093.png",
+          "change": "a lareira acesa com fogo forte, brilho laranja nas paredes"
+        }
+      ]
+    },
+    "scene_2a7d221e": {
+      "id": "scene_2a7d221e",
+      "name": "Despensa Alta",
+      "description": "Prateleiras rangentes com sacos de grãos roídos e caixas lacradas. A nevasca sibila pelas frestas do telhado.",
+      "exits": {
+        "baixo": "scene_1d5a0c52"
+      },
+      "objects": [
+        {
+          "id": "background_56e031c1",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_5ef5d6ae.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_oleo_f13e",
+          "name": "oleo",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_oleo_f13e_833c41.png",
+          "position": {
+            "x": 326,
+            "y": 538
+          },
+          "size": {
+            "width": 49,
+            "height": 111
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um frasco de vidro grosso contendo óleo lampante refinado.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "frasco de óleo",
+              "oleo"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_3a0093b4": {
+      "id": "scene_3a0093b4",
+      "name": "Capela",
+      "description": "Nave central em ruínas parciais. Vitrais quebrados deixam a neve entrar sobre os bancos de carvalho corrompido.",
+      "exits": {
+        "sul": "scene_dba96132",
+        "leste": "scene_ece7e4db",
+        "cima": "scene_0b59956c"
+      },
+      "objects": [
+        {
+          "id": "background_47ed6193",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_6a1702e7.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_ece7e4db": {
+      "id": "scene_ece7e4db",
+      "name": "Sala do Capítulo",
+      "description": "Sala solene com uma mesa pesada de carvalho negro cercada por cadeiras de espaldar alto. Nas paredes, retratos de abades com olhos pintados de preto.",
+      "exits": {
+        "oeste": "scene_3a0093b4"
+      },
+      "objects": [
+        {
+          "id": "background_0e694541",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_316361d3.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_gaveta_0d0f",
+          "name": "gaveta",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 958,
+            "y": 750
+          },
+          "size": {
+            "width": 603,
+            "height": 66
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Gaveta de madeira nobre presa à mesa da Sala do Capítulo.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on open {\n  say \"Você puxa a gaveta, mas ela está emperrada e trancada por um mecanismo de madeira inchada.\"\n}\non use with \"pe de cabra\" {\n  if flag(gaveta_aberta) { say \"A gaveta já foi aberta.\" }\n  else { set gaveta_aberta; show chave; say \"Você enfia o pé de cabra na fresta da gaveta e força até estalar. Dentro há uma chave de ferro enferrujada.\" }\n}\non examine {\n  if flag(gaveta_aberta) { say \"Uma gaveta arrombada e vazia.\" }\n  else { say \"Uma gaveta de carvalho maciço com uma fechadura antiga.\" }\n}\n"
+        },
+        {
+          "id": "obj_chave_5477",
+          "name": "chave",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_chave_5477_61fd30.png",
+          "position": {
+            "x": 958,
+            "y": 726
+          },
+          "size": {
+            "width": 30,
+            "height": 53
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma chave pesada de ferro forjado, gasta pelo tempo.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "chave de ferro",
+              "chave"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_0b59956c": {
+      "id": "scene_0b59956c",
+      "name": "Torre do Sino",
+      "description": "Topo da torre fustigado por ventos glaciais. Um enorme sino de bronze jaz em sua estrutura, gravado com runas profanas.",
+      "exits": {
+        "baixo": "scene_3a0093b4"
+      },
+      "objects": [
+        {
+          "id": "background_1cb0d325",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_777d5d24.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_sino_f7a1",
+          "name": "sino",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 965,
+            "y": 330
+          },
+          "size": {
+            "width": 328,
+            "height": 661
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um sino imenso de bronze enegrecido, suspenso por correntes grossas.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(sino_tocado) { say \"O sino monumental vibra levemente após ter sido percutido.\" }\n  else { say \"Um sino colossal de bronze maciço, coberto de runas gravadas.\" }\n}\n"
+        },
+        {
+          "id": "obj_martelo_75be",
+          "name": "martelo",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_martelo_75be_f39124.png",
+          "position": {
+            "x": 1059,
+            "y": 878
+          },
+          "size": {
+            "width": 86,
+            "height": 91
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um martelo pesado de bronze, usado para golpear o sino.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "martelo de bronze",
+              "martelo"
+            ]
+          },
+          "actions": [],
+          "ses": "on use with sino {\n  if flag(sino_tocado) { say \"O sino já foi tocado.\" }\n  else { set sino_tocado; say \"Você desfere um golpe formidável com o martelo de bronze no sino. Um som profundo e ressonante ecoa por todo o mosteiro, penetrando até nas profundezas da terra.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_d3ceb89c": {
+      "id": "scene_d3ceb89c",
+      "name": "Biblioteca",
+      "description": "Fileiras intermináveis de estantes altas cobertas de teias de aranha. O teto aboboadomostra afrescos de santos com rostos raspados.",
+      "exits": {
+        "oeste": "scene_dba96132",
+        "leste": "scene_ddddac7e"
+      },
+      "objects": [
+        {
+          "id": "background_ffcc3dd3",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_27128d80.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_manuscrito_antigo_2e60",
+          "name": "manuscrito antigo",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_manuscrito_antigo_2e60_02d622.png",
+          "position": {
+            "x": 179,
+            "y": 915
+          },
+          "size": {
+            "width": 226,
+            "height": 242
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um pergaminho antigo com anotações sobre os rituais da irmandade.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "manuscrito",
+              "pergaminho"
+            ]
+          },
+          "actions": [],
+          "ses": "on examine {\n  say \"O texto revela: 'O sino da torre, quando percutido pelo martelo de bronze, faz os monges perderem o transe místico; a estante do norte na biblioteca esconde a sacristia; e a prata da adaga corta os laços do ritual'.\"\n}\n"
+        },
+        {
+          "id": "obj_estante_9a92",
+          "name": "estante",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 769,
+            "y": 655
+          },
+          "size": {
+            "width": 160,
+            "height": 228
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma estante de livros alta e pesada encostada na parede norte.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on push {\n  if flag(estante_movida) { say \"A estante já foi empurrada, revelando a passagem secreta.\" }\n  else {\n    if has(\"manuscrito antigo\") {\n      set estante_movida;\n      link norte to Sacristia;\n      link sul to Biblioteca in Sacristia;\n      say \"Você empurra a estante pesada usando as instruções do manuscrito. Ela desliza e revela uma passagem secreta ao norte.\"\n    } else {\n      say \"Você tenta empurrar a estante, mas ela é pesada demais. Parece haver um mecanismo ou segredo que você ainda não compreende.\"\n    }\n  }\n}\non examine {\n  if flag(estante_movida) { say \"Uma estante de livros empurrada para o lado, revelando uma passagem ao norte.\" }\n  else { say \"Uma estante alta de carvalho cheia de tomos antigos. Ela parece ligeiramente desalinhada no piso.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": [
+        {
+          "when": "flag(estante_movida)",
+          "background": "backgrounds/Variant_d40be010.png",
+          "change": "a grande estante foi empurrada para o lado, revelando uma passagem escura de pedra"
+        }
+      ]
+    },
+    "scene_fe49a327": {
+      "id": "scene_fe49a327",
+      "name": "Sacristia",
+      "description": "Pequena sala escondida nos fundos, com paramentos litúrgicos rasgados e objetos de prata macabra.",
+      "exits": {
+        "leste": "scene_9ad49751"
+      },
+      "objects": [
+        {
+          "id": "background_49db8a44",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_6e8631f9.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_painel_26e0",
+          "name": "painel",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 1310,
+            "y": 680
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Painel de madeira embutido na parede da sacristia.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use with \"pe de cabra\" {\n  if flag(painel_aberto) { say \"O painel já foi aberto.\" }\n  else { set painel_aberto; show adaga; say \"Você usa o pé de cabra para forçar o painel de madeira. Ele cede, revelando uma adaga de prata escondida.\" }\n}\non examine {\n  if flag(painel_aberto) { say \"Um painel de madeira arrombado.\" }\n  else { say \"Um painel de madeira aparafusado firmemente na parede.\" }\n}\n"
+        },
+        {
+          "id": "obj_adaga_878b",
+          "name": "adaga",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_adaga_878b_c53bee.png",
+          "position": {
+            "x": 672,
+            "y": 700
+          },
+          "size": {
+            "width": 42,
+            "height": 170
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma adaga com lâmina de prata pura e empunhadura cravada de pedras escuras.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "adaga",
+              "adaga ritualística"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_9ad49751": {
+      "id": "scene_9ad49751",
+      "name": "Celas dos Monges",
+      "description": "Corredor estreito de celas monásticas com portas de madeira carcomida. O frio aqui dentro é cortante.",
+      "exits": {
+        "oeste": "scene_fe49a327",
+        "norte": "scene_ddddac7e"
+      },
+      "objects": [
+        {
+          "id": "background_7a52d061",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_c034c9fe.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_incenso_c06c",
+          "name": "incenso",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_incenso_c06c_b35f12.png",
+          "position": {
+            "x": 975,
+            "y": 872
+          },
+          "size": {
+            "width": 64,
+            "height": 104
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um bastão de ervas aromáticas e resinas sagradas.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "incenso",
+              "incenso purificador"
+            ]
+          },
+          "actions": [],
+          "ses": "on use with lareira {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; say \"Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa.\" }\n  } else {\n    say \"Você precisa acender a lareira primeiro para ter brasas para o incenso.\"\n  }\n}\non use {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; say \"Você acende o incenso nas brasas da lareira.\" }\n  } else {\n    say \"A lareira está apagada.\"\n  }\n}\n"
+        },
+        {
+          "id": "obj_colchao_4ac8",
+          "name": "colchao",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 597,
+            "y": 756
+          },
+          "size": {
+            "width": 354,
+            "height": 225
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um colchão imundo e puído jogado sobre o estrado de madeira.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(colchao_mexido) { say \"O colchão está revirado no chão.\" }\n  else { set colchao_mexido; show incenso; say \"Você afasta o colchão puído e encontra um bastão de incenso purificador escondido embaixo.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_ddddac7e": {
+      "id": "scene_ddddac7e",
+      "name": "Scriptorium",
+      "description": "Mesas de trabalho com pergaminhos ressecados e tinteiros secos. Uma escada em caracol de ferro desce para a penumbra.",
+      "exits": {
+        "oeste": "scene_d3ceb89c",
+        "sul": "scene_9ad49751",
+        "baixo": "scene_2810dff1"
+      },
+      "objects": [
+        {
+          "id": "background_ee509bb1",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_a0a2b88e.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    },
+    "scene_2810dff1": {
+      "id": "scene_2810dff1",
+      "name": "Cripta Superior",
+      "description": "Catacumbas úmidas e escuras. O ar é gélido e irrespirável se a escuridão dominar.",
+      "exits": {
+        "cima": "scene_ddddac7e"
+      },
+      "objects": [
+        {
+          "id": "background_6ea4edce",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_94ca2e60.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_nicho_8569",
+          "name": "nicho",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 1506,
+            "y": 602
+          },
+          "size": {
+            "width": 100,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um nicho escavado na parede de pedra, envolto em sombras.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(nicho_examinado) { say \"O nicho de pedra está vazio.\" }\n  else { set nicho_examinado; show osso; say \"Examinando o fundo do nicho conforme a pista do livro de registros, você encontra um talismã em formato de osso esculpido.\" }\n}\n"
+        },
+        {
+          "id": "obj_osso_58b1",
+          "name": "osso",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_osso_58b1_0db66f.png",
+          "position": {
+            "x": 985,
+            "y": 717
+          },
+          "size": {
+            "width": 46,
+            "height": 56
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um pequeno talismã esculpido em osso com inscrições arcanas.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "simbolo de osso",
+              "osso"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_porta_de_ferro_1068",
+          "name": "porta de ferro",
+          "type": "porta",
+          "sprite": "",
+          "position": {
+            "x": 1488,
+            "y": 522
+          },
+          "size": {
+            "width": 312,
+            "height": 469
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma porta maciça de ferro enferrujado que barra o caminho para a cripta profunda.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use with chave {\n  if flag(porta_cripta_aberta) { say \"A porta de ferro já está destrancada.\" }\n  else {\n    set porta_cripta_aberta;\n    link leste to \"Cripta Profunda\";\n    say \"Você insere a pesada chave de ferro na fechadura e gira. A porta range e se abre para o leste.\"\n  }\n}\non examine {\n  if flag(porta_cripta_aberta) { say \"Uma porta de ferro robusta, agora aberta.\" }\n  else { say \"Uma porta de ferro trancada com uma fechadura severa.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on enter {\n  if flag(lanterna_acesa) {\n    say \"Você desce a escada em caracol para a escuridão da cripta, guiado pela luz da sua lanterna.\"\n  } else {\n    end \"Você desce a escada na escuridão absoluta, erra o último degrau e despenca sobre as pedras afiadas da cripta. Sua jornada termina no breu.\"\n  }\n}\n",
+      "variants": [
+        {
+          "when": "flag(porta_cripta_aberta)",
+          "background": "backgrounds/Variant_4532c05b.png",
+          "change": "a porta de ferro está escancarada, mostrando uma passagem escura"
+        }
+      ]
+    },
+    "scene_29ffc9a8": {
+      "id": "scene_29ffc9a8",
+      "name": "Cripta Profunda",
+      "description": "Câmara circular repleta de miasmas venenosos. Um altar profano goteja um óleo denso.",
+      "exits": {},
+      "objects": [
+        {
+          "id": "background_73400d41",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_310a4211.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_parede_00a7",
+          "name": "parede",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 958,
+            "y": 278
+          },
+          "size": {
+            "width": 368,
+            "height": 394
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma parede de pedra maciça com entalhes rituais que parecem ocultar uma passagem.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use with osso {\n  if flag(passagem_aberta) { say \"A passagem secreta já está aberta.\" }\n  else {\n    set passagem_aberta;\n    link norte to \"Câmara do Ritual\";\n    remove osso;\n    say \"Você encaixa o símbolo de osso na ranhura da parede. A rocha pesada desliza lentamente, revelando uma passagem ao norte.\"\n  }\n}\non examine {\n  if flag(passagem_aberta) { say \"Uma parede de pedra com uma abertura secreta ao norte.\" }\n  else { say \"Uma parede de pedra maciça com uma cavidade estranha em formato sinuoso.\" }\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on enter {\n  if flag(incenso_aceso) {\n    say \"O fumo protetor do incenso ao redor afasta os vapores venenosos que pairam nesta cripta.\"\n  } else {\n    end \"Uma névoa verde e acre invade seus pulmões instantaneamente. Seus joelhos fraquejam e você desaba sufocado nas cinzas da cripta.\"\n  }\n}\n",
+      "variants": [
+        {
+          "when": "flag(passagem_aberta)",
+          "background": "backgrounds/Variant_dcb70d1a.png",
+          "change": "a parede de pedra deslizou e abriu uma passagem com leve brilho vermelho"
+        }
+      ]
+    },
+    "scene_e8992222": {
+      "id": "scene_e8992222",
+      "name": "Câmara do Ritual",
+      "description": "Sub-cripta iluminada por braseiros de chamas azuladas. No centro, os monges entoam cânticos sombrios ao redor de um foco de magia negra.",
+      "exits": {},
+      "objects": [
+        {
+          "id": "background_726ce7e0",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_31701863.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_altar_79b5",
+          "name": "altar",
+          "type": "móvel",
+          "sprite": "",
+          "position": {
+            "x": 958,
+            "y": 696
+          },
+          "size": {
+            "width": 551,
+            "height": 281
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um altar de sacrifício cercado por monges em transe e braseiros de fogo azulado.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on use with adaga {\n  if flag(sino_tocado) {\n    set guia_acordado;\n    end \"Você empunha a adaga de prata e corta os laços mágicos do altar. Com um estrondo, as chamas azuladas se apagam e os monges desmoronam no chão; ao mesmo tempo, de volta à cabana, seu guia desperta com um suspiro profundo, livre da maldição. Você venceu!\";\n  } else {\n    end \"Você corta os laços com a adaga de prata, mas sem o sino ter sido tocado, os monges despertam de seu transe com um grito ensurdecedor e o cercam. Suas garras frias o dilaceram. Fim de jogo.\";\n  }\n}\non examine {\n  say \"Um altar profano coberto de runas sangrentas onde o ritual negro é canalizado pela irmandade.\"\n}\n"
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "",
+      "variants": []
+    }
+  },
+  "assets": {
+    "sprites": {},
+    "items": {},
+    "audio": {}
+  },
+  "presentation": {
+    "style": "classico",
+    "layout": "classico",
+    "retro": false
+  },
+  "launcher": {
+    "title": "Neve sobre o Claustro",
+    "description": "Uma nevasca isola você e seu guia num mosteiro nas montanhas. Os monges não estão rezando.",
+    "flyer_image": "/flyer_calixto.png",
+    "version": "1.0.0"
+  },
+  "art": {
+    "style": "pintura digital de adventure gótico, mosteiro isolado nas montanhas cobertas de neve, noite de nevasca, tons frios azulados com luz quente de velas e lareiras, atmosfera de horror sombrio",
+    "reference": "Cabana do Guia"
+  }
+}

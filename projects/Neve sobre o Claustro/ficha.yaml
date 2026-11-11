@@ -1,0 +1,576 @@
+# Ficha do jogo: o adventure inteiro num arquivo. Formato em docs/FICHA.md.
+nome: Neve sobre o Claustro
+descricao: Uma nevasca isola você e seu guia num mosteiro nas montanhas. Os monges não estão rezando.
+inicio: Cabana do Guia
+apresentacao:
+  estilo: classico
+  layout: classico
+  retro: false
+arte:
+  estilo: pintura digital de adventure gótico, mosteiro isolado nas montanhas cobertas de neve, noite de nevasca,
+    tons frios azulados com luz quente de velas e lareiras, atmosfera de horror sombrio
+  referencia: Cabana do Guia
+requisitos:
+  cenas: 18
+  puzzles: 10
+  mortes: 3
+cenas:
+- nome: Cabana do Guia
+  descricao: Um chalé rangendo sob a nevasca intensa. Seu guia repousa na cama, frio e imóvel, com um símbolo queimado
+    na palma da mão.
+  saidas:
+    sul: Encosta Ventosa
+  objetos:
+  - nome: lanterna
+    descricao: Uma lamparina de metal gasta. Está completamente vazia de óleo.
+    pegavel: true
+    script: |
+      on examine { if flag(lanterna_acesa) { say "A lanterna está acesa, projetando uma luz firme e amarelada ao seu redor." } else if flag(lanterna_com_oleo) { say "A lanterna está cheia de óleo, pronta para ser acesa com fósforos." } else { say "Uma lamparina de metal gasta. Está vazia de óleo." } }
+      on use with oleo {
+        if flag(lanterna_com_oleo) { say "A lanterna já está cheia." }
+        else { set lanterna_com_oleo; remove oleo; say "Você despeja o óleo dentro do reservatório da lanterna." }
+      }
+      on use with fosforos {
+        if flag(lanterna_acesa) { say "A lanterna já está acesa." }
+        else if flag(lanterna_com_oleo) { set lanterna_acesa; say "Você risca um fósforo e acende o pavio da lanterna. A luz afasta as sombras." }
+        else { say "Você tenta acender a lanterna, mas ela está vazia de óleo." }
+      }
+- nome: Encosta Ventosa
+  descricao: O vento uiva ferozmente entre pinheiros cobertos de gelo espesso. Uma trilha de pegadas frescas rasga
+    a neve em direção à montanha.
+  saidas:
+    norte: Cabana do Guia
+    leste: Trilha do Abismo
+- nome: Trilha do Abismo
+  descricao: Caminho estreito e traiçoeiro à beira do precipício. A neve aqui mantém pegadas profundas e arrastadas
+    que parecem não pertencer a humanos.
+  saidas:
+    oeste: Encosta Ventosa
+    leste: Portões do Mosteiro
+- nome: Portões do Mosteiro
+  descricao: Imensos portões de ferro batido entreabertos em uma fachada de pedra gasta pelo tempo. Luzes trêmulas
+    escapam pelas frestas das janelas góticas.
+  saidas:
+    oeste: Trilha do Abismo
+    leste: Portaria
+- nome: Portaria
+  descricao: Guarita escura e abafada, coberta de poeira secular e teias de aranha. O ar tem um cheiro forte de
+    cera de vela e mofo.
+  saidas:
+    oeste: Portões do Mosteiro
+    norte: Claustro Principal
+  objetos:
+  - nome: balcão
+    descricao: Um balcão de madeira rústica e empoeirada.
+    tipo: móvel
+    script: |
+      on open {
+        if flag(balcão_aberto) { say "O balcão já foi examinado e aberto." }
+        else { set balcão_aberto; show fosforos; say "Você abre uma gaveta emperrada no balcão e encontra uma caixinha de fósforos." }
+      }
+      on examine {
+        if flag(balcão_aberto) { say "Um balcão de madeira rústica com a gaveta aberta." }
+        else { say "Um balcão de madeira rústica com uma gaveta fechada que parece emperrada." }
+      }
+  - nome: fosforos
+    descricao: Uma caixinha de fósforos de madeira, úmida mas utilizável.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - caixa de fósforos
+    - fósforos
+  - nome: livro de registros
+    descricao: Um livro de registros encadernado em couro carcomido.
+    script: |
+      on examine {
+        say "Você folheia as páginas gastas. A última entrada escrita à mão diz: 'A luz que dorme sob o nicho dos mártires guiará aqueles que buscam a verdade no subsolo'."
+      }
+- nome: Claustro Principal
+  descricao: Pátio interno cercado por arcadas de pedra escura. No centro, uma fonte de água congelada em formato
+    de cálice gótico.
+  saidas:
+    sul: Portaria
+    oeste: Cozinha
+    norte: Capela
+    leste: Biblioteca
+- nome: Cozinha
+  descricao: Cozinha ampla com panelas de ferro enferrujadas. O silêncio aqui é pesado e sufocante.
+  saidas:
+    leste: Claustro Principal
+    cima: Despensa Alta
+  objetos:
+  - nome: pe de cabra
+    descricao: Uma barra de ferro pesada e robusta, ideal para alavancar portas e gavetas.
+    pegavel: true
+    apelidos:
+    - pé de cabra
+    - barra de ferro
+  - nome: lareira
+    descricao: Uma lareira de pedra enorme e escura, com cinzas frias no fundo.
+    tipo: móvel
+    script: |
+      on examine {
+        if flag(fogo_aceso) { say "A lareira brilha com chamas intensas e calorosas, iluminando a cozinha e mantendo brasas vivas." }
+        else { say "Uma lareira de pedra escura cheia de cinzas frias." }
+      }
+      on use with fosforos {
+        if flag(fogo_aceso) { say "A lareira já está acesa." }
+        else { set fogo_aceso; say "Você risca um fósforo e acende as lenhas secas na lareira. O fogo crepita com força." }
+      }
+      on use with incenso {
+        if flag(fogo_aceso) {
+          if flag(incenso_aceso) { say "O incenso já está fumegando." }
+          else { set incenso_aceso; say "Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa." }
+        } else {
+          say "Você precisa acender a lareira primeiro para ter brasas para o incenso."
+        }
+      }
+  variantes:
+  - quando: flag(fogo_aceso)
+    mudanca: a lareira acesa com fogo forte, brilho laranja nas paredes
+- nome: Despensa Alta
+  descricao: Prateleiras rangentes com sacos de grãos roídos e caixas lacradas. A nevasca sibila pelas frestas do
+    telhado.
+  saidas:
+    baixo: Cozinha
+  objetos:
+  - nome: oleo
+    descricao: Um frasco de vidro grosso contendo óleo lampante refinado.
+    pegavel: true
+    apelidos:
+    - frasco de óleo
+    - oleo
+- nome: Capela
+  descricao: Nave central em ruínas parciais. Vitrais quebrados deixam a neve entrar sobre os bancos de carvalho
+    corrompido.
+  saidas:
+    sul: Claustro Principal
+    leste: Sala do Capítulo
+    cima: Torre do Sino
+- nome: Sala do Capítulo
+  descricao: Sala solene com uma mesa pesada de carvalho negro cercada por cadeiras de espaldar alto. Nas paredes,
+    retratos de abades com olhos pintados de preto.
+  saidas:
+    oeste: Capela
+  objetos:
+  - nome: gaveta
+    descricao: Gaveta de madeira nobre presa à mesa da Sala do Capítulo.
+    tipo: móvel
+    script: |
+      on open {
+        say "Você puxa a gaveta, mas ela está emperrada e trancada por um mecanismo de madeira inchada."
+      }
+      on use with "pe de cabra" {
+        if flag(gaveta_aberta) { say "A gaveta já foi aberta." }
+        else { set gaveta_aberta; show chave; say "Você enfia o pé de cabra na fresta da gaveta e força até estalar. Dentro há uma chave de ferro enferrujada." }
+      }
+      on examine {
+        if flag(gaveta_aberta) { say "Uma gaveta arrombada e vazia." }
+        else { say "Uma gaveta de carvalho maciço com uma fechadura antiga." }
+      }
+  - nome: chave
+    descricao: Uma chave pesada de ferro forjado, gasta pelo tempo.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - chave de ferro
+    - chave
+- nome: Torre do Sino
+  descricao: Topo da torre fustigado por ventos glaciais. Um enorme sino de bronze jaz em sua estrutura, gravado
+    com runas profanas.
+  saidas:
+    baixo: Capela
+  objetos:
+  - nome: sino
+    descricao: Um sino imenso de bronze enegrecido, suspenso por correntes grossas.
+    tipo: móvel
+    script: |
+      on examine {
+        if flag(sino_tocado) { say "O sino monumental vibra levemente após ter sido percutido." }
+        else { say "Um sino colossal de bronze maciço, coberto de runas gravadas." }
+      }
+  - nome: martelo
+    descricao: Um martelo pesado de bronze, usado para golpear o sino.
+    pegavel: true
+    apelidos:
+    - martelo de bronze
+    - martelo
+    script: |
+      on use with sino {
+        if flag(sino_tocado) { say "O sino já foi tocado." }
+        else { set sino_tocado; say "Você desfere um golpe formidável com o martelo de bronze no sino. Um som profundo e ressonante ecoa por todo o mosteiro, penetrando até nas profundezas da terra." }
+      }
+- nome: Biblioteca
+  descricao: Fileiras intermináveis de estantes altas cobertas de teias de aranha. O teto aboboadomostra afrescos
+    de santos com rostos raspados.
+  saidas:
+    oeste: Claustro Principal
+    leste: Scriptorium
+  objetos:
+  - nome: manuscrito antigo
+    descricao: Um pergaminho antigo com anotações sobre os rituais da irmandade.
+    pegavel: true
+    apelidos:
+    - manuscrito
+    - pergaminho
+    script: |
+      on examine {
+        say "O texto revela: 'O sino da torre, quando percutido pelo martelo de bronze, faz os monges perderem o transe místico; a estante do norte na biblioteca esconde a sacristia; e a prata da adaga corta os laços do ritual'."
+      }
+  - nome: estante
+    descricao: Uma estante de livros alta e pesada encostada na parede norte.
+    tipo: móvel
+    script: |
+      on push {
+        if flag(estante_movida) { say "A estante já foi empurrada, revelando a passagem secreta." }
+        else {
+          if has("manuscrito antigo") {
+            set estante_movida;
+            link norte to Sacristia;
+            link sul to Biblioteca in Sacristia;
+            say "Você empurra a estante pesada usando as instruções do manuscrito. Ela desliza e revela uma passagem secreta ao norte."
+          } else {
+            say "Você tenta empurrar a estante, mas ela é pesada demais. Parece haver um mecanismo ou segredo que você ainda não compreende."
+          }
+        }
+      }
+      on examine {
+        if flag(estante_movida) { say "Uma estante de livros empurrada para o lado, revelando uma passagem ao norte." }
+        else { say "Uma estante alta de carvalho cheia de tomos antigos. Ela parece ligeiramente desalinhada no piso." }
+      }
+  variantes:
+  - quando: flag(estante_movida)
+    mudanca: a grande estante foi empurrada para o lado, revelando uma passagem escura de pedra
+- nome: Sacristia
+  descricao: Pequena sala escondida nos fundos, com paramentos litúrgicos rasgados e objetos de prata macabra.
+  saidas:
+    leste: Celas dos Monges
+  objetos:
+  - nome: painel
+    descricao: Painel de madeira embutido na parede da sacristia.
+    tipo: móvel
+    script: |
+      on use with "pe de cabra" {
+        if flag(painel_aberto) { say "O painel já foi aberto." }
+        else { set painel_aberto; show adaga; say "Você usa o pé de cabra para forçar o painel de madeira. Ele cede, revelando uma adaga de prata escondida." }
+      }
+      on examine {
+        if flag(painel_aberto) { say "Um painel de madeira arrombado." }
+        else { say "Um painel de madeira aparafusado firmemente na parede." }
+      }
+  - nome: adaga
+    descricao: Uma adaga com lâmina de prata pura e empunhadura cravada de pedras escuras.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - adaga
+    - adaga ritualística
+- nome: Celas dos Monges
+  descricao: Corredor estreito de celas monásticas com portas de madeira carcomida. O frio aqui dentro é cortante.
+  saidas:
+    oeste: Sacristia
+    norte: Scriptorium
+  objetos:
+  - nome: incenso
+    descricao: Um bastão de ervas aromáticas e resinas sagradas.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - incenso
+    - incenso purificador
+    script: |
+      on use with lareira {
+        if flag(fogo_aceso) {
+          if flag(incenso_aceso) { say "O incenso já está fumegando." }
+          else { set incenso_aceso; say "Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa." }
+        } else {
+          say "Você precisa acender a lareira primeiro para ter brasas para o incenso."
+        }
+      }
+      on use {
+        if flag(fogo_aceso) {
+          if flag(incenso_aceso) { say "O incenso já está fumegando." }
+          else { set incenso_aceso; say "Você acende o incenso nas brasas da lareira." }
+        } else {
+          say "A lareira está apagada."
+        }
+      }
+  - nome: colchao
+    descricao: Um colchão imundo e puído jogado sobre o estrado de madeira.
+    tipo: móvel
+    script: |
+      on examine {
+        if flag(colchao_mexido) { say "O colchão está revirado no chão." }
+        else { set colchao_mexido; show incenso; say "Você afasta o colchão puído e encontra um bastão de incenso purificador escondido embaixo." }
+      }
+- nome: Scriptorium
+  descricao: Mesas de trabalho com pergaminhos ressecados e tinteiros secos. Uma escada em caracol de ferro desce
+    para a penumbra.
+  saidas:
+    oeste: Biblioteca
+    sul: Celas dos Monges
+    baixo: Cripta Superior
+- nome: Cripta Superior
+  descricao: Catacumbas úmidas e escuras. O ar é gélido e irrespirável se a escuridão dominar.
+  script: |
+    on enter {
+      if flag(lanterna_acesa) {
+        say "Você desce a escada em caracol para a escuridão da cripta, guiado pela luz da sua lanterna."
+      } else {
+        end "Você desce a escada na escuridão absoluta, erra o último degrau e despenca sobre as pedras afiadas da cripta. Sua jornada termina no breu."
+      }
+    }
+  saidas:
+    cima: Scriptorium
+  objetos:
+  - nome: nicho
+    descricao: Um nicho escavado na parede de pedra, envolto em sombras.
+    tipo: móvel
+    script: |
+      on examine {
+        if flag(nicho_examinado) { say "O nicho de pedra está vazio." }
+        else { set nicho_examinado; show osso; say "Examinando o fundo do nicho conforme a pista do livro de registros, você encontra um talismã em formato de osso esculpido." }
+      }
+  - nome: osso
+    descricao: Um pequeno talismã esculpido em osso com inscrições arcanas.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - simbolo de osso
+    - osso
+  - nome: porta de ferro
+    descricao: Uma porta maciça de ferro enferrujado que barra o caminho para a cripta profunda.
+    tipo: porta
+    script: |
+      on use with chave {
+        if flag(porta_cripta_aberta) { say "A porta de ferro já está destrancada." }
+        else {
+          set porta_cripta_aberta;
+          link leste to "Cripta Profunda";
+          say "Você insere a pesada chave de ferro na fechadura e gira. A porta range e se abre para o leste."
+        }
+      }
+      on examine {
+        if flag(porta_cripta_aberta) { say "Uma porta de ferro robusta, agora aberta." }
+        else { say "Uma porta de ferro trancada com uma fechadura severa." }
+      }
+  variantes:
+  - quando: flag(porta_cripta_aberta)
+    mudanca: a porta de ferro está escancarada, mostrando uma passagem escura
+- nome: Cripta Profunda
+  descricao: Câmara circular repleta de miasmas venenosos. Um altar profano goteja um óleo denso.
+  script: |
+    on enter {
+      if flag(incenso_aceso) {
+        say "O fumo protetor do incenso ao redor afasta os vapores venenosos que pairam nesta cripta."
+      } else {
+        end "Uma névoa verde e acre invade seus pulmões instantaneamente. Seus joelhos fraquejam e você desaba sufocado nas cinzas da cripta."
+      }
+    }
+  objetos:
+  - nome: parede
+    descricao: Uma parede de pedra maciça com entalhes rituais que parecem ocultar uma passagem.
+    tipo: móvel
+    script: |
+      on use with osso {
+        if flag(passagem_aberta) { say "A passagem secreta já está aberta." }
+        else {
+          set passagem_aberta;
+          link norte to "Câmara do Ritual";
+          remove osso;
+          say "Você encaixa o símbolo de osso na ranhura da parede. A rocha pesada desliza lentamente, revelando uma passagem ao norte."
+        }
+      }
+      on examine {
+        if flag(passagem_aberta) { say "Uma parede de pedra com uma abertura secreta ao norte." }
+        else { say "Uma parede de pedra maciça com uma cavidade estranha em formato sinuoso." }
+      }
+  variantes:
+  - quando: flag(passagem_aberta)
+    mudanca: a parede de pedra deslizou e abriu uma passagem com leve brilho vermelho
+- nome: Câmara do Ritual
+  descricao: Sub-cripta iluminada por braseiros de chamas azuladas. No centro, os monges entoam cânticos sombrios
+    ao redor de um foco de magia negra.
+  objetos:
+  - nome: altar
+    descricao: Um altar de sacrifício cercado por monges em transe e braseiros de fogo azulado.
+    tipo: móvel
+    script: |
+      on use with adaga {
+        if flag(sino_tocado) {
+          set guia_acordado;
+          end "Você empunha a adaga de prata e corta os laços mágicos do altar. Com um estrondo, as chamas azuladas se apagam e os monges desmoronam no chão; ao mesmo tempo, de volta à cabana, seu guia desperta com um suspiro profundo, livre da maldição. Você venceu!";
+        } else {
+          end "Você corta os laços com a adaga de prata, mas sem o sino ter sido tocado, os monges despertam de seu transe com um grito ensurdecedor e o cercam. Suas garras frias o dilaceram. Fim de jogo.";
+        }
+      }
+      on examine {
+        say "Um altar profano coberto de runas sangrentas onde o ritual negro é canalizado pela irmandade."
+      }
+testes:
+  vitoria: corta os laços
+  solucao:
+  - pegar lanterna
+  - sul
+  - leste
+  - leste
+  - leste
+  - abrir balcao
+  - pegar fosforos
+  - ler livro
+  - norte
+  - oeste
+  - pegar pe de cabra
+  - usar fosforos na lareira
+  - cima
+  - pegar oleo
+  - baixo
+  - usar oleo na lanterna
+  - usar fosforos na lanterna
+  - leste
+  - norte
+  - leste
+  - usar pe de cabra na gaveta
+  - pegar chave
+  - oeste
+  - cima
+  - pegar martelo
+  - usar martelo no sino
+  - baixo
+  - sul
+  - leste
+  - pegar manuscrito
+  - ler manuscrito
+  - empurrar estante
+  - norte
+  - usar pe de cabra no painel
+  - pegar adaga
+  - leste
+  - examinar colchao
+  - pegar incenso
+  - oeste
+  - sul
+  - oeste
+  - oeste
+  - usar incenso na lareira
+  - leste
+  - leste
+  - leste
+  - baixo
+  - examinar nicho
+  - pegar osso
+  - usar chave na porta
+  - leste
+  - usar osso na parede
+  - norte
+  - usar adaga no altar
+  mortes:
+  - nome: cripta sem luz
+    comandos:
+    - sul
+    - leste
+    - leste
+    - leste
+    - norte
+    - leste
+    - leste
+    - baixo
+    fim: despenca
+  - nome: gás sem incenso
+    comandos:
+    - pegar lanterna
+    - sul
+    - leste
+    - leste
+    - leste
+    - abrir balcao
+    - pegar fosforos
+    - ler livro
+    - norte
+    - oeste
+    - pegar pe de cabra
+    - usar fosforos na lareira
+    - cima
+    - pegar oleo
+    - baixo
+    - usar oleo na lanterna
+    - usar fosforos na lanterna
+    - leste
+    - norte
+    - leste
+    - usar pe de cabra na gaveta
+    - pegar chave
+    - oeste
+    - cima
+    - pegar martelo
+    - usar martelo no sino
+    - baixo
+    - sul
+    - leste
+    - pegar manuscrito
+    - ler manuscrito
+    - empurrar estante
+    - norte
+    - usar pe de cabra no painel
+    - pegar adaga
+    - sul
+    - leste
+    - baixo
+    - usar chave na porta
+    - leste
+    fim: névoa
+  - nome: ritual sem sino
+    comandos:
+    - pegar lanterna
+    - sul
+    - leste
+    - leste
+    - leste
+    - abrir balcao
+    - pegar fosforos
+    - ler livro
+    - norte
+    - oeste
+    - pegar pe de cabra
+    - usar fosforos na lareira
+    - cima
+    - pegar oleo
+    - baixo
+    - usar oleo na lanterna
+    - usar fosforos na lanterna
+    - leste
+    - norte
+    - leste
+    - usar pe de cabra na gaveta
+    - pegar chave
+    - oeste
+    - cima
+    - baixo
+    - sul
+    - leste
+    - pegar manuscrito
+    - ler manuscrito
+    - empurrar estante
+    - norte
+    - usar pe de cabra no painel
+    - pegar adaga
+    - leste
+    - examinar colchao
+    - pegar incenso
+    - oeste
+    - sul
+    - oeste
+    - oeste
+    - usar incenso na lareira
+    - leste
+    - leste
+    - leste
+    - baixo
+    - examinar nicho
+    - pegar osso
+    - usar chave na porta
+    - leste
+    - usar osso na parede
+    - norte
+    - usar adaga no altar
+    fim: despertam

@@ -177,3 +177,12 @@ As rotas `check` e `build` recebem `{"project_name", "text"}`.
 [`projects/Neve sobre o Claustro/ficha.yaml`](../projects/Neve%20sobre%20o%20Claustro/ficha.yaml):
 terror gótico num mosteiro isolado pela neve. Tem 18 locais, 22 objetos, 13 ações de puzzle e 3
 mortes, no mesmo gênero e na mesma escala dos adventures de terror de 8 bits.
+
+![As cenas do Claustro, geradas a partir da ficha numa RTX 3060](images/claustro-cenas-1.jpg)
+![Continuação, com as variantes: estante movida, porta de ferro aberta, passagem da cripta](images/claustro-cenas-2.jpg)
+
+*As 18 cenas e as 4 variantes (marcadas com \*). Foram geradas por `python tools/build_game.py
+"Neve sobre o Claustro" --arte`, em cerca de 4 horas de GPU, com retomada depois de uma
+interrupção. Os contornos azuis são áreas clicáveis de objetos pintados. Um defeito conhecido: o
+chão dos interiores puxou a neve da cena de referência.*
+
