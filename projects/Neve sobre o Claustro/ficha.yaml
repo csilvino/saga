@@ -18,6 +18,7 @@ cenas:
 - nome: Cabana do Guia
   descricao: Um chalé rangendo sob a nevasca intensa. Seu guia repousa na cama, frio e imóvel, com um símbolo queimado
     na palma da mão.
+  som: nevasca uivando contra as paredes de um chalé de madeira, tábuas rangendo, interior abafado
   saidas:
     sul: Encosta Ventosa
   objetos:
@@ -32,30 +33,34 @@ cenas:
       }
       on use with fosforos {
         if flag(lanterna_acesa) { say "A lanterna já está acesa." }
-        else if flag(lanterna_com_oleo) { set lanterna_acesa; say "Você risca um fósforo e acende o pavio da lanterna. A luz afasta as sombras." }
+        else if flag(lanterna_com_oleo) { set lanterna_acesa; play "fósforo riscado e a chama de uma lanterna a óleo pegando"; say "Você risca um fósforo e acende o pavio da lanterna. A luz afasta as sombras." }
         else { say "Você tenta acender a lanterna, mas ela está vazia de óleo." }
       }
 - nome: Encosta Ventosa
   descricao: O vento uiva ferozmente entre pinheiros cobertos de gelo espesso. Uma trilha de pegadas frescas rasga
     a neve em direção à montanha.
+  som: vento forte uivando entre pinheiros cobertos de gelo, ao ar livre na montanha
   saidas:
     norte: Cabana do Guia
     leste: Trilha do Abismo
 - nome: Trilha do Abismo
   descricao: Caminho estreito e traiçoeiro à beira do precipício. A neve aqui mantém pegadas profundas e arrastadas
     que parecem não pertencer a humanos.
+  som: rajadas de vento cortante à beira de um precipício, neve varrida, eco no vazio
   saidas:
     oeste: Encosta Ventosa
     leste: Portões do Mosteiro
 - nome: Portões do Mosteiro
   descricao: Imensos portões de ferro batido entreabertos em uma fachada de pedra gasta pelo tempo. Luzes trêmulas
     escapam pelas frestas das janelas góticas.
+  som: vento de nevasca contra muros de pedra, portões de ferro rangendo de leve ao vento
   saidas:
     oeste: Trilha do Abismo
     leste: Portaria
 - nome: Portaria
   descricao: Guarita escura e abafada, coberta de poeira secular e teias de aranha. O ar tem um cheiro forte de
     cera de vela e mofo.
+  som: guarita de pedra abafada, vento distante lá fora, chama de vela crepitando baixinho
   saidas:
     oeste: Portões do Mosteiro
     norte: Claustro Principal
@@ -66,7 +71,7 @@ cenas:
     script: |
       on open {
         if flag(balcão_aberto) { say "O balcão já foi examinado e aberto." }
-        else { set balcão_aberto; show fosforos; say "Você abre uma gaveta emperrada no balcão e encontra uma caixinha de fósforos." }
+        else { set balcão_aberto; play "gaveta de madeira emperrada sendo puxada com um rangido"; show fosforos; say "Você abre uma gaveta emperrada no balcão e encontra uma caixinha de fósforos." }
       }
       on examine {
         if flag(balcão_aberto) { say "Um balcão de madeira rústica com a gaveta aberta." }
@@ -88,6 +93,7 @@ cenas:
 - nome: Claustro Principal
   descricao: Pátio interno cercado por arcadas de pedra escura. No centro, uma fonte de água congelada em formato
     de cálice gótico.
+  som: pátio de pedra ao ar livre, vento frio girando entre arcadas, eco suave
   saidas:
     sul: Portaria
     oeste: Cozinha
@@ -95,6 +101,10 @@ cenas:
     leste: Biblioteca
 - nome: Cozinha
   descricao: Cozinha ampla com panelas de ferro enferrujadas. O silêncio aqui é pesado e sufocante.
+  som:
+    ambiente: cozinha de pedra silenciosa e abafada, vento distante pela chaminé
+    quando:
+    - {quando: 'flag(fogo_aceso)', ambiente: fogo crepitando numa lareira de pedra, vento distante pela chaminé}
   saidas:
     leste: Claustro Principal
     cima: Despensa Alta
@@ -115,12 +125,12 @@ cenas:
       }
       on use with fosforos {
         if flag(fogo_aceso) { say "A lareira já está acesa." }
-        else { set fogo_aceso; say "Você risca um fósforo e acende as lenhas secas na lareira. O fogo crepita com força." }
+        else { set fogo_aceso; play "fósforo riscado e lenha seca pegando fogo numa lareira"; say "Você risca um fósforo e acende as lenhas secas na lareira. O fogo crepita com força." }
       }
       on use with incenso {
         if flag(fogo_aceso) {
           if flag(incenso_aceso) { say "O incenso já está fumegando." }
-          else { set incenso_aceso; say "Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa." }
+          else { set incenso_aceso; play "chiado suave de incenso acendendo sobre brasas"; say "Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa." }
         } else {
           say "Você precisa acender a lareira primeiro para ter brasas para o incenso."
         }
@@ -131,6 +141,7 @@ cenas:
 - nome: Despensa Alta
   descricao: Prateleiras rangentes com sacos de grãos roídos e caixas lacradas. A nevasca sibila pelas frestas do
     telhado.
+  som: nevasca sibilando pelas frestas de um telhado de madeira, prateleiras rangendo, ratos arranhando ao longe
   saidas:
     baixo: Cozinha
   objetos:
@@ -143,6 +154,7 @@ cenas:
 - nome: Capela
   descricao: Nave central em ruínas parciais. Vitrais quebrados deixam a neve entrar sobre os bancos de carvalho
     corrompido.
+  som: capela de pedra ampla e vazia, vento entrando por vitrais quebrados, eco longo
   saidas:
     sul: Claustro Principal
     leste: Sala do Capítulo
@@ -150,6 +162,7 @@ cenas:
 - nome: Sala do Capítulo
   descricao: Sala solene com uma mesa pesada de carvalho negro cercada por cadeiras de espaldar alto. Nas paredes,
     retratos de abades com olhos pintados de preto.
+  som: silêncio pesado de uma sala de pedra, vento abafado atrás das paredes, madeira estalando
   saidas:
     oeste: Capela
   objetos:
@@ -162,7 +175,7 @@ cenas:
       }
       on use with "pe de cabra" {
         if flag(gaveta_aberta) { say "A gaveta já foi aberta." }
-        else { set gaveta_aberta; show chave; say "Você enfia o pé de cabra na fresta da gaveta e força até estalar. Dentro há uma chave de ferro enferrujada." }
+        else { set gaveta_aberta; play "madeira estalando ao ser forçada com um pé de cabra"; show chave; say "Você enfia o pé de cabra na fresta da gaveta e força até estalar. Dentro há uma chave de ferro enferrujada." }
       }
       on examine {
         if flag(gaveta_aberta) { say "Uma gaveta arrombada e vazia." }
@@ -178,11 +191,13 @@ cenas:
 - nome: Torre do Sino
   descricao: Topo da torre fustigado por ventos glaciais. Um enorme sino de bronze jaz em sua estrutura, gravado
     com runas profanas.
+  som: vento glacial muito forte no alto de uma torre aberta, rajadas assobiando entre vigas de madeira
   saidas:
     baixo: Capela
   objetos:
   - nome: sino
     descricao: Um sino imenso de bronze enegrecido, suspenso por correntes grossas.
+    som: {descricao: sino de bronze enorme vibrando baixinho com o vento, repete: as vezes, intervalo: [15, 40], quando: not flag(sino_tocado)}
     tipo: móvel
     script: |
       on examine {
@@ -198,11 +213,15 @@ cenas:
     script: |
       on use with sino {
         if flag(sino_tocado) { say "O sino já foi tocado." }
-        else { set sino_tocado; say "Você desfere um golpe formidável com o martelo de bronze no sino. Um som profundo e ressonante ecoa por todo o mosteiro, penetrando até nas profundezas da terra." }
+        else { set sino_tocado; play "badalada profunda e ressonante de um enorme sino de bronze, eco longo"; say "Você desfere um golpe formidável com o martelo de bronze no sino. Um som profundo e ressonante ecoa por todo o mosteiro, penetrando até nas profundezas da terra." }
       }
 - nome: Biblioteca
   descricao: Fileiras intermináveis de estantes altas cobertas de teias de aranha. O teto aboboadomostra afrescos
     de santos com rostos raspados.
+  som:
+    ambiente: biblioteca de pedra silenciosa, vento abafado, madeira estalando de leve
+    quando:
+    - {quando: 'flag(estante_movida)', ambiente: corrente de ar frio saindo de uma passagem de pedra, eco grave e escuro}
   saidas:
     oeste: Claustro Principal
     leste: Scriptorium
@@ -225,7 +244,7 @@ cenas:
         if flag(estante_movida) { say "A estante já foi empurrada, revelando a passagem secreta." }
         else {
           if has("manuscrito antigo") {
-            set estante_movida;
+            set estante_movida; play "estante pesada de carvalho arrastada sobre piso de pedra";
             link norte to Sacristia;
             link sul to Biblioteca in Sacristia;
             say "Você empurra a estante pesada usando as instruções do manuscrito. Ela desliza e revela uma passagem secreta ao norte."
@@ -243,6 +262,7 @@ cenas:
     mudanca: o armário-estante de madeira foi afastado para a esquerda e, no fundo da sala ao norte, abriu-se uma passagem secreta escura em arco de pedra, com degraus
 - nome: Sacristia
   descricao: Pequena sala escondida nos fundos, com paramentos litúrgicos rasgados e objetos de prata macabra.
+  som: sala pequena de pedra em silêncio, uma gota de água pingando de vez em quando
   saidas:
     leste: Celas dos Monges
   objetos:
@@ -252,7 +272,7 @@ cenas:
     script: |
       on use with "pe de cabra" {
         if flag(painel_aberto) { say "O painel já foi aberto." }
-        else { set painel_aberto; show adaga; say "Você usa o pé de cabra para forçar o painel de madeira. Ele cede, revelando uma adaga de prata escondida." }
+        else { set painel_aberto; play "painel de madeira cedendo com estalo ao ser forçado com um pé de cabra"; show adaga; say "Você usa o pé de cabra para forçar o painel de madeira. Ele cede, revelando uma adaga de prata escondida." }
       }
       on examine {
         if flag(painel_aberto) { say "Um painel de madeira arrombado." }
@@ -267,6 +287,7 @@ cenas:
     - adaga ritualística
 - nome: Celas dos Monges
   descricao: Corredor estreito de celas monásticas com portas de madeira carcomida. O frio aqui dentro é cortante.
+  som: corredor de pedra estreito e gelado, vento assobiando por frestas, portas de madeira rangendo ao longe
   saidas:
     oeste: Sacristia
     norte: Scriptorium
@@ -282,7 +303,7 @@ cenas:
       on use with lareira {
         if flag(fogo_aceso) {
           if flag(incenso_aceso) { say "O incenso já está fumegando." }
-          else { set incenso_aceso; say "Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa." }
+          else { set incenso_aceso; play "chiado suave de incenso acendendo sobre brasas"; say "Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa." }
         } else {
           say "Você precisa acender a lareira primeiro para ter brasas para o incenso."
         }
@@ -290,7 +311,7 @@ cenas:
       on use {
         if flag(fogo_aceso) {
           if flag(incenso_aceso) { say "O incenso já está fumegando." }
-          else { set incenso_aceso; say "Você acende o incenso nas brasas da lareira." }
+          else { set incenso_aceso; play "chiado suave de incenso acendendo sobre brasas"; say "Você acende o incenso nas brasas da lareira." }
         } else {
           say "A lareira está apagada."
         }
@@ -306,18 +327,23 @@ cenas:
 - nome: Scriptorium
   descricao: Mesas de trabalho com pergaminhos ressecados e tinteiros secos. Uma escada em caracol de ferro desce
     para a penumbra.
+  som: sala de pedra silenciosa, ar parado, vento muito distante
   saidas:
     oeste: Biblioteca
     sul: Celas dos Monges
     baixo: Cripta Superior
 - nome: Cripta Superior
   descricao: Catacumbas úmidas e escuras. O ar é gélido e irrespirável se a escuridão dominar.
+  som:
+    ambiente: catacumba de pedra úmida, gotas de água pingando com eco, ar parado
+    quando:
+    - {quando: 'flag(porta_cripta_aberta)', ambiente: catacumba de pedra úmida, gotas pingando, corrente de ar grave vinda de baixo}
   script: |
     on enter {
       if flag(lanterna_acesa) {
         say "Você desce a escada em caracol para a escuridão da cripta, guiado pela luz da sua lanterna."
       } else {
-        end "Você desce a escada na escuridão absoluta, erra o último degrau e despenca sobre as pedras afiadas da cripta. Sua jornada termina no breu."
+        play "queda e impacto surdo sobre pedras numa cripta"; end "Você desce a escada na escuridão absoluta, erra o último degrau e despenca sobre as pedras afiadas da cripta. Sua jornada termina no breu."
       }
     }
   saidas:
@@ -345,7 +371,7 @@ cenas:
       on use with chave {
         if flag(porta_cripta_aberta) { say "A porta de ferro já está destrancada." }
         else {
-          set porta_cripta_aberta;
+          set porta_cripta_aberta; play "porta de ferro pesada rangendo ao abrir numa cripta de pedra";
           link leste to "Cripta Profunda";
           say "Você insere a pesada chave de ferro na fechadura e gira. A porta range e se abre para o leste."
         }
@@ -359,12 +385,13 @@ cenas:
     mudanca: a porta de ferro está escancarada, mostrando uma passagem escura
 - nome: Cripta Profunda
   descricao: Câmara circular repleta de miasmas venenosos. Um altar profano goteja um óleo denso.
+  som: câmara de pedra circular, borbulhar lento de óleo espesso, zumbido grave e opressivo
   script: |
     on enter {
       if flag(incenso_aceso) {
         say "O fumo protetor do incenso ao redor afasta os vapores venenosos que pairam nesta cripta."
       } else {
-        end "Uma névoa verde e acre invade seus pulmões instantaneamente. Seus joelhos fraquejam e você desaba sufocado nas cinzas da cripta."
+        play "chiado de gás venenoso escapando numa câmara de pedra"; end "Uma névoa verde e acre invade seus pulmões instantaneamente. Seus joelhos fraquejam e você desaba sufocado nas cinzas da cripta."
       }
     }
   objetos:
@@ -375,7 +402,7 @@ cenas:
       on use with osso {
         if flag(passagem_aberta) { say "A passagem secreta já está aberta." }
         else {
-          set passagem_aberta;
+          set passagem_aberta; play "parede de pedra deslizando com estrondo grave, poeira caindo";
           link norte to "Câmara do Ritual";
           remove osso;
           say "Você encaixa o símbolo de osso na ranhura da parede. A rocha pesada desliza lentamente, revelando uma passagem ao norte."
@@ -391,6 +418,7 @@ cenas:
 - nome: Câmara do Ritual
   descricao: Sub-cripta iluminada por braseiros de chamas azuladas. No centro, os monges entoam cânticos sombrios
     ao redor de um foco de magia negra.
+  som: braseiros crepitando numa câmara de pedra, zumbido grave e ritualístico, eco profundo
   objetos:
   - nome: altar
     descricao: Um altar de sacrifício cercado por monges em transe e braseiros de fogo azulado.
@@ -398,10 +426,10 @@ cenas:
     script: |
       on use with adaga {
         if flag(sino_tocado) {
-          set guia_acordado;
+          set guia_acordado; play "estrondo grave e chamas se apagando de uma vez numa câmara de pedra";
           end "Você empunha a adaga de prata e corta os laços mágicos do altar. Com um estrondo, as chamas azuladas se apagam e os monges desmoronam no chão; ao mesmo tempo, de volta à cabana, seu guia desperta com um suspiro profundo, livre da maldição. Você venceu!";
         } else {
-          end "Você corta os laços com a adaga de prata, mas sem o sino ter sido tocado, os monges despertam de seu transe com um grito ensurdecedor e o cercam. Suas garras frias o dilaceram. Fim de jogo.";
+          play "estrondo grave e ameaçador numa câmara de pedra"; end "Você corta os laços com a adaga de prata, mas sem o sino ter sido tocado, os monges despertam de seu transe com um grito ensurdecedor e o cercam. Suas garras frias o dilaceram. Fim de jogo.";
         }
       }
       on examine {

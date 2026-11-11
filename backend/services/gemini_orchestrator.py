@@ -60,11 +60,13 @@ Como trabalhar:
 - Se o cenário saiu contradizendo a história (lâmpada acesa que devia estar apagada, porta aberta
   que devia estar trancada, fogo onde não há), corrija com edit_scene_background: ela edita a mesma
   imagem e mantém as áreas clicáveis. O gerador ignora negações no prompt; a edição não.
+- create_scene_art e create_background_variant já revisam e corrigem a imagem sozinhas; o que
+  sobrar vem em "problems". Para conferir uma cena feita antes, use review_scene_art (fix=true corrige).
 
 """ + REFERENCE + 2 * chr(10) + blueprint.REFERENCE
 
-BLUEPRINT_TOOLS = {"get_blueprint", "check_blueprint", "save_blueprint", "start_game_art"}
-READ_ONLY = director_tools.READ_ONLY | {"get_blueprint", "check_blueprint", "start_game_art"}
+BLUEPRINT_TOOLS = {"get_blueprint", "check_blueprint", "save_blueprint", "start_game_art", "start_game_sound"}
+READ_ONLY = director_tools.READ_ONLY | {"get_blueprint", "check_blueprint", "start_game_art", "start_game_sound"}
 
 IMAGE_TOOLS = [
     types.FunctionDeclaration(
@@ -90,6 +92,11 @@ IMAGE_TOOLS = [
         name="start_game_art",
         description=("Começa a gerar em segundo plano toda a arte que falta: cenas (a de referência primeiro) e variantes. "
                      "Demora horas; devolve na hora. Use só quando o usuário pedir a arte."),
+        parameters=None),
+    types.FunctionDeclaration(
+        name="start_game_sound",
+        description=("Começa a gerar em segundo plano os sons que faltam (som ambiente das cenas, sons de objetos e os "
+                     "play \"...\" dos scripts), a partir da ficha. Minutos; devolve na hora. Só quando o usuário pedir."),
         parameters=None),
     types.FunctionDeclaration(
         name="create_scene_art",
@@ -120,6 +127,15 @@ IMAGE_TOOLS = [
             "when": types.Schema(type="STRING", description="condição SES, ex.: flag(porta_aberta)"),
             "change": types.Schema(type="STRING", description="o que muda na imagem (pode ser em português)"),
         }, required=["scene", "when", "change"])),
+    types.FunctionDeclaration(
+        name="review_scene_art",
+        description=("Revisa a arte de uma cena como um jogador veria: o cenário mostra os objetos fixos, "
+                     "concorda com o texto e com o estado inicial; cada variante mostra a mudança e nada mais. "
+                     "fix=true também corrige (GPU, ~5 min por correção). Devolve o que ainda está errado."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "scene": types.Schema(type="STRING", description="id ou nome da cena (já com arte)"),
+            "fix": types.Schema(type="BOOLEAN", description="true: corrige o que achar"),
+        }, required=["scene"])),
     types.FunctionDeclaration(
         name="generate_image_and_set_as_background",
         description=("Gera uma imagem de fundo e aplica numa cena (lenta: minutos; só se o usuário pedir arte). "
@@ -273,6 +289,12 @@ class DirectorSession:
                         self.project_name, args.get("scene"), args.get("when", ""), args.get("change", ""))
                 except scene_art.ArtError as e:
                     return {"error": str(e)}
+            if name == "review_scene_art":
+                from backend.services import scene_art
+                try:
+                    return await scene_art.review_scene(self.project_name, args.get("scene"), bool(args.get("fix")))
+                except scene_art.ArtError as e:
+                    return {"error": str(e)}
             if name == "generate_image_and_set_as_background":
                 return await self.generate_background(args)
             if name == "generate_sprite_for_object":
@@ -296,6 +318,10 @@ class DirectorSession:
             job = await routes.start_art(self.project_name)
             return {"started": True, "running": job["running"],
                     **blueprint.art_status(project_service.load_project(self.project_name))}
+        if name == "start_game_sound":
+            job = await routes.start_sound(self.project_name)
+            return {"started": True, "running": job["running"],
+                    **blueprint.sound_status(project_service.load_project(self.project_name))}
         text = args.get("text") or ""
         save = name == "save_blueprint"
         if save and routes.ART_JOBS.get(self.project_name, {}).get("running"):

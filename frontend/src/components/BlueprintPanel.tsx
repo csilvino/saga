@@ -1,8 +1,9 @@
 // BlueprintPanel - the game's ficha (ficha.yaml): one text with the whole adventure. VERIFICAR
 // checks it (logic holes, the solution, each death, an automatic player), MONTAR builds the project
-// from it keeping the art already made, GERAR ARTE makes the missing pictures in the background.
+// from it keeping the art already made, GERAR ARTE / GERAR SONS make the missing pictures / sounds
+// in the background.
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { X, CheckCircle2, AlertTriangle, XCircle, Hammer, SearchCheck, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, CheckCircle2, AlertTriangle, XCircle, Hammer, SearchCheck, Image as ImageIcon, Loader2, Music } from 'lucide-react';
 import api from '../services/api';
 
 interface Problem { nivel: 'erro' | 'aviso'; msg: string; onde?: string }
@@ -15,9 +16,10 @@ interface Report {
   testes?: TestResult[];
   explorador?: { venceu: boolean; confirmado?: boolean; caminho: string[]; comandos_testados: number; estados: number;
                  cenas_nao_visitadas: string[]; finais: { texto: string; comandos: number }[]; esgotou: boolean };
-  arte?: { cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean };
+  arte?: { cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean; arte_revisar?: string[] };
 }
-interface ArtStatus { running: boolean; log: string[]; cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean }
+interface ArtStatus { running: boolean; log: string[]; cenas_sem_arte: string[]; variantes_sem_arte: string[]; pronta: boolean; arte_revisar?: string[] }
+interface SoundStatus { running: boolean; log: string[]; sons_sem_arquivo: string[]; sons: number; som_pronto: boolean; result?: { falhas?: string[] } | null }
 
 const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBuilt: () => void }> = ({ projectName, onClose, onBuilt }) => {
   const [text, setText] = useState('');
@@ -25,6 +27,8 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
   const [busy, setBusy] = useState<'' | 'check' | 'build'>('');
   const [report, setReport] = useState<Report | null>(null);
   const [art, setArt] = useState<ArtStatus | null>(null);
+  const [sound, setSound] = useState<SoundStatus | null>(null);
+  const soundTimer = useRef<number | null>(null);
   const [error, setError] = useState('');
   const timer = useRef<number | null>(null);
 
@@ -45,12 +49,29 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
 
   useEffect(() => { pollArt(); return () => { if (timer.current) window.clearTimeout(timer.current); }; }, [pollArt]);
 
+  const pollSound = useCallback(async () => {
+    try {
+      const r = await api.get(`/api/blueprint/sound/${encodeURIComponent(projectName)}`);
+      setSound(r.data);
+      if (soundTimer.current) window.clearTimeout(soundTimer.current);
+      if (r.data.running) soundTimer.current = window.setTimeout(pollSound, 5000);
+    } catch { /* the backend restarted: the panel keeps what it showed */ }
+  }, [projectName]);
+
+  useEffect(() => { pollSound(); return () => { if (soundTimer.current) window.clearTimeout(soundTimer.current); }; }, [pollSound]);
+
+  const startSound = async () => {
+    setError('');
+    try { await api.post(`/api/blueprint/sound/${encodeURIComponent(projectName)}`); pollSound(); }
+    catch (e: any) { setError(e.response?.data?.detail || String(e)); }
+  };
+
   const run = async (kind: 'check' | 'build') => {
     setBusy(kind); setError('');
     try {
       const r = await api.post(`/api/blueprint/${kind}`, { project_name: projectName, text });
       setReport(r.data);
-      if (kind === 'build' && r.data.salvo) { setExported(false); onBuilt(); pollArt(); }
+      if (kind === 'build' && r.data.salvo) { setExported(false); onBuilt(); pollArt(); pollSound(); }
     } catch (e: any) {
       setError(e.response?.data?.detail || String(e));
     } finally {
@@ -95,8 +116,8 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
                       className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 disabled:opacity-50 rounded-lg flex items-center gap-2">
                 {busy === 'check' ? <Loader2 size={16} className="animate-spin" /> : <SearchCheck size={16} />} Verificar
               </button>
-              <button onClick={() => run('build')} disabled={!!busy || art?.running}
-                      title={art?.running ? 'Espere a arte terminar' : 'Verifica e, sem erros, monta o projeto (a arte já feita é mantida)'}
+              <button onClick={() => run('build')} disabled={!!busy || art?.running || sound?.running}
+                      title={art?.running || sound?.running ? 'Espere a arte e os sons terminarem' : 'Verifica e, sem erros, monta o projeto (a arte e os sons já feitos são mantidos)'}
                       className="px-3 py-2 text-sm bg-purple-700 hover:bg-purple-600 disabled:opacity-50 rounded-lg flex items-center gap-2">
                 {busy === 'build' ? <Loader2 size={16} className="animate-spin" /> : <Hammer size={16} />} Montar o jogo
               </button>
@@ -104,6 +125,12 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
                       title="Gera as cenas e variantes que faltam, em segundo plano (horas)"
                       className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 disabled:opacity-50 rounded-lg flex items-center gap-2">
                 {art?.running ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />} Gerar arte
+              </button>
+              <button onClick={startSound} disabled={!!busy || sound?.running || !sound?.sons || sound?.som_pronto}
+                      title={!sound?.sons ? 'A ficha não tem sons (som: nas cenas e objetos, play "..." nos scripts)'
+                        : 'Gera o som ambiente, os sons dos objetos e os play dos scripts que faltam (minutos)'}
+                      className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 disabled:opacity-50 rounded-lg flex items-center gap-2">
+                {sound?.running ? <Loader2 size={16} className="animate-spin" /> : <Music size={16} />} Gerar sons
               </button>
             </div>
 
@@ -158,8 +185,34 @@ const BlueprintPanel: React.FC<{ projectName: string; onClose: () => void; onBui
                       : `Faltam ${art.cenas_sem_arte.length} cena(s) e ${art.variantes_sem_arte.length} variante(s).`}
                     {art.running && ' Gerando…'}
                   </div>
+                  {(art.arte_revisar?.length ?? 0) > 0 && (
+                    <div className="mt-1">
+                      <div className="text-amber-300">A revisão ainda vê {art.arte_revisar!.length} problema(s) na arte:</div>
+                      {art.arte_revisar!.map((p, i) => (
+                        <div key={i} className="flex gap-2 text-amber-200 text-xs">
+                          <AlertTriangle size={12} className="mt-0.5 shrink-0" /><span>{p}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {art.log.length > 0 && (
                     <pre className="mt-1 text-[11px] text-gray-500 whitespace-pre-wrap max-h-48 overflow-y-auto">{art.log.slice(-12).join('\n')}</pre>
+                  )}
+                </div>
+              )}
+              {sound && sound.sons > 0 && (
+                <div>
+                  <div className="text-gray-400 text-xs uppercase mb-1">Som</div>
+                  <div className={sound.som_pronto ? 'text-green-300' : 'text-gray-300'}>
+                    {sound.som_pronto ? `Os ${sound.sons} sons estão prontos.`
+                      : `Faltam ${sound.sons_sem_arquivo.length} de ${sound.sons} sons.`}
+                    {sound.running && ' Gerando…'}
+                  </div>
+                  {(sound.result?.falhas?.length ?? 0) > 0 && (
+                    <div className="text-xs text-red-300 mt-1">{sound.result!.falhas!.slice(0, 3).join(' · ')}</div>
+                  )}
+                  {sound.log.length > 0 && (
+                    <pre className="mt-1 text-[11px] text-gray-500 whitespace-pre-wrap max-h-32 overflow-y-auto">{sound.log.slice(-8).join('\n')}</pre>
                   )}
                 </div>
               )}

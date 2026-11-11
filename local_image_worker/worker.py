@@ -7,6 +7,7 @@ The Saga backend calls it when Settings > image source = Local.
     POST /generate  {"prompt", "width", "height", "reference_image": "<abs path>"?, "edit"?, "steps"?, "seed"?}
                     -> image/png
     POST /sprites   {"sheet", "count", "background"?, "boxes"?} -> {"sprites": [{"png" (base64), "box"}]}
+    POST /audio     {"prompt", "seconds", "loop"?, "steps"?, "seed"?} -> audio/ogg   (Stable Audio Open)
     GET  /health    -> {"ok": true, "loaded": "...", "busy": bool}
 
 Built for a 12 GB card / 16 GB RAM: the T5 text encoder (~9.5 GB) and the transformer (~7 GB, Q4)
@@ -91,11 +92,18 @@ class Flux:
         gc.collect()
         torch.cuda.empty_cache()
 
+    def unload(self):
+        if self.pipe is not None:
+            log.info("descarregando o transformer")
+            self.pipe = None
+            self._free()
+
     def _encode(self, prompts):
         """CLIP + T5 straight onto the GPU (the transformer must not be loaded)."""
         from diffusers import FluxKontextPipeline
         from transformers import CLIPTextModel, T5EncoderModel
         base, _ = self._paths()
+        AUDIO.unload()
         if self.pipe is not None:
             log.info("descarregando o transformer para codificar prompts")
             self.pipe = None
@@ -118,6 +126,7 @@ class Flux:
     def _load_transformer(self):
         if self.pipe is not None:
             return
+        AUDIO.unload()
         from diffusers import FluxKontextPipeline, FluxTransformer2DModel, GGUFQuantizationConfig
         base, gguf = self._paths()
         t = time.time()
@@ -182,6 +191,93 @@ def fit(img: Image.Image, width, height) -> Image.Image:
 
 
 FLUX = Flux()
+
+
+# --- sound: Stable Audio Open ------------------------------------------------------------------
+#
+# Shares the GPU with FLUX (same lock): whichever is asked for unloads the other. Background
+# sounds come out as seamless loops (the tail is crossfaded into the head); event sounds are
+# trimmed of leading/trailing silence. Everything is peak-normalised; the player sets volumes.
+
+AUDIO_REPO_DEFAULT = "stabilityai/stable-audio-open-1.0"   # gated: accept the license on Hugging Face
+AUDIO_MAX_SECONDS = 47.0
+LOOP_CROSSFADE = 2.0
+
+
+class Audio:
+    def __init__(self):
+        self.pipe = None
+
+    def unload(self):
+        if self.pipe is not None:
+            log.info("descarregando o modelo de som")
+            self.pipe = None
+            gc.collect()
+            torch.cuda.empty_cache()
+
+    def _load(self):
+        if self.pipe is not None:
+            return
+        from diffusers import StableAudioPipeline
+        FLUX.unload()
+        s = settings()
+        repo = os.environ.get("AUDIO_REPO") or s.get("audio_repo") or AUDIO_REPO_DEFAULT
+        t = time.time()
+        self.pipe = StableAudioPipeline.from_pretrained(repo, torch_dtype=torch.float16).to("cuda")
+        log.info("modelo de som %s carregado em %.0fs", repo, time.time() - t)
+
+    def generate(self, prompt: str, seconds: float, loop: bool, steps: int = 100, seed=None) -> bytes:
+        import numpy as np
+        import soundfile as sf
+        with FLUX.lock:
+            FLUX.busy = True
+            try:
+                self._load()
+                seconds = max(1.0, min(float(seconds), AUDIO_MAX_SECONDS - (LOOP_CROSSFADE if loop else 0)))
+                length = seconds + (LOOP_CROSSFADE if loop else 0)
+                g = torch.Generator("cuda").manual_seed(int(seed)) if seed is not None else None
+                t = time.time()
+                out = self.pipe(prompt, negative_prompt="Low quality, distorted, music, speech, voices.",
+                                num_inference_steps=int(steps), audio_end_in_s=length,
+                                num_waveforms_per_prompt=1, generator=g).audios[0]
+                rate = self.pipe.vae.sampling_rate
+                y = out.T.float().cpu().numpy()                  # (samples, channels)
+                log.info("som %.0fs em %.0fs: %s", length, time.time() - t, prompt[:80])
+            finally:
+                FLUX.busy = False
+        y = make_loop(y, rate) if loop else trim(y, rate)
+        peak = float(np.abs(y).max()) or 1.0
+        y = (y * (0.89 / peak)).astype("float32")                # -1 dBFS
+        buf = io.BytesIO()
+        sf.write(buf, y, rate, format="OGG", subtype="VORBIS")
+        return buf.getvalue()
+
+
+def make_loop(y, rate):
+    """The last LOOP_CROSSFADE seconds fade into the first ones, so the end runs into the start."""
+    import numpy as np
+    xf = min(int(LOOP_CROSSFADE * rate), len(y) // 3)
+    body = y[:len(y) - xf].copy()
+    ramp = np.linspace(0.0, 1.0, xf, dtype=y.dtype)[:, None]
+    body[:xf] = y[:xf] * ramp + y[len(y) - xf:] * (1.0 - ramp)
+    return body
+
+
+def trim(y, rate, threshold_db=-45.0):
+    """Cuts silence at both ends and fades the last 50 ms."""
+    import numpy as np
+    level = np.abs(y).max(axis=1)
+    loud = np.where(level > 10 ** (threshold_db / 20) * max(level.max(), 1e-9))[0]
+    if len(loud):
+        y = y[max(0, loud[0] - int(0.01 * rate)): loud[-1] + int(0.05 * rate)]
+    fade = min(int(0.05 * rate), len(y))
+    if fade:
+        y = y.copy()
+        y[-fade:] *= np.linspace(1.0, 0.0, fade, dtype=y.dtype)[:, None]
+    return y
+
+
+AUDIO = Audio()
 
 
 # --- sprites: cut a sheet of objects into transparent PNGs that sit well in the scene -------------
@@ -286,10 +382,25 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/health":
             return self._json(200, {"ok": True, "model": "FLUX.1-Kontext-dev",
                                     "loaded": FLUX.pipe is not None, "busy": FLUX.busy,
+                                    "audio_loaded": AUDIO.pipe is not None,
                                     "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None})
         self._json(404, {"error": "not found"})
 
     def do_POST(self):
+        if self.path == "/audio":
+            try:
+                job = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+                data = AUDIO.generate(job["prompt"], float(job.get("seconds", 10)), bool(job.get("loop")),
+                                      int(job.get("steps", 100)), job.get("seed"))
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/ogg")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            except Exception as e:
+                log.exception("falha ao gerar som")
+                self._json(500, {"error": f"{type(e).__name__}: {e}"})
+            return
         if self.path == "/sprites":
             try:
                 job = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")

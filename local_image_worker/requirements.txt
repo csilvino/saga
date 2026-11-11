@@ -11,3 +11,4 @@ rembg>=2.0.60
 onnxruntime
 scipy
 numpy
+soundfile>=0.12    # sound (Stable Audio Open) -> OGG

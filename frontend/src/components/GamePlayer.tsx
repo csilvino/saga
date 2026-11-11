@@ -1,6 +1,7 @@
 // GamePlayer Component - Saga Engine
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, X, Package, MapPin, Volume2, VolumeX, Maximize2, Minimize2, Send, Type, Notebook } from 'lucide-react';
+import { useGameAudio, type ObjectSound } from './useGameAudio';
 import type { Project, GameObject } from '../types';
 import api, { getAssetUrl, isPlaceholderSprite } from '../services/api';
 import { useResizable, useRightResizable } from '../hooks';
@@ -106,6 +107,8 @@ interface GameView {
   inventory: { id: string; name: string }[];
   exits: Record<string, string>;
   background?: string | null;   // state variant (e.g. door open), else the scene background
+  ambient?: string | null;      // the scene's background sound for this state
+  object_sounds?: ObjectSound[];
   ended: string | null;
 }
 
@@ -154,6 +157,8 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   const leftPanel = useResizable(320, 200, 500);
   const rightPanel = useRightResizable(384, 250, 600);
 
+  const audio = useGameAudio(project.name, view?.ambient, view?.object_sounds, isMuted, pres.retro);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
@@ -185,6 +190,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
   const showResult = (data: any) => {
     setGameState(data.state);
     setView(data.view);
+    audio.playEvents((data.sounds || []).map((s: { file?: string | null }) => s.file));
     (data.messages || []).forEach((m: string) => addToLog(m, messageType(m)));
     if (data.view?.ended) addToLog('— FIM — digite RECOMEÇAR para jogar de novo.', 'system');
     addToLog('');

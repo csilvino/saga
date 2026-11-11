@@ -44,6 +44,7 @@ STATEMENTS = {
     "inc":    "inc flag [n]                    soma n (1) à flag",
     "dec":    "dec flag [n]                    subtrai n (1) da flag",
     "end":    'end "texto"                     termina o jogo com esse texto (vitória ou fim)',
+    "play":   'play "descrição do som"         toca um som (a geração cria o som pela descrição)',
     "stop":   "stop                            para o script aqui",
 }
 
@@ -298,7 +299,7 @@ class Parser:
             raise self.error(f"comando desconhecido {word!r}; comandos: {', '.join(STATEMENTS)}, if")
         self.advance()
         line, col = t.line, t.col
-        if word in ("say", "end"):
+        if word in ("say", "end", "play"):
             s = self.tok
             if s.kind != "string":
                 raise self.error(f"'{word}' precisa de um texto entre aspas")

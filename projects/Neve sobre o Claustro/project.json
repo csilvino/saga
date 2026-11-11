@@ -42,7 +42,13 @@
           "zIndex": 0,
           "properties": {},
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "review": {
+            "problems": [
+              "O guia não está visível na cama e o símbolo queimado na mão não aparece."
+            ],
+            "at": "2026-11-11 08:40"
+          }
         },
         {
           "id": "obj_lanterna_4221",
@@ -70,13 +76,17 @@
             "aliases": []
           },
           "actions": [],
-          "ses": "on examine { if flag(lanterna_acesa) { say \"A lanterna está acesa, projetando uma luz firme e amarelada ao seu redor.\" } else if flag(lanterna_com_oleo) { say \"A lanterna está cheia de óleo, pronta para ser acesa com fósforos.\" } else { say \"Uma lamparina de metal gasta. Está vazia de óleo.\" } }\non use with oleo {\n  if flag(lanterna_com_oleo) { say \"A lanterna já está cheia.\" }\n  else { set lanterna_com_oleo; remove oleo; say \"Você despeja o óleo dentro do reservatório da lanterna.\" }\n}\non use with fosforos {\n  if flag(lanterna_acesa) { say \"A lanterna já está acesa.\" }\n  else if flag(lanterna_com_oleo) { set lanterna_acesa; say \"Você risca um fósforo e acende o pavio da lanterna. A luz afasta as sombras.\" }\n  else { say \"Você tenta acender a lanterna, mas ela está vazia de óleo.\" }\n}\n"
+          "ses": "on examine { if flag(lanterna_acesa) { say \"A lanterna está acesa, projetando uma luz firme e amarelada ao seu redor.\" } else if flag(lanterna_com_oleo) { say \"A lanterna está cheia de óleo, pronta para ser acesa com fósforos.\" } else { say \"Uma lamparina de metal gasta. Está vazia de óleo.\" } }\non use with oleo {\n  if flag(lanterna_com_oleo) { say \"A lanterna já está cheia.\" }\n  else { set lanterna_com_oleo; remove oleo; say \"Você despeja o óleo dentro do reservatório da lanterna.\" }\n}\non use with fosforos {\n  if flag(lanterna_acesa) { say \"A lanterna já está acesa.\" }\n  else if flag(lanterna_com_oleo) { set lanterna_acesa; play \"fósforo riscado e a chama de uma lanterna a óleo pegando\"; say \"Você risca um fósforo e acende o pavio da lanterna. A luz afasta as sombras.\" }\n  else { say \"Você tenta acender a lanterna, mas ela está vazia de óleo.\" }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "nevasca uivando contra as paredes de um chalé de madeira, tábuas rangendo, interior abafado",
+        "variants": []
+      }
     },
     "scene_fd544680": {
       "id": "scene_fd544680",
@@ -118,7 +128,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "vento forte uivando entre pinheiros cobertos de gelo, ao ar livre na montanha",
+        "variants": []
+      }
     },
     "scene_9024b0eb": {
       "id": "scene_9024b0eb",
@@ -160,7 +174,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "rajadas de vento cortante à beira de um precipício, neve varrida, eco no vazio",
+        "variants": []
+      }
     },
     "scene_350fddd9": {
       "id": "scene_350fddd9",
@@ -202,7 +220,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "vento de nevasca contra muros de pedra, portões de ferro rangendo de leve ao vento",
+        "variants": []
+      }
     },
     "scene_a9d4cee7": {
       "id": "scene_a9d4cee7",
@@ -267,7 +289,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open {\n  if flag(balcão_aberto) { say \"O balcão já foi examinado e aberto.\" }\n  else { set balcão_aberto; show fosforos; say \"Você abre uma gaveta emperrada no balcão e encontra uma caixinha de fósforos.\" }\n}\non examine {\n  if flag(balcão_aberto) { say \"Um balcão de madeira rústica com a gaveta aberta.\" }\n  else { say \"Um balcão de madeira rústica com uma gaveta fechada que parece emperrada.\" }\n}\n"
+          "ses": "on open {\n  if flag(balcão_aberto) { say \"O balcão já foi examinado e aberto.\" }\n  else { set balcão_aberto; play \"gaveta de madeira emperrada sendo puxada com um rangido\"; show fosforos; say \"Você abre uma gaveta emperrada no balcão e encontra uma caixinha de fósforos.\" }\n}\non examine {\n  if flag(balcão_aberto) { say \"Um balcão de madeira rústica com a gaveta aberta.\" }\n  else { say \"Um balcão de madeira rústica com uma gaveta fechada que parece emperrada.\" }\n}\n"
         },
         {
           "id": "obj_fosforos_f018",
@@ -333,7 +355,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "guarita de pedra abafada, vento distante lá fora, chama de vela crepitando baixinho",
+        "variants": []
+      }
     },
     "scene_dba96132": {
       "id": "scene_dba96132",
@@ -371,13 +397,23 @@
           "zIndex": 0,
           "properties": {},
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "review": {
+            "problems": [
+              "A água da fonte está jorrando ativamente em vez de estar congelada."
+            ],
+            "at": "2026-11-11 08:47"
+          }
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "pátio de pedra ao ar livre, vento frio girando entre arcadas, eco suave",
+        "variants": []
+      }
     },
     "scene_1d5a0c52": {
       "id": "scene_1d5a0c52",
@@ -473,7 +509,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  if flag(fogo_aceso) { say \"A lareira brilha com chamas intensas e calorosas, iluminando a cozinha e mantendo brasas vivas.\" }\n  else { say \"Uma lareira de pedra escura cheia de cinzas frias.\" }\n}\non use with fosforos {\n  if flag(fogo_aceso) { say \"A lareira já está acesa.\" }\n  else { set fogo_aceso; say \"Você risca um fósforo e acende as lenhas secas na lareira. O fogo crepita com força.\" }\n}\non use with incenso {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; say \"Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa.\" }\n  } else {\n    say \"Você precisa acender a lareira primeiro para ter brasas para o incenso.\"\n  }\n}\n"
+          "ses": "on examine {\n  if flag(fogo_aceso) { say \"A lareira brilha com chamas intensas e calorosas, iluminando a cozinha e mantendo brasas vivas.\" }\n  else { say \"Uma lareira de pedra escura cheia de cinzas frias.\" }\n}\non use with fosforos {\n  if flag(fogo_aceso) { say \"A lareira já está acesa.\" }\n  else { set fogo_aceso; play \"fósforo riscado e lenha seca pegando fogo numa lareira\"; say \"Você risca um fósforo e acende as lenhas secas na lareira. O fogo crepita com força.\" }\n}\non use with incenso {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; play \"chiado suave de incenso acendendo sobre brasas\"; say \"Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa.\" }\n  } else {\n    say \"Você precisa acender a lareira primeiro para ter brasas para o incenso.\"\n  }\n}\n"
         }
       ],
       "hotspots": [],
@@ -482,10 +518,19 @@
       "variants": [
         {
           "when": "flag(fogo_aceso)",
-          "background": "backgrounds/Variant_85af7093.png",
-          "change": "a lareira acesa com fogo forte, brilho laranja nas paredes"
+          "change": "a lareira acesa com fogo forte, brilho laranja nas paredes",
+          "background": "backgrounds/Variant_85af7093.png"
         }
-      ]
+      ],
+      "sound": {
+        "ambient": "cozinha de pedra silenciosa e abafada, vento distante pela chaminé",
+        "variants": [
+          {
+            "when": "flag(fogo_aceso)",
+            "ambient": "fogo crepitando numa lareira de pedra"
+          }
+        ]
+      }
     },
     "scene_2a7d221e": {
       "id": "scene_2a7d221e",
@@ -557,7 +602,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "nevasca sibilando pelas frestas de um telhado de madeira, prateleiras rangendo, ratos arranhando ao longe",
+        "variants": []
+      }
     },
     "scene_3a0093b4": {
       "id": "scene_3a0093b4",
@@ -600,7 +649,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "capela de pedra ampla e vazia, vento entrando por vitrais quebrados, eco longo",
+        "variants": []
+      }
     },
     "scene_ece7e4db": {
       "id": "scene_ece7e4db",
@@ -664,7 +717,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open {\n  say \"Você puxa a gaveta, mas ela está emperrada e trancada por um mecanismo de madeira inchada.\"\n}\non use with \"pe de cabra\" {\n  if flag(gaveta_aberta) { say \"A gaveta já foi aberta.\" }\n  else { set gaveta_aberta; show chave; say \"Você enfia o pé de cabra na fresta da gaveta e força até estalar. Dentro há uma chave de ferro enferrujada.\" }\n}\non examine {\n  if flag(gaveta_aberta) { say \"Uma gaveta arrombada e vazia.\" }\n  else { say \"Uma gaveta de carvalho maciço com uma fechadura antiga.\" }\n}\n"
+          "ses": "on open {\n  say \"Você puxa a gaveta, mas ela está emperrada e trancada por um mecanismo de madeira inchada.\"\n}\non use with \"pe de cabra\" {\n  if flag(gaveta_aberta) { say \"A gaveta já foi aberta.\" }\n  else { set gaveta_aberta; play \"madeira estalando ao ser forçada com um pé de cabra\"; show chave; say \"Você enfia o pé de cabra na fresta da gaveta e força até estalar. Dentro há uma chave de ferro enferrujada.\" }\n}\non examine {\n  if flag(gaveta_aberta) { say \"Uma gaveta arrombada e vazia.\" }\n  else { say \"Uma gaveta de carvalho maciço com uma fechadura antiga.\" }\n}\n"
         },
         {
           "id": "obj_chave_5477",
@@ -701,7 +754,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "silêncio pesado de uma sala de pedra, vento abafado atrás das paredes, madeira estalando",
+        "variants": []
+      }
     },
     "scene_0b59956c": {
       "id": "scene_0b59956c",
@@ -765,7 +822,16 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  if flag(sino_tocado) { say \"O sino monumental vibra levemente após ter sido percutido.\" }\n  else { say \"Um sino colossal de bronze maciço, coberto de runas gravadas.\" }\n}\n"
+          "ses": "on examine {\n  if flag(sino_tocado) { say \"O sino monumental vibra levemente após ter sido percutido.\" }\n  else { say \"Um sino colossal de bronze maciço, coberto de runas gravadas.\" }\n}\n",
+          "sound": {
+            "desc": "sino de bronze enorme vibrando baixinho com o vento",
+            "mode": "random",
+            "every": [
+              15.0,
+              40.0
+            ],
+            "when": "not flag(sino_tocado)"
+          }
         },
         {
           "id": "obj_martelo_75be",
@@ -796,13 +862,17 @@
             ]
           },
           "actions": [],
-          "ses": "on use with sino {\n  if flag(sino_tocado) { say \"O sino já foi tocado.\" }\n  else { set sino_tocado; say \"Você desfere um golpe formidável com o martelo de bronze no sino. Um som profundo e ressonante ecoa por todo o mosteiro, penetrando até nas profundezas da terra.\" }\n}\n"
+          "ses": "on use with sino {\n  if flag(sino_tocado) { say \"O sino já foi tocado.\" }\n  else { set sino_tocado; play \"badalada profunda e ressonante de um enorme sino de bronze, eco longo\"; say \"Você desfere um golpe formidável com o martelo de bronze no sino. Um som profundo e ressonante ecoa por todo o mosteiro, penetrando até nas profundezas da terra.\" }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "vento glacial muito forte no alto de uma torre aberta, rajadas assobiando entre vigas de madeira",
+        "variants": []
+      }
     },
     "scene_d3ceb89c": {
       "id": "scene_d3ceb89c",
@@ -898,7 +968,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on push {\n  if flag(estante_movida) { say \"A estante já foi empurrada, revelando a passagem secreta.\" }\n  else {\n    if has(\"manuscrito antigo\") {\n      set estante_movida;\n      link norte to Sacristia;\n      link sul to Biblioteca in Sacristia;\n      say \"Você empurra a estante pesada usando as instruções do manuscrito. Ela desliza e revela uma passagem secreta ao norte.\"\n    } else {\n      say \"Você tenta empurrar a estante, mas ela é pesada demais. Parece haver um mecanismo ou segredo que você ainda não compreende.\"\n    }\n  }\n}\non examine {\n  if flag(estante_movida) { say \"Uma estante de livros empurrada para o lado, revelando uma passagem ao norte.\" }\n  else { say \"Uma estante alta de carvalho cheia de tomos antigos. Ela parece ligeiramente desalinhada no piso.\" }\n}\n"
+          "ses": "on push {\n  if flag(estante_movida) { say \"A estante já foi empurrada, revelando a passagem secreta.\" }\n  else {\n    if has(\"manuscrito antigo\") {\n      set estante_movida; play \"estante pesada de carvalho arrastada sobre piso de pedra\";\n      link norte to Sacristia;\n      link sul to Biblioteca in Sacristia;\n      say \"Você empurra a estante pesada usando as instruções do manuscrito. Ela desliza e revela uma passagem secreta ao norte.\"\n    } else {\n      say \"Você tenta empurrar a estante, mas ela é pesada demais. Parece haver um mecanismo ou segredo que você ainda não compreende.\"\n    }\n  }\n}\non examine {\n  if flag(estante_movida) { say \"Uma estante de livros empurrada para o lado, revelando uma passagem ao norte.\" }\n  else { say \"Uma estante alta de carvalho cheia de tomos antigos. Ela parece ligeiramente desalinhada no piso.\" }\n}\n"
         }
       ],
       "hotspots": [],
@@ -907,10 +977,19 @@
       "variants": [
         {
           "when": "flag(estante_movida)",
-          "background": "backgrounds/Variant_072eab61.png",
-          "change": "o armário-estante de madeira foi afastado para a esquerda e, no fundo da sala ao norte, abriu-se uma passagem secreta escura em arco de pedra, com degraus"
+          "change": "o armário-estante de madeira foi afastado para a esquerda e, no fundo da sala ao norte, abriu-se uma passagem secreta escura em arco de pedra, com degraus",
+          "background": "backgrounds/Variant_072eab61.png"
         }
-      ]
+      ],
+      "sound": {
+        "ambient": "biblioteca de pedra silenciosa, vento abafado, madeira estalando de leve",
+        "variants": [
+          {
+            "when": "flag(estante_movida)",
+            "ambient": "corrente de ar frio saindo de uma passagem de pedra"
+          }
+        ]
+      }
     },
     "scene_fe49a327": {
       "id": "scene_fe49a327",
@@ -945,7 +1024,13 @@
           "zIndex": 0,
           "properties": {},
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "review": {
+            "problems": [
+              "Falta o painel de madeira embutido na parede."
+            ],
+            "at": "2026-11-11 09:29"
+          }
         },
         {
           "id": "obj_painel_26e0",
@@ -974,7 +1059,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on use with \"pe de cabra\" {\n  if flag(painel_aberto) { say \"O painel já foi aberto.\" }\n  else { set painel_aberto; show adaga; say \"Você usa o pé de cabra para forçar o painel de madeira. Ele cede, revelando uma adaga de prata escondida.\" }\n}\non examine {\n  if flag(painel_aberto) { say \"Um painel de madeira arrombado.\" }\n  else { say \"Um painel de madeira aparafusado firmemente na parede.\" }\n}\n"
+          "ses": "on use with \"pe de cabra\" {\n  if flag(painel_aberto) { say \"O painel já foi aberto.\" }\n  else { set painel_aberto; play \"painel de madeira cedendo com estalo ao ser forçado com um pé de cabra\"; show adaga; say \"Você usa o pé de cabra para forçar o painel de madeira. Ele cede, revelando uma adaga de prata escondida.\" }\n}\non examine {\n  if flag(painel_aberto) { say \"Um painel de madeira arrombado.\" }\n  else { say \"Um painel de madeira aparafusado firmemente na parede.\" }\n}\n"
         },
         {
           "id": "obj_adaga_878b",
@@ -1011,7 +1096,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "sala pequena de pedra em silêncio, uma gota de água pingando de vez em quando",
+        "variants": []
+      }
     },
     "scene_9ad49751": {
       "id": "scene_9ad49751",
@@ -1078,7 +1167,7 @@
             ]
           },
           "actions": [],
-          "ses": "on use with lareira {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; say \"Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa.\" }\n  } else {\n    say \"Você precisa acender a lareira primeiro para ter brasas para o incenso.\"\n  }\n}\non use {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; say \"Você acende o incenso nas brasas da lareira.\" }\n  } else {\n    say \"A lareira está apagada.\"\n  }\n}\n"
+          "ses": "on use with lareira {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; play \"chiado suave de incenso acendendo sobre brasas\"; say \"Você aproxima o incenso das brasas da lareira. Ele começa a emanar uma fumaça purificadora e densa.\" }\n  } else {\n    say \"Você precisa acender a lareira primeiro para ter brasas para o incenso.\"\n  }\n}\non use {\n  if flag(fogo_aceso) {\n    if flag(incenso_aceso) { say \"O incenso já está fumegando.\" }\n    else { set incenso_aceso; play \"chiado suave de incenso acendendo sobre brasas\"; say \"Você acende o incenso nas brasas da lareira.\" }\n  } else {\n    say \"A lareira está apagada.\"\n  }\n}\n"
         },
         {
           "id": "obj_colchao_4ac8",
@@ -1113,7 +1202,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "corredor de pedra estreito e gelado, vento assobiando por frestas, portas de madeira rangendo ao longe",
+        "variants": []
+      }
     },
     "scene_ddddac7e": {
       "id": "scene_ddddac7e",
@@ -1156,7 +1249,11 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "sala de pedra silenciosa, ar parado, vento muito distante",
+        "variants": []
+      }
     },
     "scene_2810dff1": {
       "id": "scene_2810dff1",
@@ -1191,7 +1288,14 @@
           "zIndex": 0,
           "properties": {},
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "review": {
+            "problems": [
+              "O ambiente parece um cômodo com janela e lareira em vez de uma cripta subterrânea.",
+              "A estrutura da porta não é visivelmente de ferro enferrujado e falta o nicho escavado."
+            ],
+            "at": "2026-11-11 09:40"
+          }
         },
         {
           "id": "obj_nicho_8569",
@@ -1280,19 +1384,28 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on use with chave {\n  if flag(porta_cripta_aberta) { say \"A porta de ferro já está destrancada.\" }\n  else {\n    set porta_cripta_aberta;\n    link leste to \"Cripta Profunda\";\n    say \"Você insere a pesada chave de ferro na fechadura e gira. A porta range e se abre para o leste.\"\n  }\n}\non examine {\n  if flag(porta_cripta_aberta) { say \"Uma porta de ferro robusta, agora aberta.\" }\n  else { say \"Uma porta de ferro trancada com uma fechadura severa.\" }\n}\n"
+          "ses": "on use with chave {\n  if flag(porta_cripta_aberta) { say \"A porta de ferro já está destrancada.\" }\n  else {\n    set porta_cripta_aberta; play \"porta de ferro pesada rangendo ao abrir numa cripta de pedra\";\n    link leste to \"Cripta Profunda\";\n    say \"Você insere a pesada chave de ferro na fechadura e gira. A porta range e se abre para o leste.\"\n  }\n}\non examine {\n  if flag(porta_cripta_aberta) { say \"Uma porta de ferro robusta, agora aberta.\" }\n  else { say \"Uma porta de ferro trancada com uma fechadura severa.\" }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on enter {\n  if flag(lanterna_acesa) {\n    say \"Você desce a escada em caracol para a escuridão da cripta, guiado pela luz da sua lanterna.\"\n  } else {\n    end \"Você desce a escada na escuridão absoluta, erra o último degrau e despenca sobre as pedras afiadas da cripta. Sua jornada termina no breu.\"\n  }\n}\n",
+      "ses": "on enter {\n  if flag(lanterna_acesa) {\n    say \"Você desce a escada em caracol para a escuridão da cripta, guiado pela luz da sua lanterna.\"\n  } else {\n    play \"queda e impacto surdo sobre pedras numa cripta\"; end \"Você desce a escada na escuridão absoluta, erra o último degrau e despenca sobre as pedras afiadas da cripta. Sua jornada termina no breu.\"\n  }\n}\n",
       "variants": [
         {
           "when": "flag(porta_cripta_aberta)",
-          "background": "backgrounds/Variant_4532c05b.png",
-          "change": "a porta de ferro está escancarada, mostrando uma passagem escura"
+          "change": "a porta de ferro está escancarada, mostrando uma passagem escura",
+          "background": "backgrounds/Variant_4532c05b.png"
         }
-      ]
+      ],
+      "sound": {
+        "ambient": "catacumba de pedra úmida, gotas de água pingando com eco, ar parado",
+        "variants": [
+          {
+            "when": "flag(porta_cripta_aberta)",
+            "ambient": "catacumba de pedra úmida"
+          }
+        ]
+      }
     },
     "scene_29ffc9a8": {
       "id": "scene_29ffc9a8",
@@ -1354,19 +1467,23 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on use with osso {\n  if flag(passagem_aberta) { say \"A passagem secreta já está aberta.\" }\n  else {\n    set passagem_aberta;\n    link norte to \"Câmara do Ritual\";\n    remove osso;\n    say \"Você encaixa o símbolo de osso na ranhura da parede. A rocha pesada desliza lentamente, revelando uma passagem ao norte.\"\n  }\n}\non examine {\n  if flag(passagem_aberta) { say \"Uma parede de pedra com uma abertura secreta ao norte.\" }\n  else { say \"Uma parede de pedra maciça com uma cavidade estranha em formato sinuoso.\" }\n}\n"
+          "ses": "on use with osso {\n  if flag(passagem_aberta) { say \"A passagem secreta já está aberta.\" }\n  else {\n    set passagem_aberta; play \"parede de pedra deslizando com estrondo grave, poeira caindo\";\n    link norte to \"Câmara do Ritual\";\n    remove osso;\n    say \"Você encaixa o símbolo de osso na ranhura da parede. A rocha pesada desliza lentamente, revelando uma passagem ao norte.\"\n  }\n}\non examine {\n  if flag(passagem_aberta) { say \"Uma parede de pedra com uma abertura secreta ao norte.\" }\n  else { say \"Uma parede de pedra maciça com uma cavidade estranha em formato sinuoso.\" }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on enter {\n  if flag(incenso_aceso) {\n    say \"O fumo protetor do incenso ao redor afasta os vapores venenosos que pairam nesta cripta.\"\n  } else {\n    end \"Uma névoa verde e acre invade seus pulmões instantaneamente. Seus joelhos fraquejam e você desaba sufocado nas cinzas da cripta.\"\n  }\n}\n",
+      "ses": "on enter {\n  if flag(incenso_aceso) {\n    say \"O fumo protetor do incenso ao redor afasta os vapores venenosos que pairam nesta cripta.\"\n  } else {\n    play \"chiado de gás venenoso escapando numa câmara de pedra\"; end \"Uma névoa verde e acre invade seus pulmões instantaneamente. Seus joelhos fraquejam e você desaba sufocado nas cinzas da cripta.\"\n  }\n}\n",
       "variants": [
         {
           "when": "flag(passagem_aberta)",
-          "background": "backgrounds/Variant_dcb70d1a.png",
-          "change": "a parede de pedra deslizou e abriu uma passagem com leve brilho vermelho"
+          "change": "a parede de pedra deslizou e abriu uma passagem com leve brilho vermelho",
+          "background": "backgrounds/Variant_dcb70d1a.png"
         }
-      ]
+      ],
+      "sound": {
+        "ambient": "câmara de pedra circular, borbulhar lento de óleo espesso, zumbido grave e opressivo",
+        "variants": []
+      }
     },
     "scene_e8992222": {
       "id": "scene_e8992222",
@@ -1428,13 +1545,17 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on use with adaga {\n  if flag(sino_tocado) {\n    set guia_acordado;\n    end \"Você empunha a adaga de prata e corta os laços mágicos do altar. Com um estrondo, as chamas azuladas se apagam e os monges desmoronam no chão; ao mesmo tempo, de volta à cabana, seu guia desperta com um suspiro profundo, livre da maldição. Você venceu!\";\n  } else {\n    end \"Você corta os laços com a adaga de prata, mas sem o sino ter sido tocado, os monges despertam de seu transe com um grito ensurdecedor e o cercam. Suas garras frias o dilaceram. Fim de jogo.\";\n  }\n}\non examine {\n  say \"Um altar profano coberto de runas sangrentas onde o ritual negro é canalizado pela irmandade.\"\n}\n"
+          "ses": "on use with adaga {\n  if flag(sino_tocado) {\n    set guia_acordado; play \"estrondo grave e chamas se apagando de uma vez numa câmara de pedra\";\n    end \"Você empunha a adaga de prata e corta os laços mágicos do altar. Com um estrondo, as chamas azuladas se apagam e os monges desmoronam no chão; ao mesmo tempo, de volta à cabana, seu guia desperta com um suspiro profundo, livre da maldição. Você venceu!\";\n  } else {\n    play \"estrondo grave e ameaçador numa câmara de pedra\"; end \"Você corta os laços com a adaga de prata, mas sem o sino ter sido tocado, os monges despertam de seu transe com um grito ensurdecedor e o cercam. Suas garras frias o dilaceram. Fim de jogo.\";\n  }\n}\non examine {\n  say \"Um altar profano coberto de runas sangrentas onde o ritual negro é canalizado pela irmandade.\"\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": []
+      "variants": [],
+      "sound": {
+        "ambient": "braseiros crepitando numa câmara de pedra, zumbido grave e ritualístico, eco profundo",
+        "variants": []
+      }
     }
   },
   "assets": {
@@ -1456,5 +1577,49 @@
   "art": {
     "style": "pintura digital de adventure gótico, mosteiro isolado nas montanhas cobertas de neve, noite de nevasca, tons frios azulados com luz quente de velas e lareiras, atmosfera de horror sombrio",
     "reference": "Cabana do Guia"
+  },
+  "sounds": {
+    "fosforo_riscado_e_a_chama_de_uma_lanterna_a_oleo_pegando": {
+      "text": "fósforo riscado e a chama de uma lanterna a óleo pegando"
+    },
+    "gaveta_de_madeira_emperrada_sendo_puxada_com_um_rangido": {
+      "text": "gaveta de madeira emperrada sendo puxada com um rangido"
+    },
+    "fosforo_riscado_e_lenha_seca_pegando_fogo_numa_lareira": {
+      "text": "fósforo riscado e lenha seca pegando fogo numa lareira"
+    },
+    "chiado_suave_de_incenso_acendendo_sobre_brasas": {
+      "text": "chiado suave de incenso acendendo sobre brasas"
+    },
+    "madeira_estalando_ao_ser_forcada_com_um_pe_de_cabra": {
+      "text": "madeira estalando ao ser forçada com um pé de cabra"
+    },
+    "badalada_profunda_e_ressonante_de_um_enorme_sino_de_bronze_eco_longo": {
+      "text": "badalada profunda e ressonante de um enorme sino de bronze, eco longo"
+    },
+    "estante_pesada_de_carvalho_arrastada_sobre_piso_de_pedra": {
+      "text": "estante pesada de carvalho arrastada sobre piso de pedra"
+    },
+    "painel_de_madeira_cedendo_com_estalo_ao_ser_forcado_com_um_pe_de_cabra": {
+      "text": "painel de madeira cedendo com estalo ao ser forçado com um pé de cabra"
+    },
+    "queda_e_impacto_surdo_sobre_pedras_numa_cripta": {
+      "text": "queda e impacto surdo sobre pedras numa cripta"
+    },
+    "porta_de_ferro_pesada_rangendo_ao_abrir_numa_cripta_de_pedra": {
+      "text": "porta de ferro pesada rangendo ao abrir numa cripta de pedra"
+    },
+    "chiado_de_gas_venenoso_escapando_numa_camara_de_pedra": {
+      "text": "chiado de gás venenoso escapando numa câmara de pedra"
+    },
+    "parede_de_pedra_deslizando_com_estrondo_grave_poeira_caindo": {
+      "text": "parede de pedra deslizando com estrondo grave, poeira caindo"
+    },
+    "estrondo_grave_e_chamas_se_apagando_de_uma_vez_numa_camara_de_pedra": {
+      "text": "estrondo grave e chamas se apagando de uma vez numa câmara de pedra"
+    },
+    "estrondo_grave_e_ameacador_numa_camara_de_pedra": {
+      "text": "estrondo grave e ameaçador numa câmara de pedra"
+    }
   }
 }

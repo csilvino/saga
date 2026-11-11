@@ -133,6 +133,83 @@ A montagem é sempre feita do zero a partir da ficha, mas reaproveita o projeto 
 Por isso dá para corrigir um texto, um script ou um puzzle depois da arte pronta. Só o que é novo
 fica para a próxima rodada de arte.
 
+## Som
+
+A ficha também diz o que se ouve. Os sons são opcionais e há três tipos:
+
+```yaml
+cenas:
+  - nome: Cozinha
+    som:                                   # som ambiente, em loop enquanto o jogador está na cena
+      ambiente: vento uivando lá fora, madeira rangendo
+      quando:                              # outro ambiente enquanto a condição valer
+        - {quando: flag(lareira_acesa), ambiente: fogo crepitando, vento ao longe}
+    objetos:
+      - nome: relógio
+        som: tique-taque de relógio de pêndulo         # som do objeto, em loop enquanto ele está à vista
+      - nome: corvo
+        som: {descricao: um corvo grasna, repete: as vezes, intervalo: [20, 60], quando: not flag(x)}
+      - nome: sino
+        script: |
+          on push { play "badalada grave de sino de bronze"; say "..." }   # som de evento
+```
+
+- **Ambiente da cena:** toca em loop e faz uma transição suave quando o jogador muda de cena ou
+  quando entra em vigor outro ambiente do `quando`, como as variantes de imagem.
+- **Som de objeto:** toca em loop (`repete: sempre`, o padrão) ou de vez em quando (`repete: as
+  vezes`, em intervalos sorteados entre os dois números de `intervalo`, em segundos). Só toca
+  enquanto o objeto está à vista e, se houver `quando`, enquanto a condição valer.
+- **Som de evento:** `play "..."` em qualquer script. O mesmo texto em vários scripts vira um som só.
+
+Descreva o som pela fonte, pelo material e pelo lugar, sem música nem vozes. A verificação confere
+os campos e as condições.
+
+**Gerar:** o botão **Gerar sons** no painel Ficha, `python tools/build_game.py "Meu Jogo" --som` ou a
+ferramenta `start_game_sound` do Diretor. A Gemini transforma cada descrição num prompt em inglês, e
+o [gerador local](../local_image_worker/README.md) faz os sons na GPU com o **Stable Audio Open**:
+
+- ambientes de 30 s e sons de objeto de 10 s, como loops sem emenda (o fim se funde com o começo);
+- eventos de 1 a 8 s, sem silêncio nas pontas.
+
+Cada som é gravado em `audio/` assim que fica pronto, e dá para retomar a geração. Ao remontar a
+ficha, o som cujo texto não mudou mantém o arquivo.
+
+**No jogo:** o player mistura tudo no navegador. O botão de som liga e desliga, e no modo RETRÔ o
+som passa por um filtro de 8 bits.
+
+## Revisão da arte
+
+Cada imagem gerada passa por uma revisão antes de entrar no jogo. A Gemini olha a imagem como um
+jogador olharia:
+
+- **cenário:** mostra os objetos fixos? Concorda com o texto? Mostra a cena **como ela começa**? Uma
+  lareira que o jogador ainda vai acender aparece apagada, porque a variante é que mostra o fogo.
+- **variante:** a mudança aparece com clareza? Continua sendo a mesma sala, sem nada novo em outro
+  lugar (pinturas no teto, uma lareira que sumiu)? A comparação vai numa imagem só, com o antes em
+  cima e o depois embaixo.
+
+Quando a imagem não passa, a revisão escreve a correção e o Saga a aplica: edita a mesma imagem, ou
+gera de novo quando a edição não salva. Isso acontece até 2 vezes por imagem. O que continua errado
+depois disso fica guardado no projeto e aparece no painel **Ficha**, em "A revisão ainda vê...", para
+você decidir. Gosto, clima e estilo (neve, poeira, cores) não contam como erro.
+
+O pedido de cada variante também diz **onde** fica o objeto que muda ("o armário à esquerda do
+centro"), tirando a posição da área clicável dele.
+
+A revisão usa o modelo `models/gemini-3.5-flash`. Os modelos *lite* erram justamente na comparação
+de duas imagens. Para trocar, use a chave `gemini_review_model` em `~/.saga_engine_settings.json`
+ou a variável `SAGA_REVIEW_MODEL`.
+
+Para revisar um jogo que já tem arte:
+
+```bash
+python tools/review_art.py "Neve sobre o Claustro"                    # só relata (Gemini, sem GPU)
+python tools/review_art.py "Neve sobre o Claustro" --cena Biblioteca  # uma cena
+python tools/review_art.py "Neve sobre o Claustro" --corrigir         # também corrige (GPU)
+```
+
+O Diretor tem a mesma revisão na ferramenta `review_scene_art`.
+
 ## Onde usar
 
 **No editor:** o botão **Ficha** no topo abre a ficha do projeto. Num projeto que ainda não tem

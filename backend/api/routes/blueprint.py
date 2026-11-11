@@ -1,6 +1,6 @@
 """
 The game's blueprint (ficha.yaml): read it, check it, build the project from it and make the art
-still missing, in the background (GET /art shows how far it got).
+and the sounds still missing, in the background (GET /art and GET /sound show how far they got).
 """
 
 import asyncio
@@ -18,6 +18,7 @@ router = APIRouter(prefix="/api/blueprint", tags=["blueprint"])
 logger = logging.getLogger(__name__)
 
 ART_JOBS: Dict[str, dict] = {}          # project name -> {"running", "log", "result", "started"}
+SOUND_JOBS: Dict[str, dict] = {}        # the same, for the sounds
 
 
 class BlueprintText(BaseModel):
@@ -55,17 +56,19 @@ async def check_blueprint(req: BlueprintText):
 async def build_blueprint(req: BlueprintText):
     if ART_JOBS.get(req.project_name, {}).get("running"):
         raise HTTPException(status_code=409, detail="a arte deste jogo está sendo gerada; espere terminar")
+    if SOUND_JOBS.get(req.project_name, {}).get("running"):
+        raise HTTPException(status_code=409, detail="os sons deste jogo estão sendo gerados; espere terminar")
     return await asyncio.to_thread(blueprint.build, req.project_name, req.text, True)
 
 
-@router.post("/art/{project_name}")
-async def start_art(project_name: str):
+def _start_job(jobs: Dict[str, dict], project_name: str, work, what: str) -> dict:
+    """Runs work(project_name, say) in the background; one job per project at a time."""
     _root(project_name)
-    job = ART_JOBS.get(project_name)
+    job = jobs.get(project_name)
     if job and job["running"]:
         return job
     job = {"running": True, "log": [], "result": None, "started": time.time()}
-    ART_JOBS[project_name] = job
+    jobs[project_name] = job
 
     def say(msg):
         job["log"].append(f"{time.strftime('%H:%M:%S')} {msg}")
@@ -73,9 +76,9 @@ async def start_art(project_name: str):
 
     async def run():
         try:
-            job["result"] = await blueprint.make_art(project_name, say)
+            job["result"] = await work(project_name, say)
         except Exception as e:                       # noqa: BLE001 - shown to the user
-            logger.exception("arte de %s", project_name)
+            logger.exception("%s de %s", what, project_name)
             job["result"] = {"erro": str(e)}
         finally:
             job["running"] = False
@@ -83,6 +86,28 @@ async def start_art(project_name: str):
 
     asyncio.create_task(run())
     return job
+
+
+@router.post("/sound/{project_name}")
+async def start_sound(project_name: str):
+    from backend.services import sound_gen
+    return _start_job(SOUND_JOBS, project_name, sound_gen.make_sounds, "som")
+
+
+@router.get("/sound/{project_name}")
+async def sound_status(project_name: str):
+    job = SOUND_JOBS.get(project_name)
+    try:
+        status = blueprint.sound_status(project_service.load_project(project_name))
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    return {"running": bool(job and job["running"]), "log": (job or {}).get("log", [])[-40:],
+            "result": (job or {}).get("result"), **status}
+
+
+@router.post("/art/{project_name}")
+async def start_art(project_name: str):
+    return _start_job(ART_JOBS, project_name, blueprint.make_art, "arte")
 
 
 @router.get("/art/{project_name}")

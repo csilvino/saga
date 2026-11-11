@@ -69,6 +69,7 @@ Os comandos são separados por `;` ou por quebra de linha.
 | `clear flag` | apaga a flag |
 | `inc flag [n]` / `dec flag [n]` | soma/subtrai n (padrão 1) |
 | `end "texto"` | termina o jogo com esse texto |
+| `play "descrição do som"` | toca um som; a geração de som da ficha cria o arquivo a partir da descrição |
 | `stop` | para o script aqui |
 | `if cond { } else if cond { } else { }` | decisão |
 

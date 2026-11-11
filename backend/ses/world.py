@@ -19,6 +19,11 @@ def slug(text) -> str:
     return re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
 
 
+def sound_key(text) -> str:
+    """The key of a 'play "..."' sound in project["sounds"]: the description, slugged."""
+    return slug(text)[:80]
+
+
 def obj_description(obj: dict) -> str:
     return (obj.get("description") or (obj.get("properties") or {}).get("description") or "").strip()
 

@@ -1,4 +1,4 @@
-# Gerador local de imagens (FLUX.1 Kontext)
+# Gerador local de imagens e sons (FLUX.1 Kontext, Stable Audio Open)
 
 Gera cenários e sprites na **sua GPU**, sem custo e sem cota. Usa o FLUX.1 Kontext [dev], que
 recebe uma imagem de referência. Com isso todas as cenas saem no mesmo estilo da primeira.
@@ -44,6 +44,22 @@ Para usar outros repositórios, defina estas variáveis de ambiente ou as chaves
 | `FLUX_GGUF_REPO` | `flux_gguf_repo` | `QuantStack/FLUX.1-Kontext-dev-GGUF` |
 | `FLUX_GGUF_FILE` | `flux_gguf_file` | `flux1-kontext-dev-Q4_K_S.gguf` |
 | `HF_HOME` | `hf_home` | cache padrão do Hugging Face |
+
+## Som (Stable Audio Open)
+
+O mesmo gerador faz os sons dos jogos (`POST /audio`), com o **Stable Audio Open 1.0**
+(`stabilityai/stable-audio-open-1.0`). O modelo é **restrito** no Hugging Face, e a licença é a
+**Stability AI Community License**, que permite uso comercial para quem fatura menos de US$ 1 milhão
+por ano:
+
+1. Aceite a licença na página do modelo.
+2. Faça login com o mesmo `HF_HOME` do gerador. No Windows, num PowerShell:
+   `$env:HF_HOME='D:\hf_cache'; .venv\Scripts\hf.exe auth login`.
+
+O som e o FLUX dividem a GPU: quem é chamado descarrega o outro. A primeira chamada de cada um
+demora mais, porque carrega o modelo. Para usar outro repositório, defina `AUDIO_REPO` ou a chave
+`audio_repo` em `~/.saga_engine_settings.json`. O som sai em OGG Vorbis, por isso o `soundfile` está
+no `requirements.txt`.
 
 ## Rodar
 

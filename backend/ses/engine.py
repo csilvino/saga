@@ -17,7 +17,7 @@ from typing import Dict, List, Optional
 
 from backend.ses.language import (Cond, parse_condition, DIRECTIONS, If, OBJECT_EVENTS, Ref, SESError, Script,
                                   Stmt, parse)
-from backend.ses.world import World, is_scenery, obj_description, slug
+from backend.ses.world import World, is_scenery, obj_description, slug, sound_key
 
 INV = "@inventory"
 GONE = "@gone"
@@ -115,6 +115,7 @@ class GameEngine:
     def start(self) -> dict:
         self.state = self.new_state()
         self.out: List[str] = []
+        self.sounds: List[str] = []
         if not self.state["scene"]:
             return {"state": self.state, "messages": ["Este projeto ainda não tem cenas."], "view": None}
         for owner, err in self.script_errors.items():
@@ -125,6 +126,7 @@ class GameEngine:
     def command(self, state: dict, text: str) -> dict:
         self.state = copy.deepcopy(state) if state else self.new_state()
         self.out = []
+        self.sounds = []
         if self.state.get("ended"):
             self.out.append(self.state["ended"])
             self.out.append("(O jogo terminou. Recomece para jogar de novo.)")
@@ -136,7 +138,11 @@ class GameEngine:
         return self._result()
 
     def _result(self) -> dict:
-        return {"state": self.state, "messages": self.out, "view": self.view()}
+        """messages: the texts of this turn; sounds: the 'play' of this turn, as
+        [{"text", "file"}] (file None until the sound is generated); view: what is on screen."""
+        known = (self.project.get("sounds") or {})
+        sounds = [{"text": t, "file": (known.get(sound_key(t)) or {}).get("file")} for t in self.sounds]
+        return {"state": self.state, "messages": self.out, "sounds": sounds, "view": self.view()}
 
     # where things are
     def location(self, oid: str) -> Optional[str]:
@@ -177,6 +183,8 @@ class GameEngine:
             "inventory": [{"id": o, "name": self.world.object_name(o)} for o in self.inventory()],
             "exits": {d: self.world.scene_name(t) for d, t in self.exits().items()},
             "background": self.background(sid),
+            "ambient": self.ambient(sid),
+            "object_sounds": self.object_sounds(),
             "ended": self.state.get("ended"),
             "turns": self.state.get("turns", 0),
         }
@@ -193,6 +201,35 @@ class GameEngine:
             except SESError:
                 continue
         return chosen
+
+    def _holds(self, owner: str, when: Optional[str]) -> bool:
+        if not when:
+            return True
+        try:
+            return self._cond(owner, parse_condition(when))
+        except SESError:
+            return False
+
+    def ambient(self, sid: str) -> Optional[str]:
+        """The scene's background sound for the current state: the last of its sound variants
+        whose condition holds (scene["sound"]["variants"]), else its own (scene["sound"]["file"])."""
+        snd = (self.world.scenes.get(sid) or {}).get("sound") or {}
+        chosen = snd.get("file")
+        for v in snd.get("variants") or []:
+            if v.get("file") and self._holds(sid, v.get("when")):
+                chosen = v["file"]
+        return chosen
+
+    def object_sounds(self) -> List[dict]:
+        """Sounds of the visible objects here (a clock ticking, a crow now and then):
+        [{"id", "file", "mode": "loop"|"random", "every": [min, max] seconds}]."""
+        out = []
+        for oid in self.here():
+            snd = self.world.objects[oid].get("sound") or {}
+            if snd.get("file") and self._holds(oid, snd.get("when")):
+                out.append({"id": oid, "file": snd["file"], "mode": snd.get("mode", "loop"),
+                            "every": snd.get("every") or [20, 60]})
+        return out
 
     # --- the player's command -----------------------------------------------------------------
 
@@ -423,6 +460,8 @@ class GameEngine:
         st = self.state
         if op == "say":
             self.say(a[0])
+        elif op == "play":
+            self.sounds.append(a[0])
         elif op == "take":
             st["where"][self._obj(a[0], owner)] = INV
         elif op == "drop":

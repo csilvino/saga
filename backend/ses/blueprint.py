@@ -28,7 +28,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from backend.ses import director_tools as dt
 from backend.ses.engine import GameEngine, INV, playtest
 from backend.ses.language import If, SESError, Stmt, parse, parse_condition, walk, walk_conds
-from backend.ses.world import World, slug
+from backend.ses.world import World, slug, sound_key
 
 FILE_NAME = "ficha.yaml"
 
@@ -121,6 +121,7 @@ def shape_problems(bp: dict) -> List[dict]:
                 parse_condition(str(v["quando"]))
             except SESError as e:
                 out.append(problem("erro", f"variante: condição {v['quando']!r} inválida: {e}", s["nome"]))
+    out += sound_problems(bp)
     start = bp.get("inicio")
     if start and slug(start) not in names:
         out.append(problem("erro", f"'inicio' aponta para {start!r}, que não é uma cena"))
@@ -216,8 +217,10 @@ def assemble(bp: dict, previous: Optional[dict] = None) -> Tuple[dict, List[dict
                                             for v in _list(s.get("variantes"))]
     if bp.get("inicio"):
         tool("set_start_scene", scene=bp["inicio"])
+    apply_sounds(bp, p)
     if previous:
         p = carry_art(previous, p)
+        carry_sounds(previous, p)
     return p, out
 
 
@@ -243,6 +246,8 @@ def carry_art(old: dict, new: dict) -> dict:
         for v in s.get("variants") or []:
             if v["when"] in done:
                 v["background"] = done[v["when"]]["background"]
+                if done[v["when"]].get("review") and done[v["when"]].get("change") == v.get("change"):
+                    v["review"] = copy.deepcopy(done[v["when"]]["review"])
         for o in s["objects"]:
             prev = old_objs.get(slug(o.get("name")))
             if o.get("type") == "background" or not prev:
@@ -266,6 +271,168 @@ def carry_art(old: dict, new: dict) -> dict:
 
 
 # --- static analysis ------------------------------------------------------------------------
+
+# --- sound: what the blueprint says -> project.json -------------------------------------------
+#
+# Scene:  som: "vento uivando"                                  (background sound, in a loop)
+#         som: {ambiente: "vento", quando: [{quando: flag(fogo), ambiente: "fogo crepitando"}]}
+# Object: som: "tique-taque de relógio"                         (in a loop while it is here)
+#         som: {descricao: "um corvo grasna", repete: as vezes, intervalo: [20, 60], quando: ...}
+# Scripts: play "porta de ferro rangendo"                       (an event)
+# The files come later (make_sounds); a sound whose text did not change keeps its file.
+
+SOUND_MODES = {"sempre": "loop", "continuo": "loop", "contínuo": "loop", "loop": "loop",
+               "as vezes": "random", "às vezes": "random", "de vez em quando": "random", "random": "random"}
+
+
+def scene_sound(value) -> Optional[dict]:
+    if not value:
+        return None
+    if isinstance(value, str):
+        value = {"ambiente": value}
+    out = {"ambient": str(value.get("ambiente") or "").strip(), "variants": []}
+    for v in _list(value.get("quando")):
+        v = v if isinstance(v, dict) else {}
+        out["variants"].append({"when": str(v.get("quando") or "").strip(),
+                                "ambient": str(v.get("ambiente") or "").strip()})
+    return out
+
+
+def object_sound(value) -> Optional[dict]:
+    """Raises ValueError/TypeError on a bad 'intervalo' (sound_problems reports it)."""
+    if not value:
+        return None
+    if isinstance(value, str):
+        value = {"descricao": value}
+    mode = SOUND_MODES.get(str(value.get("repete") or "sempre").strip().lower(), "")
+    every = [float(x) for x in _list(value.get("intervalo"))] or [20.0, 60.0]
+    out = {"desc": str(value.get("descricao") or "").strip(), "mode": mode, "every": every}
+    if value.get("quando"):
+        out["when"] = str(value["quando"]).strip()
+    return out
+
+
+def sound_problems(bp: dict) -> List[dict]:
+    out = []
+
+    def cond(text, where):
+        try:
+            parse_condition(text)
+        except SESError as e:
+            out.append(problem("erro", f"som: condição {text!r} inválida: {e}", where))
+
+    for s in _list(bp.get("cenas")):
+        if not isinstance(s, dict):
+            continue
+        where = str(s.get("nome") or "")
+        raw = s.get("som")
+        if raw and not isinstance(raw, (str, dict)):
+            out.append(problem("erro", "'som' da cena: um texto ou {ambiente, quando}", where))
+        elif raw:
+            snd = scene_sound(raw)
+            if not snd["ambient"]:
+                out.append(problem("erro", "'som' da cena sem 'ambiente'", where))
+            for v in snd["variants"]:
+                if not v["when"] or not v["ambient"]:
+                    out.append(problem("erro", "som: cada item de 'quando' precisa de 'quando' e 'ambiente'", where))
+                else:
+                    cond(v["when"], where)
+        for o in _list(s.get("objetos")):
+            raw = o.get("som") if isinstance(o, dict) else None
+            if not raw:
+                continue
+            w = f"{where} / {o.get('nome')}"
+            if not isinstance(raw, (str, dict)):
+                out.append(problem("erro", "'som' do objeto: um texto ou {descricao, repete, intervalo, quando}", w))
+                continue
+            try:
+                snd = object_sound(raw)
+            except (TypeError, ValueError):
+                out.append(problem("erro", "som: 'intervalo' são dois números de segundos, ex.: [20, 60]", w))
+                continue
+            if not snd["desc"]:
+                out.append(problem("erro", "'som' do objeto sem 'descricao'", w))
+            if not snd["mode"]:
+                out.append(problem("erro", "som: 'repete' é 'sempre' ou 'as vezes'", w))
+            if len(snd["every"]) != 2 or not 0 < snd["every"][0] <= snd["every"][1]:
+                out.append(problem("erro", "som: 'intervalo' são dois números de segundos, ex.: [20, 60]", w))
+            if snd.get("when"):
+                cond(snd["when"], w)
+    return out
+
+
+def play_texts(project: dict) -> List[str]:
+    """Every 'play "..."' in the project's scripts, once each, in order."""
+    seen, out = set(), []
+    for _owner, _sid, src in _scripts(project):
+        try:
+            script = parse(src)
+        except SESError:
+            continue
+        for h in script.handlers:
+            for n in walk(h.body):
+                if isinstance(n, Stmt) and n.op == "play" and sound_key(n.args[0]) not in seen:
+                    seen.add(sound_key(n.args[0]))
+                    out.append(n.args[0])
+    return out
+
+
+def apply_sounds(bp: dict, p: dict):
+    """Writes the blueprint's sounds into the assembled project (no files yet)."""
+    world = World(p)
+    for s in _list(bp.get("cenas")):
+        sid = world.find_scene(s.get("nome"))
+        if not sid:
+            continue
+        snd = scene_sound(s.get("som"))
+        if snd:
+            p["scenes"][sid]["sound"] = snd
+        by_name = {slug(o.get("name")): o for o in p["scenes"][sid].get("objects", [])}
+        for o in _list(s.get("objetos")):
+            obj = by_name.get(slug(o.get("nome")))
+            osnd = object_sound(o.get("som")) if obj is not None else None
+            if osnd:
+                obj["sound"] = osnd
+    p["sounds"] = {sound_key(t): {"text": t} for t in play_texts(p)}
+
+
+def _sound_items(project: dict):
+    """(kind, text, the dict that holds 'file') for every sound of the project."""
+    for s in (project.get("scenes") or {}).values():
+        snd = s.get("sound") or {}
+        if snd.get("ambient"):
+            yield "ambient", snd["ambient"], snd
+        for v in snd.get("variants") or []:
+            if v.get("ambient"):
+                yield "ambient", v["ambient"], v
+        for o in s.get("objects", []):
+            osnd = o.get("sound") or {}
+            if osnd.get("desc"):
+                yield ("object" if osnd.get("mode") == "loop" else "event"), osnd["desc"], osnd
+    for v in (project.get("sounds") or {}).values():
+        if v.get("text"):
+            yield "event", v["text"], v
+
+
+def carry_sounds(old: dict, new: dict):
+    """A sound whose kind and text did not change keeps its file."""
+    files = {(k, sound_key(t)): h["file"] for k, t, h in _sound_items(old) if h.get("file")}
+    for k, t, h in _sound_items(new):
+        if (k, sound_key(t)) in files:
+            h["file"] = files[(k, sound_key(t))]
+
+
+def sound_jobs(project: dict) -> List[Tuple[str, str, dict]]:
+    """Every sound still without a file: (kind, text, holder). kind: 'ambient' (long, loops),
+    'object' (loops), 'event' (short, once)."""
+    return [(k, t, h) for k, t, h in _sound_items(project) if not h.get("file")]
+
+
+def sound_status(project: dict) -> dict:
+    items = list(_sound_items(project))
+    missing = [t for _k, t, h in items if not h.get("file")]
+    return {"sons_sem_arquivo": missing, "sons": len(items), "som_pronto": not missing}
+
 
 def _scripts(project):
     """(owner name, scene id, parsed script) for every script in the project."""
@@ -293,7 +460,7 @@ def analyze(project: dict) -> List[dict]:
             if h.with_ref is not None:
                 used.add(slug(h.with_ref.name))
             if h.event not in ("examine", "take", "drop") or any(
-                    isinstance(n, Stmt) and n.op not in ("say", "stop") for n in walk(h.body)):
+                    isinstance(n, Stmt) and n.op not in ("say", "stop", "play") for n in walk(h.body)):
                 useful_own.add(slug(owner))
             for node in walk(h.body):
                 if isinstance(node, Stmt):
@@ -665,6 +832,7 @@ def check(bp: dict, previous: Optional[dict] = None, explore_budget: int = 25000
         "testes": results,
         **({"explorador": exploration} if exploration else {}),
         "arte": art_status(project),
+        "som": sound_status(project),
     }
     return project, report
 
@@ -674,8 +842,14 @@ def art_status(project: dict) -> dict:
     missing = [s.get("name") for s in scenes.values() if not has_art(s)]
     variants = [f"{s.get('name')}: {v.get('when')}" for s in scenes.values()
                 for v in s.get("variants") or [] if not v.get("background")]
+    review = []                     # what the art reviewer still finds wrong (scene_art.review_*)
+    for s in scenes.values():
+        bg = _scene_bg(s) or {}
+        review += [f"{s.get('name')}: {p}" for p in (bg.get("review") or {}).get("problems", [])]
+        for v in s.get("variants") or []:
+            review += [f"{s.get('name')} [{v.get('when')}]: {p}" for p in (v.get("review") or {}).get("problems", [])]
     return {"cenas_sem_arte": missing, "variantes_sem_arte": variants,
-            "pronta": not missing and not variants}
+            "pronta": not missing and not variants, "arte_revisar": review}
 
 
 def export(project: dict) -> dict:
@@ -708,12 +882,23 @@ def export(project: dict) -> dict:
                 entry["apelidos"] = list(props["aliases"])
             if (o.get("ses") or "").strip():
                 entry["script"] = o["ses"].strip() + "\n"
+            osnd = o.get("sound") or {}
+            if osnd.get("desc"):
+                simple = osnd.get("mode", "loop") == "loop" and not osnd.get("when")
+                entry["som"] = osnd["desc"] if simple else {
+                    "descricao": osnd["desc"], "repete": "sempre" if osnd.get("mode") == "loop" else "as vezes",
+                    "intervalo": osnd.get("every") or [20, 60], **({"quando": osnd["when"]} if osnd.get("when") else {})}
             objs.append(entry)
         entry = {"nome": s.get("name"), "descricao": (s.get("description") or "").strip()}
         if (s.get("ses") or "").strip():
             entry["script"] = s["ses"].strip() + "\n"
         if exits:
             entry["saidas"] = exits
+        snd = s.get("sound") or {}
+        if snd.get("ambient"):
+            entry["som"] = snd["ambient"] if not snd.get("variants") else {
+                "ambiente": snd["ambient"],
+                "quando": [{"quando": v["when"], "ambiente": v["ambient"]} for v in snd["variants"]]}
         if objs:
             entry["objetos"] = objs
         variants = [{"quando": v["when"], "mudanca": v.get("change") or "(descreva a mudança)"}
@@ -811,7 +996,7 @@ async def make_art(project_name: str, progress: Optional[Callable[[str], None]] 
                 continue
             say(f"variante {scene.get('name')}: {v['when']}")
             try:
-                await scene_art.create_variant(project_name, sid, v["when"], v.get("change") or "")
+                await scene_art.create_variant(project_name, sid, v["when"], v.get("change") or "", progress=say)
                 done.append(f"{scene.get('name')}: {v['when']}")
             except Exception as e:                       # noqa: BLE001
                 failed.append(f"{scene.get('name')} {v['when']}: {e}")
@@ -839,6 +1024,10 @@ cenas:
     variantes:                          # outra versão do cenário enquanto a condição valer
       - quando: flag(porta_aberta)
         mudanca: a porta de ferro agora está aberta, escada visível
+    som:                                # opcional: som ambiente em loop enquanto o jogador está aqui
+      ambiente: vento frio no pátio, sinos distantes
+      quando:                           # outro ambiente enquanto a condição valer (opcional)
+        - {quando: flag(porta_aberta), ambiente: corrente de ar vinda da escada}
     objetos:
       - nome: balcão
         descricao: aparência visual (vira imagem) e o que o jogador lê ao examinar
@@ -846,8 +1035,10 @@ cenas:
         pegavel: false
         escondido: false                # true: só aparece com show/take num script
         apelidos: [balcao]
+        som: tique-taque de relógio     # opcional: som do objeto, em loop enquanto ele está à vista
+        # ou {descricao: um corvo grasna, repete: as vezes, intervalo: [20, 60], quando: not flag(x)}
         script: |
-          on open { show fosforos; say "..." }
+          on open { show fosforos; play "gaveta de madeira rangendo"; say "..." }   # play: som de evento
 requisitos: {cenas: 7, puzzles: 4, mortes: 2}   # o que o usuário pediu; a verificação cobra
 testes:
   vitoria: trecho do texto do end de vitória
@@ -861,4 +1052,5 @@ comandos da solução que mudam o jogo sem ser andar ou pegar (abrir, usar X em 
 revela algo). Um item pegável precisa servir para algo. Nomes de cenas e de objetos únicos no jogo inteiro. Passagem que abre durante o jogo não vai em
 saidas: o script que a abre faz 'link direção to cena'. A verificação aponta: script com erro, cena sem
 caminho, flag testada que ninguém marca, objeto escondido que nunca aparece, item sem uso, e roda a
-solução, cada morte e um jogador automático que tenta vencer sozinho."""
+solução, cada morte e um jogador automático que tenta vencer sozinho. Som: descreva o que se ouve
+(fonte, material, lugar), sem música nem vozes; sons são opcionais, mas dão vida ao jogo."""
