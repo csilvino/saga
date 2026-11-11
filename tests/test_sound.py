@@ -75,6 +75,16 @@ def test_bad_sound_fields_are_errors():
     assert not bp.check(bp.load(bad), None, explore_budget=2000)[1]["ok"]
 
 
+def test_a_comma_inside_braces_without_quotes_is_caught():
+    # YAML cuts "eco de sino ao longe, grave" at the comma and makes "grave" a key
+    for old, new in (("ambiente: eco de sino ao longe}", "ambiente: eco de sino ao longe, grave}"),
+                     ("descricao: um corvo grasna,", "descricao: um corvo grasna, rouco,")):
+        report = bp.check(bp.load(FICHA.replace(old, new)), None, explore_budget=2000)[1]
+        assert any("precisa de aspas" in p["msg"] for p in report["problemas"]), new
+    quoted = FICHA.replace("ambiente: eco de sino ao longe}", 'ambiente: "eco de sino ao longe, grave"}')
+    assert scene(build(quoted), "Torre")["sound"]["variants"][0]["ambient"] == "eco de sino ao longe, grave"
+
+
 def test_rebuilding_keeps_the_files_of_sounds_whose_text_did_not_change():
     p = build()
     for _kind, _text, holder in bp._sound_items(p):

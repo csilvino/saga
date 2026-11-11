@@ -85,7 +85,8 @@
       "variants": [],
       "sound": {
         "ambient": "nevasca uivando contra as paredes de um chalé de madeira, tábuas rangendo, interior abafado",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_nevasca_uivando_contra_as_parede_879ac7.ogg"
       }
     },
     "scene_fd544680": {
@@ -131,7 +132,8 @@
       "variants": [],
       "sound": {
         "ambient": "vento forte uivando entre pinheiros cobertos de gelo, ao ar livre na montanha",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_vento_forte_uivando_entre_pinhei_f11913.ogg"
       }
     },
     "scene_9024b0eb": {
@@ -177,7 +179,8 @@
       "variants": [],
       "sound": {
         "ambient": "rajadas de vento cortante à beira de um precipício, neve varrida, eco no vazio",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_rajadas_de_vento_cortante_a_beir_e05ae1.ogg"
       }
     },
     "scene_350fddd9": {
@@ -223,7 +226,8 @@
       "variants": [],
       "sound": {
         "ambient": "vento de nevasca contra muros de pedra, portões de ferro rangendo de leve ao vento",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_vento_de_nevasca_contra_muros_de_6ad06b.ogg"
       }
     },
     "scene_a9d4cee7": {
@@ -358,7 +362,8 @@
       "variants": [],
       "sound": {
         "ambient": "guarita de pedra abafada, vento distante lá fora, chama de vela crepitando baixinho",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_guarita_de_pedra_abafada_vento_d_2274b9.ogg"
       }
     },
     "scene_dba96132": {
@@ -412,7 +417,8 @@
       "variants": [],
       "sound": {
         "ambient": "pátio de pedra ao ar livre, vento frio girando entre arcadas, eco suave",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_patio_de_pedra_ao_ar_livre_vento_1a8947.ogg"
       }
     },
     "scene_1d5a0c52": {
@@ -527,9 +533,11 @@
         "variants": [
           {
             "when": "flag(fogo_aceso)",
-            "ambient": "fogo crepitando numa lareira de pedra"
+            "ambient": "fogo crepitando numa lareira de pedra, vento distante pela chaminé",
+            "file": "audio/Sound_fogo_crepitando_numa_lareira_de__4fc7a3.ogg"
           }
-        ]
+        ],
+        "file": "audio/Sound_cozinha_de_pedra_silenciosa_e_ab_9b4120.ogg"
       }
     },
     "scene_2a7d221e": {
@@ -605,7 +613,8 @@
       "variants": [],
       "sound": {
         "ambient": "nevasca sibilando pelas frestas de um telhado de madeira, prateleiras rangendo, ratos arranhando ao longe",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_nevasca_sibilando_pelas_frestas__ae9c5d.ogg"
       }
     },
     "scene_3a0093b4": {
@@ -652,7 +661,8 @@
       "variants": [],
       "sound": {
         "ambient": "capela de pedra ampla e vazia, vento entrando por vitrais quebrados, eco longo",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_capela_de_pedra_ampla_e_vazia_ve_892484.ogg"
       }
     },
     "scene_ece7e4db": {
@@ -757,7 +767,8 @@
       "variants": [],
       "sound": {
         "ambient": "silêncio pesado de uma sala de pedra, vento abafado atrás das paredes, madeira estalando",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_silencio_pesado_de_uma_sala_de_p_64aa68.ogg"
       }
     },
     "scene_0b59956c": {
@@ -830,7 +841,8 @@
               15.0,
               40.0
             ],
-            "when": "not flag(sino_tocado)"
+            "when": "not flag(sino_tocado)",
+            "file": "audio/Sound_sino_de_bronze_enorme_vibrando_b_c6d0f2.ogg"
           }
         },
         {
@@ -871,7 +883,8 @@
       "variants": [],
       "sound": {
         "ambient": "vento glacial muito forte no alto de uma torre aberta, rajadas assobiando entre vigas de madeira",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_vento_glacial_muito_forte_no_alt_03360f.ogg"
       }
     },
     "scene_d3ceb89c": {
@@ -986,9 +999,11 @@
         "variants": [
           {
             "when": "flag(estante_movida)",
-            "ambient": "corrente de ar frio saindo de uma passagem de pedra"
+            "ambient": "corrente de ar frio saindo de uma passagem de pedra, eco grave e escuro",
+            "file": "audio/Sound_corrente_de_ar_frio_saindo_de_um_758fec.ogg"
           }
-        ]
+        ],
+        "file": "audio/Sound_biblioteca_de_pedra_silenciosa_v_9af164.ogg"
       }
     },
     "scene_fe49a327": {
@@ -1099,7 +1114,8 @@
       "variants": [],
       "sound": {
         "ambient": "sala pequena de pedra em silêncio, uma gota de água pingando de vez em quando",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_sala_pequena_de_pedra_em_silenci_dc21cb.ogg"
       }
     },
     "scene_9ad49751": {
@@ -1205,7 +1221,8 @@
       "variants": [],
       "sound": {
         "ambient": "corredor de pedra estreito e gelado, vento assobiando por frestas, portas de madeira rangendo ao longe",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_corredor_de_pedra_estreito_e_gel_253c26.ogg"
       }
     },
     "scene_ddddac7e": {
@@ -1252,7 +1269,8 @@
       "variants": [],
       "sound": {
         "ambient": "sala de pedra silenciosa, ar parado, vento muito distante",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_sala_de_pedra_silenciosa_ar_para_929761.ogg"
       }
     },
     "scene_2810dff1": {
@@ -1402,9 +1420,11 @@
         "variants": [
           {
             "when": "flag(porta_cripta_aberta)",
-            "ambient": "catacumba de pedra úmida"
+            "ambient": "catacumba de pedra úmida, gotas pingando, corrente de ar grave vinda de baixo",
+            "file": "audio/Sound_catacumba_de_pedra_umida_gotas_p_501cfe.ogg"
           }
-        ]
+        ],
+        "file": "audio/Sound_catacumba_de_pedra_umida_gotas_d_d81004.ogg"
       }
     },
     "scene_29ffc9a8": {
@@ -1482,7 +1502,8 @@
       ],
       "sound": {
         "ambient": "câmara de pedra circular, borbulhar lento de óleo espesso, zumbido grave e opressivo",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_camara_de_pedra_circular_borbulh_3cf4df.ogg"
       }
     },
     "scene_e8992222": {
@@ -1554,7 +1575,8 @@
       "variants": [],
       "sound": {
         "ambient": "braseiros crepitando numa câmara de pedra, zumbido grave e ritualístico, eco profundo",
-        "variants": []
+        "variants": [],
+        "file": "audio/Sound_braseiros_crepitando_numa_camara_395f7c.ogg"
       }
     }
   },
@@ -1580,46 +1602,60 @@
   },
   "sounds": {
     "fosforo_riscado_e_a_chama_de_uma_lanterna_a_oleo_pegando": {
-      "text": "fósforo riscado e a chama de uma lanterna a óleo pegando"
+      "text": "fósforo riscado e a chama de uma lanterna a óleo pegando",
+      "file": "audio/Sound_fosforo_riscado_e_a_chama_de_uma_792cf4.ogg"
     },
     "gaveta_de_madeira_emperrada_sendo_puxada_com_um_rangido": {
-      "text": "gaveta de madeira emperrada sendo puxada com um rangido"
+      "text": "gaveta de madeira emperrada sendo puxada com um rangido",
+      "file": "audio/Sound_gaveta_de_madeira_emperrada_send_2a45b2.ogg"
     },
     "fosforo_riscado_e_lenha_seca_pegando_fogo_numa_lareira": {
-      "text": "fósforo riscado e lenha seca pegando fogo numa lareira"
+      "text": "fósforo riscado e lenha seca pegando fogo numa lareira",
+      "file": "audio/Sound_fosforo_riscado_e_lenha_seca_peg_ffab4c.ogg"
     },
     "chiado_suave_de_incenso_acendendo_sobre_brasas": {
-      "text": "chiado suave de incenso acendendo sobre brasas"
+      "text": "chiado suave de incenso acendendo sobre brasas",
+      "file": "audio/Sound_chiado_suave_de_incenso_acendend_5b81f4.ogg"
     },
     "madeira_estalando_ao_ser_forcada_com_um_pe_de_cabra": {
-      "text": "madeira estalando ao ser forçada com um pé de cabra"
+      "text": "madeira estalando ao ser forçada com um pé de cabra",
+      "file": "audio/Sound_madeira_estalando_ao_ser_forcada_007af1.ogg"
     },
     "badalada_profunda_e_ressonante_de_um_enorme_sino_de_bronze_eco_longo": {
-      "text": "badalada profunda e ressonante de um enorme sino de bronze, eco longo"
+      "text": "badalada profunda e ressonante de um enorme sino de bronze, eco longo",
+      "file": "audio/Sound_badalada_profunda_e_ressonante_d_4a9a62.ogg"
     },
     "estante_pesada_de_carvalho_arrastada_sobre_piso_de_pedra": {
-      "text": "estante pesada de carvalho arrastada sobre piso de pedra"
+      "text": "estante pesada de carvalho arrastada sobre piso de pedra",
+      "file": "audio/Sound_estante_pesada_de_carvalho_arras_100594.ogg"
     },
     "painel_de_madeira_cedendo_com_estalo_ao_ser_forcado_com_um_pe_de_cabra": {
-      "text": "painel de madeira cedendo com estalo ao ser forçado com um pé de cabra"
+      "text": "painel de madeira cedendo com estalo ao ser forçado com um pé de cabra",
+      "file": "audio/Sound_painel_de_madeira_cedendo_com_es_e4a1cd.ogg"
     },
     "queda_e_impacto_surdo_sobre_pedras_numa_cripta": {
-      "text": "queda e impacto surdo sobre pedras numa cripta"
+      "text": "queda e impacto surdo sobre pedras numa cripta",
+      "file": "audio/Sound_queda_e_impacto_surdo_sobre_pedr_fc7a9e.ogg"
     },
     "porta_de_ferro_pesada_rangendo_ao_abrir_numa_cripta_de_pedra": {
-      "text": "porta de ferro pesada rangendo ao abrir numa cripta de pedra"
+      "text": "porta de ferro pesada rangendo ao abrir numa cripta de pedra",
+      "file": "audio/Sound_porta_de_ferro_pesada_rangendo_a_410f9f.ogg"
     },
     "chiado_de_gas_venenoso_escapando_numa_camara_de_pedra": {
-      "text": "chiado de gás venenoso escapando numa câmara de pedra"
+      "text": "chiado de gás venenoso escapando numa câmara de pedra",
+      "file": "audio/Sound_chiado_de_gas_venenoso_escapando_856e59.ogg"
     },
     "parede_de_pedra_deslizando_com_estrondo_grave_poeira_caindo": {
-      "text": "parede de pedra deslizando com estrondo grave, poeira caindo"
+      "text": "parede de pedra deslizando com estrondo grave, poeira caindo",
+      "file": "audio/Sound_parede_de_pedra_deslizando_com_e_41d4cd.ogg"
     },
     "estrondo_grave_e_chamas_se_apagando_de_uma_vez_numa_camara_de_pedra": {
-      "text": "estrondo grave e chamas se apagando de uma vez numa câmara de pedra"
+      "text": "estrondo grave e chamas se apagando de uma vez numa câmara de pedra",
+      "file": "audio/Sound_estrondo_grave_e_chamas_se_apaga_3b98ba.ogg"
     },
     "estrondo_grave_e_ameacador_numa_camara_de_pedra": {
-      "text": "estrondo grave e ameaçador numa câmara de pedra"
+      "text": "estrondo grave e ameaçador numa câmara de pedra",
+      "file": "audio/Sound_estrondo_grave_e_ameacador_numa__208a48.ogg"
     }
   }
 }

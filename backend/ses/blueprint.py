@@ -321,6 +321,13 @@ def sound_problems(bp: dict) -> List[dict]:
         except SESError as e:
             out.append(problem("erro", f"som: condição {text!r} inválida: {e}", where))
 
+    def keys(d, allowed, where):
+        # a comma inside {...} without quotes splits the text into a bogus key
+        extra = [str(k) for k in d if k not in allowed] if isinstance(d, dict) else []
+        if extra:
+            out.append(problem("erro", f"som: chave(s) desconhecida(s) {', '.join(map(repr, extra))}; "
+                                       "um texto com vírgula dentro de {...} precisa de aspas", where))
+
     for s in _list(bp.get("cenas")):
         if not isinstance(s, dict):
             continue
@@ -329,6 +336,9 @@ def sound_problems(bp: dict) -> List[dict]:
         if raw and not isinstance(raw, (str, dict)):
             out.append(problem("erro", "'som' da cena: um texto ou {ambiente, quando}", where))
         elif raw:
+            keys(raw, ("ambiente", "quando"), where)
+            for v in _list(raw.get("quando")) if isinstance(raw, dict) else []:
+                keys(v, ("quando", "ambiente"), where)
             snd = scene_sound(raw)
             if not snd["ambient"]:
                 out.append(problem("erro", "'som' da cena sem 'ambiente'", where))
@@ -345,6 +355,7 @@ def sound_problems(bp: dict) -> List[dict]:
             if not isinstance(raw, (str, dict)):
                 out.append(problem("erro", "'som' do objeto: um texto ou {descricao, repete, intervalo, quando}", w))
                 continue
+            keys(raw, ("descricao", "repete", "intervalo", "quando"), w)
             try:
                 snd = object_sound(raw)
             except (TypeError, ValueError):

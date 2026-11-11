@@ -104,7 +104,7 @@ cenas:
   som:
     ambiente: cozinha de pedra silenciosa e abafada, vento distante pela chaminé
     quando:
-    - {quando: 'flag(fogo_aceso)', ambiente: fogo crepitando numa lareira de pedra, vento distante pela chaminé}
+    - {quando: 'flag(fogo_aceso)', ambiente: "fogo crepitando numa lareira de pedra, vento distante pela chaminé"}
   saidas:
     leste: Claustro Principal
     cima: Despensa Alta
@@ -221,7 +221,7 @@ cenas:
   som:
     ambiente: biblioteca de pedra silenciosa, vento abafado, madeira estalando de leve
     quando:
-    - {quando: 'flag(estante_movida)', ambiente: corrente de ar frio saindo de uma passagem de pedra, eco grave e escuro}
+    - {quando: 'flag(estante_movida)', ambiente: "corrente de ar frio saindo de uma passagem de pedra, eco grave e escuro"}
   saidas:
     oeste: Claustro Principal
     leste: Scriptorium
@@ -337,7 +337,7 @@ cenas:
   som:
     ambiente: catacumba de pedra úmida, gotas de água pingando com eco, ar parado
     quando:
-    - {quando: 'flag(porta_cripta_aberta)', ambiente: catacumba de pedra úmida, gotas pingando, corrente de ar grave vinda de baixo}
+    - {quando: 'flag(porta_cripta_aberta)', ambiente: "catacumba de pedra úmida, gotas pingando, corrente de ar grave vinda de baixo"}
   script: |
     on enter {
       if flag(lanterna_acesa) {

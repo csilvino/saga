@@ -223,7 +223,12 @@ class Audio:
         s = settings()
         repo = os.environ.get("AUDIO_REPO") or s.get("audio_repo") or AUDIO_REPO_DEFAULT
         t = time.time()
-        self.pipe = StableAudioPipeline.from_pretrained(repo, torch_dtype=torch.float16).to("cuda")
+        from huggingface_hub import snapshot_download
+        # only what diffusers uses: the repo root also has the original 4.8 GB checkpoints
+        path = repo if os.path.isdir(repo) else snapshot_download(repo, allow_patterns=[
+            "model_index.json", "scheduler/*", "text_encoder/*", "tokenizer/*",
+            "transformer/*", "vae/*", "projection_model/*"])
+        self.pipe = StableAudioPipeline.from_pretrained(path, torch_dtype=torch.float16).to("cuda")
         log.info("modelo de som %s carregado em %.0fs", repo, time.time() - t)
 
     def generate(self, prompt: str, seconds: float, loop: bool, steps: int = 100, seed=None) -> bytes:
@@ -249,7 +254,11 @@ class Audio:
         peak = float(np.abs(y).max()) or 1.0
         y = (y * (0.89 / peak)).astype("float32")                # -1 dBFS
         buf = io.BytesIO()
-        sf.write(buf, y, rate, format="OGG", subtype="VORBIS")
+        # in small blocks: libsndfile 1.2 kills the process writing a long OGG in one go
+        with sf.SoundFile(buf, "w", rate, y.shape[1] if y.ndim > 1 else 1,
+                          format="OGG", subtype="VORBIS") as f:
+            for i in range(0, len(y), 8192):
+                f.write(y[i:i + 8192])
         return buf.getvalue()
 
 

@@ -12,3 +12,4 @@ onnxruntime
 scipy
 numpy
 soundfile>=0.12    # sound (Stable Audio Open) -> OGG
+torchsde>=0.2.6        # the Stable Audio scheduler needs it
