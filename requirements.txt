@@ -20,3 +20,4 @@ rembg
 opencv-python-headless
 numpy
 onnxruntime
+PyYAML>=6.0

@@ -14,7 +14,7 @@ logging.getLogger("watchfiles").setLevel(logging.DEBUG)
 ROOT_DIR = Path(__file__).parent.parent
 sys.path.append(str(ROOT_DIR))
 
-from backend.api.routes import projects, scenes, dialogs, ai, assets, auth, orchestrator, genai_sprites, tools, objects, genai_image, genai_edit, game
+from backend.api.routes import projects, scenes, dialogs, ai, assets, auth, orchestrator, genai_sprites, tools, objects, genai_image, genai_edit, game, blueprint
 from backend.services.project_service import project_service # Importa a instância
 
 app = FastAPI(
@@ -66,6 +66,7 @@ app.include_router(genai_image.router)
 app.include_router(genai_edit.router)
 app.include_router(game.router)
 app.include_router(game.ses_router)
+app.include_router(blueprint.router)
 
 @app.get("/")
 async def root():

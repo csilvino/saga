@@ -20,6 +20,7 @@ import { Header } from './components/structure/Header';
 import { ConfirmModal } from './components/ui';
 import SettingsPanel from './components/settings/SettingsPanel';
 import GamePlayer from './components/GamePlayer'; // Importado
+import BlueprintPanel from './components/BlueprintPanel';
 import { useResizable, useRightResizable } from './hooks';
 
 const LAST_PROJECT_KEY = 'saga_last_open_project';
@@ -84,6 +85,7 @@ export default function App() {
   const [deletionTarget, setDeletionTarget] = useState<{ type: string; id: string; sceneId?: string } | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false); // Estado para controlar o modo de jogo
+  const [showBlueprint, setShowBlueprint] = useState(false);
   const [isOpening, setIsOpening] = useState<string | null>(null);
 
   // Extraction Mode State
@@ -828,9 +830,18 @@ export default function App() {
             try { sessionStorage.setItem(PLAYING_KEY, project.name); } catch { /* storage blocked */ }
             setIsPlaying(true);
           }} // Conectado
+          onBlueprint={() => setShowBlueprint(true)}
           hasAiKey={hasAiKey}
           onOpenApiKey={() => openSettings('api')}
         />
+
+        {showBlueprint && (
+          <BlueprintPanel
+            projectName={project.name}
+            onClose={() => setShowBlueprint(false)}
+            onBuilt={() => openProject(project.name)}
+          />
+        )}
 
         {isSettingsOpen && (
           <SettingsPanel

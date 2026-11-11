@@ -20,7 +20,7 @@ from google.genai import types
 
 from backend.config.user_settings import get_gemini_model
 from backend.services.project_service import project_service
-from backend.ses import director_tools
+from backend.ses import blueprint, director_tools
 from backend.ses.language import REFERENCE
 
 logger = logging.getLogger(__name__)
@@ -31,8 +31,14 @@ MAX_STEPS = 30
 SYSTEM_PROMPT = """Você é o Diretor do Saga Engine: constrói adventures em texto dentro do editor, usando as ferramentas.
 
 Como trabalhar:
-- Execute, não descreva. Para pedidos grandes ("crie um jogo de mistério"), planeje rapidamente
-  (cenas, objetos, um puzzle com solução) e construa tudo com as ferramentas.
+- Execute, não descreva.
+- JOGO INTEIRO ("crie um jogo de mistério", "um adventure como X"): escreva a FICHA do jogo (formato
+  abaixo) e chame check_blueprint. Ela aponta furos de lógica, roda a sua solução e cada morte, e um
+  jogador automático tenta vencer sozinho. Corrija a ficha e confira de novo até "ok": true, e só então
+  chame save_blueprint, que monta o projeto inteiro de uma vez. Mudanças grandes num jogo que tem ficha:
+  get_blueprint, edite, confira e salve de novo (a arte já feita é mantida). A arte do jogo inteiro:
+  start_game_art (roda sozinha em segundo plano, horas).
+- Ajustes pequenos (uma cena, um objeto, um script): use as ferramentas diretas abaixo.
 - Use ids ou nomes nas ferramentas. Se não sabe o que existe, chame get_project.
 - Saídas: connect_scenes para passagens abertas. Passagem que abre durante o jogo: não conecte;
   use 'link direção to cena' no script que a abre.
@@ -55,9 +61,36 @@ Como trabalhar:
   que devia estar trancada, fogo onde não há), corrija com edit_scene_background: ela edita a mesma
   imagem e mantém as áreas clicáveis. O gerador ignora negações no prompt; a edição não.
 
-""" + REFERENCE
+""" + REFERENCE + 2 * chr(10) + blueprint.REFERENCE
+
+BLUEPRINT_TOOLS = {"get_blueprint", "check_blueprint", "save_blueprint", "start_game_art"}
+READ_ONLY = director_tools.READ_ONLY | {"get_blueprint", "check_blueprint", "start_game_art"}
 
 IMAGE_TOOLS = [
+    types.FunctionDeclaration(
+        name="get_blueprint",
+        description="A ficha (YAML) do jogo deste projeto. Se o projeto ainda não tem ficha, devolve um rascunho tirado do projeto atual.",
+        parameters=None),
+    types.FunctionDeclaration(
+        name="check_blueprint",
+        description=("Confere uma ficha sem salvar nada: erros de script, cenas sem caminho, flags que ninguém marca, "
+                     "objetos escondidos que nunca aparecem, itens sem uso; roda a solução, as mortes e um jogador "
+                     "automático. Devolve o relatório."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "text": types.Schema(type="STRING", description="a ficha inteira, em YAML"),
+        }, required=["text"])),
+    types.FunctionDeclaration(
+        name="save_blueprint",
+        description=("Confere a ficha e, se não houver erros, monta o projeto inteiro a partir dela (cenas, saídas, objetos, "
+                     "scripts) e a guarda no projeto. A arte já feita das cenas e objetos que mantêm o nome é preservada."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "text": types.Schema(type="STRING", description="a ficha inteira, em YAML"),
+        }, required=["text"])),
+    types.FunctionDeclaration(
+        name="start_game_art",
+        description=("Começa a gerar em segundo plano toda a arte que falta: cenas (a de referência primeiro) e variantes. "
+                     "Demora horas; devolve na hora. Use só quando o usuário pedir a arte."),
+        parameters=None),
     types.FunctionDeclaration(
         name="create_scene_art",
         description=("Cria a arte completa de UMA cena: cenário com os objetos fixos pintados e clicáveis, "
@@ -177,7 +210,7 @@ class DirectorSession:
             for call in calls:
                 args = _plain(call.args or {})
                 result = await self.run_tool(call.name, args)
-                if call.name not in director_tools.READ_ONLY and "error" not in result:
+                if call.name not in READ_ONLY and "error" not in result:
                     changed = True
                 logger.info("director %s %s -> %s", call.name, json.dumps(args, ensure_ascii=False)[:200],
                             json.dumps(result, ensure_ascii=False)[:200])
@@ -217,6 +250,8 @@ class DirectorSession:
                 if name not in director_tools.READ_ONLY and "error" not in result:
                     project_service.save_project_data(self.project_name, project)
                 return result
+            if name in BLUEPRINT_TOOLS:
+                return await self.blueprint_tool(name, args)
             if name == "create_scene_art":
                 from backend.services import scene_art
                 try:
@@ -252,6 +287,23 @@ class DirectorSession:
         except Exception as e:                     # the model gets the error and can try something else
             logger.exception("tool %s failed", name)
             return {"error": f"{type(e).__name__}: {e}"}
+
+    async def blueprint_tool(self, name, args):
+        from backend.api.routes import blueprint as routes
+        if name == "get_blueprint":
+            return await routes.get_blueprint(self.project_name)
+        if name == "start_game_art":
+            job = await routes.start_art(self.project_name)
+            return {"started": True, "running": job["running"],
+                    **blueprint.art_status(project_service.load_project(self.project_name))}
+        text = args.get("text") or ""
+        save = name == "save_blueprint"
+        if save and routes.ART_JOBS.get(self.project_name, {}).get("running"):
+            return {"error": "a arte deste jogo está sendo gerada; espere terminar para salvar a ficha"}
+        report = await asyncio.to_thread(blueprint.build, self.project_name, text, save)
+        if "explorador" in report:                  # the model needs the verdict, not the 56 commands
+            report["explorador"]["caminho"] = len(report["explorador"]["caminho"])
+        return report
 
     # --- images (existing endpoints) ----------------------------------------------------------
 

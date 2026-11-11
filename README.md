@@ -37,6 +37,10 @@ O caminho tem duas fases:
   - canvas de cenas, propriedades do objeto (descrição, "pode ser pego", escondido, outros nomes);
   - editor de script que valida enquanto você digita;
   - chat com o Diretor e o player de texto.
+- **A ficha do jogo** ([docs/FICHA.md](docs/FICHA.md)): o adventure inteiro num arquivo YAML. O
+  Saga confere a lógica, roda a solução e as mortes, e um jogador automático tenta vencer sozinho e
+  denuncia atalhos. Depois monta o projeto de uma vez e gera a arte em segundo plano. É assim que o
+  Diretor faz jogos grandes. Veja [A ficha do jogo](#a-ficha-do-jogo).
 - **Projeto de exemplo** [`projects/O Farol`](projects/O%20Farol/project.json): um adventure curto
   (6 cenas) escrito em SES. A solução está em [`tools/build_demo_farol.py`](tools/build_demo_farol.py).
   Os cenários foram gerados pelo Diretor com FLUX.1 Kontext numa RTX 3060.
@@ -155,6 +159,9 @@ que não existe.
    usa para jogar executa essa sequência.
 4. Se o jogo não chega ao fim, ele lê onde travou, corrige e testa de novo.
 
+Para um jogo inteiro, o Diretor não constrói peça por peça: ele escreve a [ficha](#a-ficha-do-jogo)
+e corrige o que a verificação apontar.
+
 ### O estado do jogo
 
 O motor ([`backend/ses/engine.py`](backend/ses/engine.py)) não guarda sessão no servidor. Cada
@@ -197,6 +204,49 @@ pip install -r requirements.txt
 
 No plano gratuito da Gemini, o limite é de cerca de 15 chamadas por minuto, e cada passo do Diretor
 gasta uma. Num jogo pequeno ele leva de 1 a 2 minutos, porque espera o limite sozinho.
+
+## A ficha do jogo
+
+Um jogo grande pedido em conversa sai com furos: a IA cria ótima atmosfera e erra a lógica (sala sem
+caminho, item inútil, solução que não bate com o mapa). A **ficha** (`projects/<jogo>/ficha.yaml`)
+põe o jogo inteiro num arquivo e troca a conversa por um processo fixo:
+
+1. **Escrever a ficha.** Vão nela o mapa, os objetos e os scripts SES, a direção de arte, as
+   variantes do cenário, a solução, as mortes e os requisitos (cenas, puzzles, mortes).
+2. **Verificar.** O Saga aponta:
+   - erros de script;
+   - cenas sem caminho;
+   - flags que ninguém marca;
+   - objetos escondidos que nunca aparecem;
+   - itens sem uso.
+
+   Depois roda a solução e cada morte, e solta um **jogador automático** que tenta vencer sem
+   solução. Se ele vence pulando um puzzle, a verificação acusa o **atalho**.
+3. **Montar.** Sem erros, o projeto inteiro é criado de uma vez. Ao montar de novo, a arte já feita
+   é mantida.
+4. **Gerar a arte** em segundo plano: a cena de referência primeiro, depois as outras, depois as
+   variantes.
+
+```yaml
+cenas:
+  - nome: Cozinha
+    descricao: Panelas de ferro penduradas e uma lareira apagada.
+    saidas: {leste: Claustro Principal, cima: Despensa Alta}
+    variantes:
+      - {quando: flag(fogo_aceso), mudanca: a lareira acesa, brilho laranja nas paredes}
+    objetos:
+      - nome: lareira
+        descricao: Uma lareira de pedra enegrecida.
+        script: |
+          on use with fosforos { set fogo_aceso; say "O fogo pega e aquece a cozinha." }
+testes:
+  vitoria: corta os laços
+  solucao: [pegar lanterna, sul, leste, ...]
+  mortes: [{nome: cripta sem luz, comandos: [...], fim: despenca}]
+```
+
+No editor, isso fica no botão **Ficha**. Pelo terminal, use `python tools/build_game.py "<jogo>"`.
+Formato completo e regras: [docs/FICHA.md](docs/FICHA.md).
 
 ## Imagens: cenários no mesmo estilo
 
@@ -273,7 +323,7 @@ no próprio player; a escolha fica salva no navegador.
 
 ```bash
 pip install pytest
-python -m pytest tests/test_ses.py tests/test_director_tools.py tests/test_demo_farol.py
+python -m pytest tests/test_ses.py tests/test_director_tools.py tests/test_demo_farol.py tests/test_blueprint.py
 ```
 
 ## Estrutura
@@ -281,13 +331,15 @@ python -m pytest tests/test_ses.py tests/test_director_tools.py tests/test_demo_
 ```
 backend/
   ses/                language.py (parser, validação, referência), engine.py (motor de jogo),
-                      world.py, director_tools.py (ferramentas da IA)
+                      world.py, director_tools.py (ferramentas da IA),
+                      blueprint.py (a ficha: verificação, montagem, jogador automático, arte)
   services/           orquestrador Gemini, geração de imagens
   api/routes/         FastAPI: /api/game, /api/ses, /api/orchestrator, cenas, objetos...
 frontend/             editor React + Vite
 projects/             projetos (O Farol = exemplo em SES; Calixto Island = experimento visual)
 local_image_worker/   gerador local de imagens (FLUX.1 Kontext), processo e venv próprios
-docs/                 SES.md (a linguagem), IMAGENS.md (cenários no mesmo estilo),
+tools/build_game.py   a ficha pela linha de comando
+docs/                 SES.md (a linguagem), FICHA.md (o jogo num arquivo), IMAGENS.md (cenários),
                       project_format.md; docs/legacy = visão antiga
 runtime/, editor/     protótipos antigos (Arcade / PySide6), fora do fluxo atual
 ```

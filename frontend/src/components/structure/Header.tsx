@@ -1,5 +1,5 @@
 import React from 'react';
-import { Save, FolderOpen, Settings, KeyRound, Bot, XCircle, Play } from 'lucide-react';
+import { Save, FolderOpen, Settings, KeyRound, Bot, XCircle, Play, ScrollText } from 'lucide-react';
 
 interface HeaderProps {
   projectName: string | null;
@@ -7,6 +7,7 @@ interface HeaderProps {
   onClose?: () => void;
   onOpen?: () => void;
   onPlay?: () => void; // Adicionado
+  onBlueprint?: () => void;   // abre a ficha do jogo
   onOpenSettings: () => void;
   hasAiKey: boolean;          // a chave do Gemini está cadastrada
   onOpenApiKey: () => void;   // abre Configurações → API Keys
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onClose,
   onOpen,
   onPlay, // Adicionado
+  onBlueprint,
   onOpenSettings,
   hasAiKey,
   onOpenApiKey,
@@ -41,6 +43,13 @@ export const Header: React.FC<HeaderProps> = ({
               <Play size={16} fill="currentColor" />
               JOGAR
             </button>
+            {onBlueprint && (
+              <button onClick={onBlueprint} title="A ficha do jogo: o adventure inteiro num arquivo, verificado e montado de uma vez"
+                      className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
+                <ScrollText size={16} />
+                Ficha
+              </button>
+            )}
             <div className="w-px h-6 bg-gray-700 mx-1" />
             <button onClick={onSave} className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
               <Save size={16} />

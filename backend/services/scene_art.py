@@ -347,8 +347,13 @@ Answer ONLY with JSON: {{"instruction": "..."}}""", "instrução de edição")
     img.save(root / rel, "PNG")
     project = project_service.load_project(project_name)
     variants = project["scenes"][sid].setdefault("variants", [])
-    variants[:] = [v for v in variants if v.get("when", "").replace(" ", "") != when.replace(" ", "")]
-    variants.append({"when": when, "background": rel, "change": change})
+    entry = {"when": when, "background": rel, "change": change}
+    same = [i for i, v in enumerate(variants) if v.get("when", "").replace(" ", "") == when.replace(" ", "")]
+    if same:                    # keep its place: when several hold, the last one in the list wins
+        variants[same[0]] = entry
+        variants[:] = [v for i, v in enumerate(variants) if i not in same[1:]]
+    else:
+        variants.append(entry)
     project_service.save_project_data(project_name, project)
     return {"scene": project["scenes"][sid].get("name"), "when": when, "background": rel, "instruction": instruction}
 
