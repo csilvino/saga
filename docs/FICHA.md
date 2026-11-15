@@ -50,6 +50,9 @@ cenas:
     variantes:                          # outra versão do cenário enquanto a condição valer
       - quando: flag(fogo_aceso)
         mudanca: a lareira acesa com fogo forte, brilho laranja nas paredes
+    escuro:                             # opcional: cena sem luz enquanto a condição valer
+      quando: not flag(lanterna_acesa)  # no escuro a tela fica preta e nada é listado
+      morte: Você tateia no escuro e cai.   # qualquer passo ou mão no que não carrega: fim
     objetos:
       - nome: balcão
         descricao: Aparência (vira imagem) e o que o jogador lê ao examinar.

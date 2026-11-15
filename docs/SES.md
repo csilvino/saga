@@ -138,6 +138,15 @@ recusam salvar um script com erro e devolvem a mensagem para que ela corrija. A 
 Um script que não compila não derruba o jogo: o objeto continua funcionando com a descrição e os
 comportamentos padrão, e o jogo mostra um aviso no início.
 
+## Cenas escuras
+
+Uma cena pode ter `dark: {"when": "<condição>", "death": "<texto>"}` (na ficha, `escuro:` com
+`quando` e `morte`). Enquanto a condição valer, `olhar` só diz que está escuro como breu, a tela
+fica preta e nenhum objeto ou saída aparece. O jogador ainda pode olhar, ver o inventário e mexer
+no que carrega (`acender lanterna`, `examinar isqueiro`). Qualquer outra coisa, inclusive andar
+para uma saída, termina o jogo com o texto de `death`. Quando a luz acende, a cena é descrita na
+hora. `acender` e `ligar` são sinônimos de `usar`.
+
 ## O estado do jogo
 
 O servidor não guarda sessão. `POST /api/game/start` devolve `{state, messages, view}` e cada

@@ -39,7 +39,8 @@ def show(report: dict):
         print(f"  {json.dumps(report['numeros'], ensure_ascii=False)}")
     if "arte" in report:
         a = report["arte"]
-        print(f"  arte: {len(a['cenas_sem_arte'])} cenas e {len(a['variantes_sem_arte'])} variantes por fazer")
+        print(f"  arte: {len(a['cenas_sem_arte'])} cenas e {len(a['variantes_sem_arte'])} variantes por fazer"
+              + (f"; objetos sem imagem: {', '.join(a['objetos_sem_arte'])}" if a.get("objetos_sem_arte") else ""))
     if "som" in report:
         print(f"  som: {len(report['som']['sons_sem_arquivo'])} de {report['som']['sons']} sons por fazer")
     print("OK" + (" — salvo" if report.get("salvo") else "") if report.get("ok") else "COM ERROS")

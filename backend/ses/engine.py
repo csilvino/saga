@@ -37,8 +37,8 @@ VERBS = {
     "take":      ["pegar", "pega", "pegue", "apanhar", "apanha", "levar", "leva", "recolher", "take", "get"],
     "drop":      ["largar", "larga", "largue", "soltar", "solta", "deixar", "deixa", "drop"],
     "use":       ["usar", "usa", "use", "utilizar", "aplicar", "colocar", "coloca", "por", "poe", "pôr", "põe",
-                  "inserir", "destrancar", "destranca"],
-    "open":      ["abrir", "abre", "abra", "open"],
+                  "inserir", "destrancar", "destranca", "acender", "acende", "acenda", "ligar", "liga", "ligue"],
+    "open":      ["abrir", "abre", "abra", "open", "revirar", "revira", "vasculhar", "vasculha", "procurar", "procura"],
     "close":     ["fechar", "fecha", "feche", "close"],
     "push":      ["empurrar", "empurra", "empurre", "apertar", "aperta", "pressionar", "push", "press"],
     "pull":      ["puxar", "puxa", "puxe", "pull"],
@@ -78,6 +78,10 @@ HELP = ("Comandos: olhar, examinar <coisa>, pegar <coisa>, largar <coisa>, usar 
         "abrir/fechar <coisa>, empurrar/puxar <coisa>, falar com <alguém>, inventário, "
         "ir <direção> (ou só norte, sul, leste, oeste, cima, baixo, entrar, sair). "
         "Pode abreviar: N, S, L, O, I, PEG CHAVE, EXA PORTA.")
+
+
+DARK_LOOK = "Está escuro como breu. Você não enxerga nada, nem as próprias mãos."
+DARK_DEATH = "Você dá um passo no escuro, tropeça em alguma coisa e cai. Não se levanta mais."
 
 
 def norm_dir(word: str) -> str:
@@ -134,7 +138,10 @@ class GameEngine:
         text = (text or "").strip()
         if text:
             self.state["turns"] = self.state.get("turns", 0) + 1
+            was_dark = self.is_dark()
             self._do(text)
+            if was_dark and not self.is_dark() and not self.state.get("ended"):
+                self._look()                       # a light came on: now the player sees the room
         return self._result()
 
     def _result(self) -> dict:
@@ -175,13 +182,15 @@ class GameEngine:
         if not sid:
             return None
         scene = self.world.scenes.get(sid) or {}
+        dark = self.is_dark(sid)
         return {
             "scene_id": sid,
             "scene_name": scene.get("name") or sid,
             "description": (scene.get("description") or "").strip(),
-            "objects": [{"id": o, "name": self.world.object_name(o)} for o in self.here()],
+            "objects": [] if dark else [{"id": o, "name": self.world.object_name(o)} for o in self.here()],
             "inventory": [{"id": o, "name": self.world.object_name(o)} for o in self.inventory()],
-            "exits": {d: self.world.scene_name(t) for d, t in self.exits().items()},
+            "exits": {} if dark else {d: self.world.scene_name(t) for d, t in self.exits().items()},
+            "dark": dark,
             "background": self.background(sid),
             "ambient": self.ambient(sid),
             "object_sounds": self.object_sounds(),
@@ -209,6 +218,18 @@ class GameEngine:
             return self._cond(owner, parse_condition(when))
         except SESError:
             return False
+
+    def is_dark(self, sid: Optional[str] = None) -> bool:
+        """A dark scene (scene["dark"] = {"when": "not flag(lanterna_acesa)", "death": "..."}): while the
+        condition holds the player sees nothing, and anything but handling what he carries kills him."""
+        sid = sid or self.state.get("scene")
+        dark = (self.world.scenes.get(sid) or {}).get("dark") or {}
+        return bool(dark.get("when")) and self._holds(sid, dark["when"])
+
+    def _die_in_dark(self):
+        dark = (self.world.scenes.get(self.state["scene"]) or {}).get("dark") or {}
+        self.state["ended"] = dark.get("death") or DARK_DEATH
+        self.say(self.state["ended"])
 
     def ambient(self, sid: str) -> Optional[str]:
         """The scene's background sound for the current state: the last of its sound variants
@@ -240,6 +261,8 @@ class GameEngine:
         first = words[0]
         verb = find_verb(first)
 
+        dark = self.is_dark()
+
         # a bare direction ("norte", "n", "subir") or an exit name ("porta")
         if verb is None or verb == "go":
             rest = words
@@ -248,7 +271,7 @@ class GameEngine:
             if rest:
                 d = norm_dir(rest[0]) if len(rest) == 1 else slug(" ".join(rest))
                 if d in self.exits() or d in DIRECTIONS or verb == "go":
-                    return self._go(d)
+                    return self._die_in_dark() if dark else self._go(d)
             if verb == "go":
                 return self.say("Ir para onde? Saídas: " + self._exit_list())
             return self.say("Não entendi. Digite 'ajuda' para ver os comandos.")
@@ -279,6 +302,9 @@ class GameEngine:
                              "use": "Usar o quê?"}.get(verb, "Em quê?"))
 
         target = self._match(first_words)
+        if dark and (target not in self.inventory() or (second_words and
+                                                         self._match(second_words) not in self.inventory())):
+            return self._die_in_dark()             # groping for something in the dark
         if not target:
             if verb in ("open", "close") and slug(" ".join(first_words)) in self.exits():
                 return self.say("É só seguir por ali: " + " ".join(first_words) + ".")
@@ -358,6 +384,9 @@ class GameEngine:
         name = scene.get("name") or sid
         desc = (scene.get("description") or "").strip()
         things = ", ".join(self.world.object_name(o) for o in self.here())
+        if self.is_dark(sid):
+            self.say((f"📍 {name}. " if self.classic else f"== {name} ==\n") + DARK_LOOK)
+            return
         if self.classic:
             self.say(f"📍 {name}." + (f" {desc}" if desc else ""))
             if things:

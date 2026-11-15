@@ -169,6 +169,7 @@ interface GameView {
   background?: string | null;   // state variant (e.g. door open), else the scene background
   ambient?: string | null;      // the scene's background sound for this state
   object_sounds?: ObjectSound[];
+  dark?: boolean;               // a dark scene with no light: the player sees nothing
   ended: string | null;
 }
 
@@ -403,6 +404,7 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
           onClick={() => processCommand(`examinar ${obj.name}`)}
         />
       ))}
+      {view?.dark && <div className="absolute inset-0 bg-black" style={{ zIndex: 10000 }} />}
     </div>
   );
 

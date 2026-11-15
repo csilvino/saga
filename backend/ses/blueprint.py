@@ -118,6 +118,16 @@ def shape_problems(bp: dict) -> List[dict]:
             out += [problem("erro", m, s["nome"]) for m in animation.parse_effect(o.get("animacao"), where)[1]]
             out += [problem("erro", m, s["nome"]) for m in animation.parse_parts(o.get("partes"), where)[1]]
         out += [problem("erro", m, s["nome"]) for m in animation.parse_effect(s.get("animacao"))[1]]
+        dark = s.get("escuro")
+        if dark is not None:
+            if not isinstance(dark, dict) or not dark.get("quando") or set(dark) - {"quando", "morte"}:
+                out.append(problem("erro", "'escuro' precisa de 'quando' (condição SES) e, se quiser, 'morte' "
+                                           "(o texto do fim)", s["nome"]))
+            else:
+                try:
+                    parse_condition(str(dark["quando"]))
+                except SESError as e:
+                    out.append(problem("erro", f"escuro: condição {dark['quando']!r} inválida: {e}", s["nome"]))
         for v in _list(s.get("variantes")):
             if not isinstance(v, dict) or not v.get("quando") or not v.get("mudanca"):
                 out.append(problem("erro", "variante precisa de 'quando' (condição SES) e 'mudanca'", s["nome"]))
@@ -150,6 +160,15 @@ def _scene_bg(scene: dict) -> Optional[dict]:
 def has_art(scene: dict) -> bool:
     bg = _scene_bg(scene)
     return bool(bg and bg.get("sprite"))
+
+
+def objects_without_art(scene: dict) -> List[dict]:
+    """Objects of a scene that has art but no picture or place for them yet: added to the ficha
+    after the scene was painted (the player shows them as a box)."""
+    if not has_art(scene):
+        return []
+    return [o for o in scene.get("objects", []) if o is not _scene_bg(scene)
+            and not (o.get("properties") or {}).get("painted") and "/" not in (o.get("sprite") or "")]
 
 
 def assemble(bp: dict, previous: Optional[dict] = None) -> Tuple[dict, List[dict]]:
@@ -221,6 +240,10 @@ def assemble(bp: dict, previous: Optional[dict] = None) -> Tuple[dict, List[dict
             apply_animation(s, p["scenes"][sid])
             p["scenes"][sid]["variants"] = [{"when": str(v["quando"]), "change": str(v["mudanca"])}
                                             for v in _list(s.get("variantes"))]
+            if isinstance(s.get("escuro"), dict):
+                d = s["escuro"]
+                p["scenes"][sid]["dark"] = {"when": str(d["quando"]),
+                                            **({"death": str(d["morte"])} if d.get("morte") else {})}
     if bp.get("inicio"):
         tool("set_start_scene", scene=bp["inicio"])
     apply_sounds(bp, p)
@@ -543,7 +566,7 @@ def analyze(project: dict) -> List[dict]:
                         elif c.kind == "call" and c.args[0] in ("has", "here"):
                             used.add(slug(c.args[1].name))
     for s in world.scenes.values():
-        for v in s.get("variants") or []:
+        for v in (s.get("variants") or []) + ([s["dark"]] if (s.get("dark") or {}).get("when") else []):
             try:
                 for c in walk_conds(parse_condition(v.get("when", ""))):
                     if c.kind == "call" and c.args[0] == "flag":
@@ -893,8 +916,9 @@ def art_status(project: dict) -> dict:
             review += [f"{s.get('name')} [{v.get('when')}]: {p}" for p in (v.get("review") or {}).get("problems", [])]
     web = [s.get("name") for s in scenes.values() if s.get("art_source") == "web"
            and (not has_art(s) or any(not v.get("background") for v in s.get("variants") or []))]
-    return {"cenas_sem_arte": missing, "variantes_sem_arte": variants,
-            "pronta": not missing and not variants, "arte_revisar": review,
+    loose = [f"{s.get('name')}: {o.get('name')}" for s in scenes.values() for o in objects_without_art(s)]
+    return {"cenas_sem_arte": missing, "variantes_sem_arte": variants, "objetos_sem_arte": loose,
+            "pronta": not missing and not variants and not loose, "arte_revisar": review,
             "na_web": web}               # scenes whose missing pictures the creator uploads (not GERAR ARTE)
 
 
@@ -960,6 +984,9 @@ def export(project: dict) -> dict:
                     for v in s.get("variants") or [] if v.get("when")]
         if variants:
             entry["variantes"] = variants
+        if (s.get("dark") or {}).get("when"):
+            d = s["dark"]
+            entry["escuro"] = {"quando": d["when"], **({"morte": d["death"]} if d.get("death") else {})}
         scenes.append(entry)
     pres = project.get("presentation") or {}
     bp = {"nome": project.get("name"), "descricao": (project.get("launcher") or {}).get("description", ""),
@@ -1048,6 +1075,16 @@ async def make_art(project_name: str, progress: Optional[Callable[[str], None]] 
                     failed.append(f"{name}: {str(e)[:200]}")
                 else:                                    # Gemini 503/429 spikes pass in a minute or two
                     await asyncio.sleep(90 * attempt)
+    for sid in order:
+        scene = project_service.load_project(project_name)["scenes"].get(sid) or {}
+        if objects_without_art(scene) and scene_art.art_source(scene) != "web":
+            say(f"objetos novos em {scene.get('name')}: {', '.join(o.get('name') for o in objects_without_art(scene))}")
+            try:
+                r = await scene_art.place_new_objects(project_name, sid)
+                done += [f"{scene.get('name')}: {n}" for n in r["placed"]]
+                failed += [f"{scene.get('name')}: {p}" for p in r["problems"]]
+            except Exception as e:                       # noqa: BLE001
+                failed.append(f"{scene.get('name')} objetos novos: {e}")
     for sid in order:
         scene = project_service.load_project(project_name)["scenes"].get(sid) or {}
         for i, v in enumerate(scene.get("variants") or []):

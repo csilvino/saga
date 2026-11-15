@@ -34,20 +34,48 @@ cenas:
     escondido: true
     apelidos: [chave pequena, chave do bau]
   - nome: relógio de pêndulo
-    descricao: Um relógio regulador de parede, pendurado na parede acima da mesa - caixa de madeira escura curta e estreita, de fundo reto, sem pés e sem base, com mostrador redondo de marfim no alto e, logo abaixo, uma portinhola de vidro com o pêndulo.
+    descricao: Um relógio regulador de parede, visto bem de frente, pendurado na parede entre a escrivaninha e a mesa - caixa de madeira escura curta e estreita, de fundo reto, sem pés e sem base, com mostrador redondo de marfim no alto e, logo abaixo, uma portinhola de vidro com o pêndulo.
     tipo: movel
     apelidos: [relogio, pendulo, pêndulo]
     som: tique-taque lento e grave de relógio de pêndulo de madeira
     partes:
     - nome: pêndulo de latão
-      descricao: Um pêndulo de latão comprido e fino, com um disco dourado redondo na ponta de baixo.
+      descricao: Um pêndulo de latão comprido e fino, com um disco de latão grande, redondo e chato na ponta de baixo, bem mais largo que a haste.
       animacao: {tipo: balanco, angulo: 9, periodo: 2}
-      onde: [0.53, 0.63]
-      altura: 0.29
+      onde: [0.505, 0.595]
+      altura: 0.19
     script: |
       on examine {
         say "O pêndulo vai e vem, tique, taque. Alguém continua dando corda nele. Os ponteiros marcam a hora certa, mas o calendário da parede parou há três semanas."
       }
+  - nome: tapete
+    descricao: Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco.
+    tipo: movel
+    apelidos: [tapete persa, alçapão, alcapao]
+    script: |
+      on examine {
+        if flag(tapete_enrolado) { say "O tapete está enrolado num canto. No chão, o alçapão aberto desce para o porão." }
+        else { say "Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco." }
+      }
+      on take {
+        if flag(tapete_enrolado) { say "Já está enrolado num canto. O alçapão aberto desce para o porão." }
+        else {
+          set tapete_enrolado; link baixo to Porão; link cima to "Escritório de Tomás" in Porão
+          play "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira"
+          say "Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
+        }
+      }
+      on pull {
+        if flag(tapete_enrolado) { say "Já está enrolado num canto. O alçapão aberto desce para o porão." }
+        else {
+          set tapete_enrolado; link baixo to Porão; link cima to "Escritório de Tomás" in Porão
+          play "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira"
+          say "Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
+        }
+      }
+  variantes:
+  - quando: flag(tapete_enrolado)
+    mudanca: só o tapete persa do chão muda - ele virou um rolo comprido deitado no assoalho, junto ao rodapé, embaixo da mesa da direita; no centro do assoalho, onde ele estava, há um alçapão de madeira aberto com uma escada descendo para o escuro. A escrivaninha de tampo corrido à esquerda, o lampião, a mesinha, a mesa da direita e a escada continuam exatamente iguais
 
 - nome: Sótão
   descricao: O telhado inclinado deixa pouco espaço para ficar em pé. Poeira grossa no assoalho, caixas de papelão e, encostado na parede, um baú antigo com ferragens.
@@ -67,7 +95,7 @@ cenas:
         else {
           set bau_aberto; show "cartão perfurado"; show "carta das marés"; show lanterna
           play "fechadura de latão girando e tampa de baú de madeira rangendo"
-          say "A chave gira. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna."
+          say "A chave gira e a tampa range ao subir. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna de metal prateada."
         }
       }
   - nome: cartão perfurado
@@ -81,15 +109,25 @@ cenas:
     escondido: true
     apelidos: [carta nautica, carta náutica, mapa, mapa das mares]
   - nome: lanterna
-    descricao: Uma lanterna de metal, pesada, com pilhas novas.
+    descricao: Uma lanterna de metal prateada, pesada, com pilhas novas.
     pegavel: true
     escondido: true
+    script: |
+      on use {
+        if not has(lanterna) { say "Primeiro pegue a lanterna." }
+        else if flag(lanterna_acesa) { say "Já está acesa." }
+        else {
+          set lanterna_acesa; play "clique de interruptor de lanterna de metal"
+          say "Clique. Um facho de luz amarela corta a escuridão."
+        }
+      }
+  variantes:
+  - quando: flag(bau_aberto)
+    mudanca: só o baú de madeira no centro muda - a tampa curva está aberta, levantada para trás, mostrando o interior de madeira escura. A caixa de papelão com colares, o assoalho e a abertura da escada continuam exatamente iguais
 
 - nome: Biblioteca
-  descricao: Estantes do chão ao teto, uma escada em caracol para o mezanino e uma escrivaninha sob a luz de um abajur. Num canto, uma porta baixa dá para os degraus do porão.
+  descricao: Estantes do chão ao teto por todos os lados e, no meio, uma escrivaninha sob a luz de um abajur.
   som: biblioteca silenciosa, papel virando, madeira estalando de leve
-  saidas:
-    baixo: Porão
   objetos:
   - nome: diário de Tomás
     descricao: Um caderno de capa de couro, aberto sobre a escrivaninha.
@@ -102,8 +140,11 @@ cenas:
       }
 
 - nome: Porão
-  descricao: Chão de cimento rachado, uma lâmpada pendurada e prateleiras cheias de caixas. A escada de madeira sobe de volta à biblioteca. Uma das estantes está estranhamente afastada da parede.
-  som: porão úmido, lâmpada zumbindo, gotas de água pingando
+  descricao: Chão de cimento rachado, uma lâmpada queimada pendurada no teto e prateleiras cheias de caixas. A escada de madeira sobe de volta ao alçapão do escritório. Uma das estantes está estranhamente afastada da parede.
+  som: porão úmido e silencioso, gotas de água pingando
+  escuro:
+    quando: not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))
+    morte: Você tateia no escuro, tropeça numa caixa e bate a cabeça no cimento. Lá em cima, ninguém ouve nada.
   objetos:
   - nome: estante do porão
     descricao: Uma estante alta de madeira, cheia de caixas e potes. Há marcas de arrasto no chão em frente a ela.
@@ -120,6 +161,9 @@ cenas:
         else { say "Ela não se mexe. As marcas no chão dizem que já se moveu muitas vezes; deve haver um jeito certo." }
       }
       on pull { say "Ela não sai do lugar puxando." }
+  variantes:
+  - quando: flag(estante_movida)
+    mudanca: só a estante de madeira alta à direita do centro muda - ela girou sobre um eixo e está afastada em ângulo, e na parede de trás, onde ela estava, abriu-se uma passagem em arco de pedra escura que leva a um corredor de pedra. A escada, a lâmpada, o balde e o resto do porão continuam exatamente iguais
 
 - nome: Passagem Secreta
   descricao: Um corredor de pedra antiga, muito mais velho que a casa, iluminado por tochas que alguém mantém acesas. No fundo, ao norte, uma luz azulada pulsa.
@@ -200,11 +244,11 @@ cenas:
     entrar: {para: Laboratório, volta: false}
 
 - nome: Posto do Capitão Rocha
-  descricao: Um armazém de madeira atulhado de baús, moedas, mapas e bugigangas do mundo inteiro. Uma bola de cristal brilha sobre a mesa. Ninguém compra ou vende aqui há muito tempo. Uma porta trancada leva aos fundos.
+  descricao: Uma velha loja de madeira. Um balcão comprido atravessa a sala e, atrás dele, prateleiras expõem garrafas, lampiões, cordas, conchas, mapas enrolados e bugigangas do mundo inteiro. Sobre o balcão, entre moedas e quinquilharias, uma bola de cristal brilha ao lado de um livro grosso de capa vermelha. Ninguém compra ou vende aqui há muito tempo. Na parede do fundo, atrás do balcão, uma porta de tábuas grossas está trancada por um cadeado de ferro pendurado na frente.
   som: interior de cabana de madeira, tábuas rangendo, sinos de vento lá fora, mar distante
   objetos:
   - nome: bola de cristal
-    descricao: Uma bola de cristal azulada, acesa por dentro, sobre um suporte no meio da mesa.
+    descricao: Uma bola de cristal azulada, acesa por dentro, sobre um suporte em cima do balcão.
     tipo: movel
     apelidos: [bola, cristal]
     animacao: {tipo: pulsar, cor: azul, intensidade: 0.6, periodo: 2.5}
@@ -212,7 +256,7 @@ cenas:
       on examine { say "Uma luz azul gira dentro do vidro, lenta como uma maré. Por um instante você vê uma ilhota branca e um templo. Depois, só o seu rosto." }
       on take { say "Está quente demais para segurar." }
   - nome: livro de contas
-    descricao: Um livro grosso de capa vermelha, numa das pilhas de livros sobre a mesa grande.
+    descricao: Um livro grosso de capa vermelha, aberto sobre o balcão, ao lado da bola de cristal.
     tipo: livro
     apelidos: [livro, contas]
     script: |
@@ -220,7 +264,7 @@ cenas:
         say "Contas do Capitão Rocha, contrabandista. A última anotação: 'Guardei a bússola, o remo e a bomba no depósito. A chave ficou no tronco oco do pântano, onde nenhum ladrão mete a mão. Quem quiser a ilhota que espere a maré morta e leve a carta.'"
       }
   - nome: porta dos fundos
-    descricao: Uma porta de tábuas grossas, com um cadeado de ferro.
+    descricao: Uma porta de tábuas grossas atrás do balcão, trancada por um cadeado de ferro.
     tipo: porta
     apelidos: [porta, cadeado]
     script: |
@@ -234,6 +278,9 @@ cenas:
       }
   saidas:
     oeste: Colina da Chegada
+  variantes:
+  - quando: flag(deposito_aberto)
+    mudanca: só a porta de tábuas grossas na parede do fundo, atrás do balcão, muda - ela está escancarada para dentro e pela abertura se vê um depósito na penumbra; o cadeado de ferro, aberto, ficou pendurado na argola do batente, do lado de cá, bem à vista. O balcão, a bola de cristal, as prateleiras e o resto da loja continuam exatamente iguais
 
 - nome: Depósito dos Fundos
   descricao: Um quarto de tábuas com uma janela pequena e uma lâmpada fraca. Cordas, garrafas e caixas pelo chão. Contra a parede, um baú com ferragens pesadas.
@@ -262,6 +309,9 @@ cenas:
     pegavel: true
     escondido: true
     apelidos: [bomba]
+  variantes:
+  - quando: flag(bau_capitao_aberto)
+    mudanca: só o baú grande com ferragens de ferro, à direita da porta, muda - a tampa curva está aberta, levantada para trás, mostrando o interior de madeira escura. A porta aberta, a lanterna, as mesas e o resto do depósito continuam exatamente iguais
 
 - nome: Pântano
   descricao: Árvores retorcidas e cobertas de musgo saem de uma água escura e parada. A névoa não deixa ver longe. Um tronco caído, oco por dentro, atravessa a margem.
@@ -286,16 +336,18 @@ cenas:
     apelidos: [chave grande]
 
 - nome: Galpão de Barcos
-  descricao: Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote inflável vermelho, murcho. Uma trilha segue para o norte, até o mar.
+  descricao: Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote cinza murcho. Uma trilha segue para o norte, até o mar.
   som: galpão de madeira rangendo, vento entre as tábuas, mar próximo
   saidas:
     norte: Praia do Barco Velho
   variantes:
+  - quando: flag(bote_cheio)
+    mudanca: o bote inflável cinza-esverdeado no chão está cheio, inflado e firme, com os dois bancos de madeira no lugar
   - quando: flag(bote_na_praia)
     mudanca: o bote inflável que estava no chão sumiu; só o assoalho de madeira vazio onde ele estava
   objetos:
   - nome: bote inflável
-    descricao: Um bote de borracha vermelho, murcho, com dois assentos de madeira.
+    descricao: Um bote de borracha cinza-esverdeado, murcho, com os dois assentos de madeira soltos por cima.
     tipo: movel
     apelidos: [bote, barco inflavel]
     script: |
@@ -309,7 +361,7 @@ cenas:
       }
       on push {
         if not flag(bote_cheio) { say "Murcho assim, não vai flutuar." }
-        else { set bote_na_praia; hide self; show "bote vermelho"; play "bote de borracha sendo arrastado sobre areia"; say "Você arrasta o bote pela trilha, até a beira da água na praia, ao norte." }
+        else { set bote_na_praia; hide self; show "bote cinza"; play "bote de borracha sendo arrastado sobre areia"; say "Você arrasta o bote pela trilha, até a beira da água na praia, ao norte." }
       }
       on pull { say "Melhor empurrar: a trilha para a praia é ao norte." }
 
@@ -324,7 +376,7 @@ cenas:
   som: caverna escura, água escorrendo pelas paredes, gotas ecoando
   script: |
     on enter {
-      if not has(lanterna) {
+      if not (has(lanterna) and flag(lanterna_acesa)) {
         play "escorregão em pedra molhada e queda no escuro, eco"
         end "Sem luz, você dá dois passos no escuro, pisa no musgo e escorrega para o buraco no meio da fenda. Ninguém nunca vai saber onde você caiu."
       } else {
@@ -345,7 +397,7 @@ cenas:
     descricao: Um barco de madeira com o casco rachado de ponta a ponta. Não flutuaria nem um minuto.
     tipo: movel
     apelidos: [barco de madeira]
-  - nome: bote vermelho
+  - nome: bote cinza
     descricao: O bote inflável, cheio, na beira da água.
     tipo: movel
     escondido: true
@@ -369,7 +421,7 @@ cenas:
     on enter {
       if not has(bússola) {
         play "neblina densa, vento uivando e ondas grandes"
-        end "Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote vermelho some na neblina."
+        end "Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote cinza some na neblina."
       } else {
         say "Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte."
       }
@@ -440,7 +492,8 @@ cenas:
 testes:
   vitoria: Tomás Albuquerque levanta a cabeça
   solucao: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar cartão perfurado,
-            pegar carta das marés, pegar lanterna, baixo, norte, ler diário, baixo, empurrar estante, leste, norte,
+            pegar carta das marés, pegar lanterna, baixo, norte, ler diário, sul, pegar tapete, acender lanterna,
+            baixo, empurrar estante, leste, norte,
             puxar alavanca, usar cartão perfurado no painel, usar anel, entrar,
             sul, abrir tronco, pegar chave de ferro, norte, leste, usar chave de ferro na porta, norte,
             abrir baú, pegar bússola, pegar remo, pegar bomba de ar, sul, oeste,
@@ -449,18 +502,24 @@ testes:
             norte, norte, norte, norte, usar carta das marés no santuário, norte, usar medalhão de coral na porta]
   mortes:
   - nome: anel sem coordenadas
-    comandos: [norte, ler diário, baixo, empurrar estante, leste, norte, puxar alavanca, usar anel]
+    comandos: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar lanterna, baixo,
+               norte, ler diário, sul, pegar tapete, acender lanterna, baixo, empurrar estante, leste, norte,
+               puxar alavanca, usar anel]
     fim: espalha cada pedaço seu
   - nome: fenda sem luz
     comandos: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar cartão perfurado,
-               baixo, norte, ler diário, baixo, empurrar estante, leste, norte, puxar alavanca,
-               usar cartão perfurado no painel, usar anel, entrar, norte, leste]
+               pegar lanterna, baixo, norte, ler diário, sul, pegar tapete, acender lanterna, baixo, empurrar estante,
+               leste, norte, puxar alavanca, usar cartão perfurado no painel, largar lanterna, usar anel, entrar,
+               norte, leste]
     fim: escorrega para o buraco
   - nome: mar sem bússola
     comandos: [abrir escrivaninha, pegar chave de latão, cima, usar chave de latão no baú, pegar cartão perfurado,
-               baixo, norte, ler diário, baixo, empurrar estante, leste, norte, puxar alavanca,
-               usar cartão perfurado no painel, usar anel, entrar,
+               pegar lanterna, baixo, norte, ler diário, sul, pegar tapete, acender lanterna, baixo, empurrar estante,
+               leste, norte, puxar alavanca, usar cartão perfurado no painel, usar anel, entrar,
                sul, abrir tronco, pegar chave de ferro, norte, leste, usar chave de ferro na porta, norte,
                abrir baú, pegar remo, pegar bomba de ar, sul, oeste, sul, leste,
                usar bomba de ar no bote, empurrar bote, norte, usar remo no bote, norte]
     fim: rema em círculos
+  - nome: porão no escuro
+    comandos: [pegar tapete, baixo, empurrar estante]
+    fim: tateia no escuro

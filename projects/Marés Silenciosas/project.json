@@ -112,13 +112,13 @@
           "id": "obj_relogio_de_pendulo_3287",
           "name": "relógio de pêndulo",
           "type": "movel",
-          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_26c5b3.png",
+          "sprite": "sprites/Sprite_obj_relogio_de_pendulo_3287_e5ba9d.png",
           "position": {
-            "x": 1308,
-            "y": 320
+            "x": 895,
+            "y": 310
           },
           "size": {
-            "width": 210,
+            "width": 172,
             "height": 320
           },
           "scale": {
@@ -127,7 +127,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Um relógio regulador de parede, pendurado na parede acima da mesa - caixa de madeira escura curta e estreita, de fundo reto, sem pés e sem base, com mostrador redondo de marfim no alto e, logo abaixo, uma portinhola de vidro com o pêndulo.",
+          "description": "Um relógio regulador de parede, visto bem de frente, pendurado na parede entre a escrivaninha e a mesa - caixa de madeira escura curta e estreita, de fundo reto, sem pés e sem base, com mostrador redondo de marfim no alto e, logo abaixo, uma portinhola de vidro com o pêndulo.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -142,23 +142,23 @@
           "parts": [
             {
               "name": "pêndulo de latão",
-              "description": "Um pêndulo de latão comprido e fino, com um disco dourado redondo na ponta de baixo.",
+              "description": "Um pêndulo de latão comprido e fino, com um disco de latão grande, redondo e chato na ponta de baixo, bem mais largo que a haste.",
               "effect": {
                 "type": "swing",
                 "amount": 9.0,
                 "period": 2.0
               },
               "at": {
-                "x": 0.53,
-                "y": 0.63
+                "x": 0.505,
+                "y": 0.595
               },
-              "height": 0.29,
-              "sprite": "sprites/Part_obj_relogio_de_pendulo_3287_0_43798c.png",
+              "height": 0.19,
+              "sprite": "sprites/Part_obj_relogio_de_pendulo_3287_0_16370a.png",
               "rect": {
-                "x": 0.4921,
-                "y": 0.63,
-                "w": 0.0758,
-                "h": 0.29
+                "x": 0.4599,
+                "y": 0.595,
+                "w": 0.0902,
+                "h": 0.19
               }
             }
           ],
@@ -171,12 +171,51 @@
             ],
             "file": "audio/Sound_tique_taque_lento_e_grave_de_rel_cd6dce.ogg"
           }
+        },
+        {
+          "id": "obj_tapete_34ee",
+          "name": "tapete",
+          "type": "movel",
+          "sprite": "",
+          "position": {
+            "x": 906,
+            "y": 965
+          },
+          "size": {
+            "width": 1452,
+            "height": 230
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "tapete persa",
+              "alçapão",
+              "alcapao"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(tapete_enrolado) { say \"O tapete está enrolado num canto. No chão, o alçapão aberto desce para o porão.\" }\n  else { say \"Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco.\" }\n}\non take {\n  if flag(tapete_enrolado) { say \"Já está enrolado num canto. O alçapão aberto desce para o porão.\" }\n  else {\n    set tapete_enrolado; link baixo to Porão; link cima to \"Escritório de Tomás\" in Porão\n    play \"tapete pesado sendo enrolado e arrastado sobre assoalho de madeira\"\n    say \"Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro.\"\n  }\n}\non pull {\n  if flag(tapete_enrolado) { say \"Já está enrolado num canto. O alçapão aberto desce para o porão.\" }\n  else {\n    set tapete_enrolado; link baixo to Porão; link cima to \"Escritório de Tomás\" in Porão\n    play \"tapete pesado sendo enrolado e arrastado sobre assoalho de madeira\"\n    say \"Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro.\"\n  }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "on first_enter {\n  say \"Lúcia Albuquerque deixou a chave com você: 'Meu irmão sumiu há três semanas. A polícia desistiu. Eu não.'\"\n}\n",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(tapete_enrolado)",
+          "change": "só o tapete persa do chão muda - ele virou um rolo comprido deitado no assoalho, junto ao rodapé, embaixo da mesa da direita; no centro do assoalho, onde ele estava, há um alçapão de madeira aberto com uma escada descendo para o escuro. A escrivaninha de tampo corrido à esquerda, o lampião, a mesinha, a mesa da direita e a escada continuam exatamente iguais",
+          "background": "backgrounds/Variant_2f6323a2.png"
+        }
+      ],
       "sound": {
         "ambient": "sala silenciosa de casa antiga, relógio distante, chuva fina na janela",
         "variants": [],
@@ -195,7 +234,7 @@
           "id": "background_2a824f2c",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_hyzw8phy.png",
+          "sprite": "backgrounds/Scene_sotao_b7e2c1.png",
           "position": {
             "x": 960,
             "y": 540
@@ -249,7 +288,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else { say \"Trancado. A fechadura é pequena, de latão.\" }\n}\non use with \"chave de latão\" {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else {\n    set bau_aberto; show \"cartão perfurado\"; show \"carta das marés\"; show lanterna\n    play \"fechadura de latão girando e tampa de baú de madeira rangendo\"\n    say \"A chave gira. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna.\"\n  }\n}\n"
+          "ses": "on open {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else { say \"Trancado. A fechadura é pequena, de latão.\" }\n}\non use with \"chave de latão\" {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else {\n    set bau_aberto; show \"cartão perfurado\"; show \"carta das marés\"; show lanterna\n    play \"fechadura de latão girando e tampa de baú de madeira rangendo\"\n    say \"A chave gira e a tampa range ao subir. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna de metal prateada.\"\n  }\n}\n"
         },
         {
           "id": "obj_cartao_perfurado_46dc",
@@ -257,12 +296,12 @@
           "type": "item",
           "sprite": "sprites/Sprite_obj_cartao_perfurado_46dc_e342e6.png",
           "position": {
-            "x": 1084,
-            "y": 902
+            "x": 575,
+            "y": 770
           },
           "size": {
-            "width": 172,
-            "height": 164
+            "width": 100,
+            "height": 95
           },
           "scale": {
             "x": 1,
@@ -288,12 +327,12 @@
           "type": "item",
           "sprite": "sprites/Sprite_obj_carta_das_mares_858a_61e84e.png",
           "position": {
-            "x": 1468,
-            "y": 758
+            "x": 690,
+            "y": 815
           },
           "size": {
-            "width": 143,
-            "height": 149
+            "width": 92,
+            "height": 96
           },
           "scale": {
             "x": 1,
@@ -319,14 +358,14 @@
           "id": "obj_lanterna_a067",
           "name": "lanterna",
           "type": "item",
-          "sprite": "sprites/Sprite_obj_lanterna_a067_96a3d1.png",
+          "sprite": "sprites/Sprite_obj_lanterna_a067_c4f1d0.png",
           "position": {
-            "x": 844,
-            "y": 822
+            "x": 839,
+            "y": 826
           },
           "size": {
-            "width": 56,
-            "height": 89
+            "width": 154,
+            "height": 104
           },
           "scale": {
             "x": 1,
@@ -334,20 +373,26 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Uma lanterna de metal, pesada, com pilhas novas.",
+          "description": "Uma lanterna de metal prateada, pesada, com pilhas novas.",
           "properties": {
             "portable": true,
             "hidden": true,
             "aliases": []
           },
           "actions": [],
-          "ses": ""
+          "ses": "on use {\n  if not has(lanterna) { say \"Primeiro pegue a lanterna.\" }\n  else if flag(lanterna_acesa) { say \"Já está acesa.\" }\n  else {\n    set lanterna_acesa; play \"clique de interruptor de lanterna de metal\"\n    say \"Clique. Um facho de luz amarela corta a escuridão.\"\n  }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(bau_aberto)",
+          "change": "só o baú de madeira no centro muda - a tampa curva está aberta, levantada para trás, mostrando o interior de madeira escura. A caixa de papelão com colares, o assoalho e a abertura da escada continuam exatamente iguais",
+          "background": "backgrounds/Variant_41631c34.png"
+        }
+      ],
       "sound": {
         "ambient": "sótão abafado, madeira do telhado estalando, vento leve nas telhas",
         "variants": [],
@@ -357,17 +402,16 @@
     "scene_37d2b3e6": {
       "id": "scene_37d2b3e6",
       "name": "Biblioteca",
-      "description": "Estantes do chão ao teto, uma escada em caracol para o mezanino e uma escrivaninha sob a luz de um abajur. Num canto, uma porta baixa dá para os degraus do porão.",
+      "description": "Estantes do chão ao teto por todos os lados e, no meio, uma escrivaninha sob a luz de um abajur.",
       "exits": {
-        "sul": "scene_54fc0d3c",
-        "baixo": "scene_cb0dfc72"
+        "sul": "scene_54fc0d3c"
       },
       "objects": [
         {
           "id": "background_6427cafa",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_8f3abaaf.png",
+          "sprite": "backgrounds/Scene_bib_5d1e9a.png",
           "position": {
             "x": 960,
             "y": 540
@@ -437,10 +481,8 @@
     "scene_cb0dfc72": {
       "id": "scene_cb0dfc72",
       "name": "Porão",
-      "description": "Chão de cimento rachado, uma lâmpada pendurada e prateleiras cheias de caixas. A escada de madeira sobe de volta à biblioteca. Uma das estantes está estranhamente afastada da parede.",
-      "exits": {
-        "cima": "scene_37d2b3e6"
-      },
+      "description": "Chão de cimento rachado, uma lâmpada queimada pendurada no teto e prateleiras cheias de caixas. A escada de madeira sobe de volta ao alçapão do escritório. Uma das estantes está estranhamente afastada da parede.",
+      "exits": {},
       "objects": [
         {
           "id": "background_9af12029",
@@ -505,11 +547,21 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(estante_movida)",
+          "change": "só a estante de madeira alta à direita do centro muda - ela girou sobre um eixo e está afastada em ângulo, e na parede de trás, onde ela estava, abriu-se uma passagem em arco de pedra escura que leva a um corredor de pedra. A escada, a lâmpada, o balde e o resto do porão continuam exatamente iguais",
+          "background": "backgrounds/Variant_06939874.png"
+        }
+      ],
+      "dark": {
+        "when": "not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))",
+        "death": "Você tateia no escuro, tropeça numa caixa e bate a cabeça no cimento. Lá em cima, ninguém ouve nada."
+      },
       "sound": {
-        "ambient": "porão úmido, lâmpada zumbindo, gotas de água pingando",
+        "ambient": "porão úmido e silencioso, gotas de água pingando",
         "variants": [],
-        "file": "audio/Sound_porao_umido_lampada_zumbindo_got_934070.ogg"
+        "file": "audio/Sound_porao_umido_e_silencioso_gotas_d_ed3056.ogg"
       }
     },
     "scene_bda57d51": {
@@ -841,7 +893,7 @@
     "scene_eff3c38f": {
       "id": "scene_eff3c38f",
       "name": "Posto do Capitão Rocha",
-      "description": "Um armazém de madeira atulhado de baús, moedas, mapas e bugigangas do mundo inteiro. Uma bola de cristal brilha sobre a mesa. Ninguém compra ou vende aqui há muito tempo. Uma porta trancada leva aos fundos.",
+      "description": "Uma velha loja de madeira. Um balcão comprido atravessa a sala e, atrás dele, prateleiras expõem garrafas, lampiões, cordas, conchas, mapas enrolados e bugigangas do mundo inteiro. Sobre o balcão, entre moedas e quinquilharias, uma bola de cristal brilha ao lado de um livro grosso de capa vermelha. Ninguém compra ou vende aqui há muito tempo. Na parede do fundo, atrás do balcão, uma porta de tábuas grossas está trancada por um cadeado de ferro pendurado na frente.",
       "exits": {
         "oeste": "scene_54ecade0"
       },
@@ -850,7 +902,7 @@
           "id": "background_fe76fa53",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_70e8af1d.png",
+          "sprite": "backgrounds/Scene_92c96470.png",
           "position": {
             "x": 960,
             "y": 540
@@ -879,12 +931,12 @@
           "type": "movel",
           "sprite": "",
           "position": {
-            "x": 1154,
-            "y": 532
+            "x": 918,
+            "y": 475
           },
           "size": {
-            "width": 116,
-            "height": 85
+            "width": 163,
+            "height": 228
           },
           "scale": {
             "x": 1,
@@ -892,7 +944,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Uma bola de cristal azulada, acesa por dentro, sobre um suporte no meio da mesa.",
+          "description": "Uma bola de cristal azulada, acesa por dentro, sobre um suporte em cima do balcão.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -917,12 +969,12 @@
           "type": "livro",
           "sprite": "",
           "position": {
-            "x": 1369,
-            "y": 776
+            "x": 1610,
+            "y": 570
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 432,
+            "height": 122
           },
           "scale": {
             "x": 1,
@@ -930,7 +982,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Um livro grosso de capa vermelha, numa das pilhas de livros sobre a mesa grande.",
+          "description": "Um livro grosso de capa vermelha, aberto sobre o balcão, ao lado da bola de cristal.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -949,12 +1001,12 @@
           "type": "porta",
           "sprite": "",
           "position": {
-            "x": 473,
-            "y": 623
+            "x": 1339,
+            "y": 364
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 278,
+            "height": 413
           },
           "scale": {
             "x": 1,
@@ -962,7 +1014,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Uma porta de tábuas grossas, com um cadeado de ferro.",
+          "description": "Uma porta de tábuas grossas atrás do balcão, trancada por um cadeado de ferro.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -979,7 +1031,13 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(deposito_aberto)",
+          "background": "backgrounds/Variant_23983746.png",
+          "change": "só a porta de tábuas grossas na parede do fundo, atrás do balcão, muda - ela está escancarada para dentro e pela abertura se vê um depósito na penumbra; o cadeado de ferro, aberto, ficou pendurado na argola do batente, do lado de cá, bem à vista. O balcão, a bola de cristal, as prateleiras e o resto da loja continuam exatamente iguais"
+        }
+      ],
       "sound": {
         "ambient": "interior de cabana de madeira, tábuas rangendo, sinos de vento lá fora, mar distante",
         "variants": [],
@@ -996,7 +1054,7 @@
           "id": "background_0164d1d5",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_7d443a10.png",
+          "sprite": "backgrounds/Scene_deposito_e41b07.png",
           "position": {
             "x": 960,
             "y": 540
@@ -1056,14 +1114,14 @@
           "id": "obj_bussola_c0fa",
           "name": "bússola",
           "type": "item",
-          "sprite": "sprites/Sprite_obj_bussola_c0fa_0a6ba0.png",
+          "sprite": "sprites/Sprite_obj_bussola_fbbbed.png",
           "position": {
-            "x": 1734,
-            "y": 745
+            "x": 1500,
+            "y": 845
           },
           "size": {
-            "width": 262,
-            "height": 246
+            "width": 65,
+            "height": 90
           },
           "scale": {
             "x": 1,
@@ -1088,12 +1146,12 @@
           "type": "item",
           "sprite": "sprites/Sprite_obj_remo_d497_eb26c2.png",
           "position": {
-            "x": 765,
-            "y": 576
+            "x": 1130,
+            "y": 790
           },
           "size": {
-            "width": 110,
-            "height": 111
+            "width": 150,
+            "height": 151
           },
           "scale": {
             "x": 1,
@@ -1116,12 +1174,12 @@
           "type": "item",
           "sprite": "sprites/Sprite_obj_bomba_de_ar_aeea_c3ad33.png",
           "position": {
-            "x": 522,
-            "y": 596
+            "x": 1330,
+            "y": 850
           },
           "size": {
-            "width": 61,
-            "height": 81
+            "width": 72,
+            "height": 96
           },
           "scale": {
             "x": 1,
@@ -1144,7 +1202,13 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(bau_capitao_aberto)",
+          "change": "só o baú grande com ferragens de ferro, à direita da porta, muda - a tampa curva está aberta, levantada para trás, mostrando o interior de madeira escura. A porta aberta, a lanterna, as mesas e o resto do depósito continuam exatamente iguais",
+          "background": "backgrounds/Variant_4666c869.png"
+        }
+      ],
       "sound": {
         "ambient": "depósito de madeira abafado, lâmpada zumbindo, ondas lá fora",
         "variants": [],
@@ -1262,7 +1326,7 @@
     "scene_14bff028": {
       "id": "scene_14bff028",
       "name": "Galpão de Barcos",
-      "description": "Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote inflável vermelho, murcho. Uma trilha segue para o norte, até o mar.",
+      "description": "Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote cinza murcho. Uma trilha segue para o norte, até o mar.",
       "exits": {
         "oeste": "scene_3275efb2",
         "norte": "scene_f222a110"
@@ -1272,7 +1336,7 @@
           "id": "background_82baa046",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_caf2a1b8.png",
+          "sprite": "backgrounds/Scene_galpao_3a9c7e.png",
           "position": {
             "x": 960,
             "y": 540
@@ -1314,7 +1378,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Um bote de borracha vermelho, murcho, com dois assentos de madeira.",
+          "description": "Um bote de borracha cinza-esverdeado, murcho, com os dois assentos de madeira soltos por cima.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -1325,13 +1389,18 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  if flag(bote_cheio) { say \"Cheio e firme. Pesado, mas dá para arrastar.\" }\n  else { say \"Murcho, mas sem furos. Precisa de ar.\" }\n}\non use with \"bomba de ar\" {\n  if flag(bote_cheio) { say \"Já está cheio.\" }\n  else { set bote_cheio; play \"bomba de ar de pé bombeando e bote de borracha enchendo\"; say \"Você bombeia até o braço doer. O bote endurece, inteiro.\" }\n}\non push {\n  if not flag(bote_cheio) { say \"Murcho assim, não vai flutuar.\" }\n  else { set bote_na_praia; hide self; show \"bote vermelho\"; play \"bote de borracha sendo arrastado sobre areia\"; say \"Você arrasta o bote pela trilha, até a beira da água na praia, ao norte.\" }\n}\non pull { say \"Melhor empurrar: a trilha para a praia é ao norte.\" }\n"
+          "ses": "on examine {\n  if flag(bote_cheio) { say \"Cheio e firme. Pesado, mas dá para arrastar.\" }\n  else { say \"Murcho, mas sem furos. Precisa de ar.\" }\n}\non use with \"bomba de ar\" {\n  if flag(bote_cheio) { say \"Já está cheio.\" }\n  else { set bote_cheio; play \"bomba de ar de pé bombeando e bote de borracha enchendo\"; say \"Você bombeia até o braço doer. O bote endurece, inteiro.\" }\n}\non push {\n  if not flag(bote_cheio) { say \"Murcho assim, não vai flutuar.\" }\n  else { set bote_na_praia; hide self; show \"bote cinza\"; play \"bote de borracha sendo arrastado sobre areia\"; say \"Você arrasta o bote pela trilha, até a beira da água na praia, ao norte.\" }\n}\non pull { say \"Melhor empurrar: a trilha para a praia é ao norte.\" }\n"
         }
       ],
       "hotspots": [],
       "actions": [],
       "ses": "",
       "variants": [
+        {
+          "when": "flag(bote_cheio)",
+          "change": "o bote inflável cinza-esverdeado no chão está cheio, inflado e firme, com os dois bancos de madeira no lugar",
+          "background": "backgrounds/Scene_caf2a1b8.png"
+        },
         {
           "when": "flag(bote_na_praia)",
           "change": "o bote inflável que estava no chão sumiu; só o assoalho de madeira vazio onde ele estava",
@@ -1430,14 +1499,14 @@
           "id": "obj_medalhao_de_coral_16e0",
           "name": "medalhão de coral",
           "type": "item",
-          "sprite": "❓",
+          "sprite": "sprites/Sprite_obj_medalhao_de_coral_16e0_229b13.png",
           "position": {
-            "x": 929,
-            "y": 743
+            "x": 912,
+            "y": 958
           },
           "size": {
-            "width": 100,
-            "height": 100
+            "width": 56,
+            "height": 53
           },
           "scale": {
             "x": 1,
@@ -1462,7 +1531,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on enter {\n  if not has(lanterna) {\n    play \"escorregão em pedra molhada e queda no escuro, eco\"\n    end \"Sem luz, você dá dois passos no escuro, pisa no musgo e escorrega para o buraco no meio da fenda. Ninguém nunca vai saber onde você caiu.\"\n  } else {\n    say \"A luz da lanterna desenha a borda do buraco no meio do chão. Você contorna devagar.\"\n  }\n}\n",
+      "ses": "on enter {\n  if not (has(lanterna) and flag(lanterna_acesa)) {\n    play \"escorregão em pedra molhada e queda no escuro, eco\"\n    end \"Sem luz, você dá dois passos no escuro, pisa no musgo e escorrega para o buraco no meio da fenda. Ninguém nunca vai saber onde você caiu.\"\n  } else {\n    say \"A luz da lanterna desenha a borda do buraco no meio do chão. Você contorna devagar.\"\n  }\n}\n",
       "variants": [],
       "sound": {
         "ambient": "caverna escura, água escorrendo pelas paredes, gotas ecoando",
@@ -1537,17 +1606,17 @@
           "ses": ""
         },
         {
-          "id": "obj_bote_vermelho_e505",
-          "name": "bote vermelho",
+          "id": "obj_bote_cinza_dda1",
+          "name": "bote cinza",
           "type": "movel",
-          "sprite": "sprites/Sprite_obj_bote_vermelho_e505_7549b3.png",
+          "sprite": "sprites/Sprite_obj_bote_cinza_8d21f4.png",
           "position": {
-            "x": 757,
-            "y": 752
+            "x": 850,
+            "y": 905
           },
           "size": {
-            "width": 246,
-            "height": 127
+            "width": 330,
+            "height": 110
           },
           "scale": {
             "x": 1,
@@ -1616,7 +1685,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on enter {\n  if not has(bússola) {\n    play \"neblina densa, vento uivando e ondas grandes\"\n    end \"Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote vermelho some na neblina.\"\n  } else {\n    say \"Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte.\"\n  }\n}\n",
+      "ses": "on enter {\n  if not has(bússola) {\n    play \"neblina densa, vento uivando e ondas grandes\"\n    end \"Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote cinza some na neblina.\"\n  } else {\n    say \"Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte.\"\n  }\n}\n",
       "effect": {
         "type": "bob",
         "amount": 12.0,
@@ -2015,9 +2084,17 @@
       "text": "tampa de madeira de escrivaninha rolando e abrindo",
       "file": "audio/Sound_tampa_de_madeira_de_escrivaninha_ee83a1.ogg"
     },
+    "tapete_pesado_sendo_enrolado_e_arrastado_sobre_assoalho_de_madeira": {
+      "text": "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira",
+      "file": "audio/Sound_tapete_pesado_sendo_enrolado_e_a_35a64e.ogg"
+    },
     "fechadura_de_latao_girando_e_tampa_de_bau_de_madeira_rangendo": {
       "text": "fechadura de latão girando e tampa de baú de madeira rangendo",
       "file": "audio/Sound_fechadura_de_latao_girando_e_tam_449d5f.ogg"
+    },
+    "clique_de_interruptor_de_lanterna_de_metal": {
+      "text": "clique de interruptor de lanterna de metal",
+      "file": "audio/Sound_clique_de_interruptor_de_lantern_55f8ca.ogg"
     },
     "estante_pesada_de_madeira_deslizando_sobre_piso_de_cimento": {
       "text": "estante pesada de madeira deslizando sobre piso de cimento",

@@ -235,3 +235,27 @@ def test_classic_presentation_and_abbreviations():
     assert "Um balde." in out["messages"]
     out = eng.command(out["state"], "N")
     assert out["view"]["scene_id"] == "s2"
+
+
+def test_dark_scene_kills_unless_handling_what_you_carry():
+    p = project()
+    p["scenes"]["jardim"]["dark"] = {"when": "not flag(luz)", "death": "Você cai no escuro."}
+    p["scenes"]["jardim"]["objects"].append(
+        {"id": "lanterna", "name": "Lanterna", "description": "Uma lanterna.",
+         "properties": {"portable": True}, "ses": 'on use { set luz; say "Clique." }'})
+    p["scenes"]["hall"]["objects"].append(
+        {"id": "isqueiro", "name": "Isqueiro", "description": "Um isqueiro.", "properties": {"portable": True}})
+    r = playtest(p, ["pegar isqueiro", "sul", "olhar", "inventario", "examinar isqueiro", "norte"])
+    msgs = [m for step in r["transcript"] for m in step["messages"]]
+    assert any("escuro como breu" in m for m in msgs)
+    assert not any("Chave Enferrujada" in m for m in msgs)       # nothing is seen in the dark
+    assert r["final_state"]["ended"] == "Você cai no escuro."                    # moving kills
+    r = playtest(p, ["sul", "pegar lanterna"])
+    assert r["final_state"]["ended"] == "Você cai no escuro."                    # groping for things kills too
+    p["scenes"]["jardim"]["objects"] = [o for o in p["scenes"]["jardim"]["objects"] if o["id"] != "lanterna"]
+    p["scenes"]["hall"]["objects"].append(
+        {"id": "lanterna", "name": "Lanterna", "description": "Uma lanterna.",
+         "properties": {"portable": True}, "ses": 'on use { set luz; say "Clique." }'})
+    r = playtest(p, ["pegar lanterna", "sul", "acender lanterna", "pegar chave", "norte"])
+    assert not r["final_state"]["ended"]
+    assert any("Chave Enferrujada" in m for m in r["transcript"][3]["messages"])   # the light shows the room

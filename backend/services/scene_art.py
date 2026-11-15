@@ -201,6 +201,8 @@ Rules:
   No people, no animals, no text.
 - sprites: for EACH sprite object, a short visual description of the object alone (shape,
   material, colour, state), e.g. "a green glass bottle with a cork and a rolled paper inside".
+  Say it is seen straight from the front; for something hung on a wall (a clock, a picture, a
+  mirror) say "seen perfectly straight from the front, flat-on, symmetric, no side visible".
 """
     plan = await _ask_json(prompt, "plano de prompts")
     if not isinstance(plan, dict) or not plan.get("background_prompt"):
@@ -310,7 +312,8 @@ def sheet_prompt(descriptions: List[str]) -> str:
     return (f"{'One single object' if n == 1 else f'{n} separate objects'} for an adventure game, {STYLE_HINT}, "
             f"with the same palette and lighting as the reference. Evenly spaced in one row, well apart, on a plain "
             f"flat light grey background, nothing else, no scenery, no ground, no frame. {items} "
-            f"Each object complete and fully visible.")
+            f"Each object complete and fully visible, seen straight from the front, flat-on, as in a frontal view "
+            f"of a room: nothing turned to the side.")
 
 
 async def cut_sprites(sheet: Path, count: int, background: Path, boxes: List[list]) -> List[dict]:
@@ -452,6 +455,38 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
                 report["problems"].append(f"'{o.get('name')}' não aparece no cenário (gere de novo a cena)")
     project_service.save_project_data(project_name, project)
     return report
+
+
+async def place_new_objects(project_name: str, scene_ref: str) -> dict:
+    """Objects added after the scene was painted. The ones that are scenery (painted) are found in the
+    picture, so they become clickable there. The loose ones (sprites) need the scene's art made again;
+    they are reported, nothing else is touched."""
+    from backend.ses.blueprint import objects_without_art
+    project = project_service.load_project(project_name)
+    root = project_service.load_project_path(project_name)
+    sid = director_tools._scene(project, scene_ref)
+    scene = project["scenes"][sid]
+    new = objects_without_art(scene)
+    painted = [o for o in new if not is_sprite(o)]
+    out = {"placed": [], "problems": [f"'{o.get('name')}' precisa de sprite: gere a arte da cena de novo"
+                                      for o in new if is_sprite(o)]}
+    if not painted:
+        return out
+    boxes = await locate(root / background_path(scene), painted, [])
+    project = project_service.load_project(project_name)
+    for o in project["scenes"][sid]["objects"]:
+        found = boxes.get(o["id"])
+        if o["id"] not in {x["id"] for x in painted}:
+            continue
+        if found and found["found"]:
+            o["sprite"] = ""
+            o.setdefault("properties", {})["painted"] = True
+            place(o, found["box"])
+            out["placed"].append(o.get("name"))
+        else:
+            out["problems"].append(f"'{o.get('name')}' não aparece no cenário")
+    project_service.save_project_data(project_name, project)
+    return out
 
 
 def save_part(root: Path, key: str, png_b64: str, parent_box: list, part: dict, bg_path: Path) -> tuple:
