@@ -459,6 +459,9 @@ cenas:
 - nome: Clareira das Pedras
   descricao: Raios de sol atravessam árvores altas e caem sobre um santuário de pedra coberto de musgo, com degraus gastos. Luzes verdes flutuam no ar.
   som: clareira de floresta, raios de sol, zumbido místico suave, pássaros
+  variantes:
+  - quando: flag(mare_baixa)
+    mudanca: as ondas entalhadas em volta da soleira do santuário brilham com luz verde, e uma folha de papel está deitada no sulco; ao fundo, a mata se abriu e uma trilha de pedras molhadas, recém-saída da água, segue para longe entre as árvores
   objetos:
   - nome: santuário
     descricao: Um santuário pequeno de pedra. Na soleira, um sulco raso e comprido, como se esperasse uma folha de papel, e ondas entalhadas em volta.

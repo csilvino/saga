@@ -1034,8 +1034,8 @@
       "variants": [
         {
           "when": "flag(deposito_aberto)",
-          "background": "backgrounds/Variant_23983746.png",
-          "change": "só a porta de tábuas grossas na parede do fundo, atrás do balcão, muda - ela está escancarada para dentro e pela abertura se vê um depósito na penumbra; o cadeado de ferro, aberto, ficou pendurado na argola do batente, do lado de cá, bem à vista. O balcão, a bola de cristal, as prateleiras e o resto da loja continuam exatamente iguais"
+          "change": "só a porta de tábuas grossas na parede do fundo, atrás do balcão, muda - ela está escancarada para dentro e pela abertura se vê um depósito na penumbra; o cadeado de ferro, aberto, ficou pendurado na argola do batente, do lado de cá, bem à vista. O balcão, a bola de cristal, as prateleiras e o resto da loja continuam exatamente iguais",
+          "background": "backgrounds/Variant_23983746.png"
         }
       ],
       "sound": {
@@ -1976,7 +1976,13 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(mare_baixa)",
+          "background": "backgrounds/Variant_45b923ec.png",
+          "change": "as ondas entalhadas em volta da soleira do santuário brilham com luz verde, e uma folha de papel está deitada no sulco; ao fundo, a mata se abriu e uma trilha de pedras molhadas, recém-saída da água, segue para longe entre as árvores"
+        }
+      ],
       "sound": {
         "ambient": "clareira de floresta, raios de sol, zumbido místico suave, pássaros",
         "variants": [],
