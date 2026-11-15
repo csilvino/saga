@@ -480,6 +480,9 @@ cenas:
 - nome: Templo da Maré
   descricao: Um templo de pedra engolido pela mata, coberto de raízes e musgo. Uma porta escura, fechada, guarda a entrada; no centro dela, um encaixe redondo.
   som: templo antigo na selva, vento entre pedras, zumbido grave vindo de dentro
+  variantes:
+  - quando: flag(tomas_resgatado)
+    mudanca: a porta de pedra afundou no chão e a entrada está aberta; lá dentro, iluminado pela luz verde de algas que brilham nas paredes, um homem magro e barbudo de roupas rasgadas levanta a cabeça, sentado no chão de pedra, com um medalhão de coral encaixado no centro da soleira
   objetos:
   - nome: porta do templo
     descricao: Uma porta de pedra lisa, sem maçaneta. No centro, um encaixe redondo com ondas entalhadas em volta.
@@ -488,6 +491,7 @@ cenas:
     script: |
       on open { say "Não há maçaneta. Só o encaixe redondo no centro." }
       on use with "medalhão de coral" {
+        set tomas_resgatado; remove "medalhão de coral"; hide self
         play "porta de pedra pesada se abrindo com estrondo grave"
         end "O medalhão encaixa com um clique. A porta afunda no chão e, lá dentro, à luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa."
       }
