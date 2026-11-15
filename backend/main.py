@@ -1,5 +1,6 @@
 import logging
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,11 +17,20 @@ sys.path.append(str(ROOT_DIR))
 
 from backend.api.routes import projects, scenes, dialogs, ai, assets, auth, orchestrator, genai_sprites, tools, objects, genai_image, genai_edit, game, blueprint
 from backend.services.project_service import project_service # Importa a instância
+from backend.services import mcp_server
+
+
+@asynccontextmanager
+async def lifespan(app):
+    async with mcp_server.run():        # the MCP sessions live as long as the server
+        yield
+
 
 app = FastAPI(
     title="Saga Engine API",
     description="Backend para o Editor da Saga Engine",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan,
 )
 
 # Configuração de CORS
@@ -68,6 +78,9 @@ app.include_router(game.router)
 app.include_router(game.ses_router)
 app.include_router(blueprint.router)
 
+# MCP: the Director's tools for the user's own AI (only from this machine)
+app.mount("/mcp", mcp_server.app)
+
 @app.get("/")
 async def root():
     return {"message": "Saga Engine API is running!", "status": "ok"}
@@ -78,5 +91,7 @@ if __name__ == "__main__":
         host="0.0.0.0", 
         port=8070, 
         reload=True,
-        reload_dirs=["backend"] # Monitora apenas a pasta 'backend'
+        reload_dirs=["backend"],  # Monitora apenas a pasta 'backend'
+        # long-lived connections (the MCP event stream, the editor) must not hold a reload forever
+        timeout_graceful_shutdown=5,
     )

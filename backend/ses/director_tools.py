@@ -94,7 +94,8 @@ def get_scene(project, scene):
     return {"id": sid, "name": s.get("name"), "description": s.get("description") or "",
             "exits": s.get("exits") or {}, "script": s.get("ses") or "",
             "objects": [{"id": o["id"], "name": o.get("name"), "description": o.get("description") or "",
-                         "properties": o.get("properties") or {}, "script": o.get("ses") or ""}
+                         "properties": o.get("properties") or {}, "script": o.get("ses") or "",
+                         "place": _placement(o)}
                         for o in s.get("objects", []) if o.get("type") != "background"]}
 
 
@@ -205,6 +206,53 @@ def update_object(project, object, name=None, description=None, portable=None, h
     return {"updated": oid, "scene": sid, **({"warnings": warnings} if warnings else {})}
 
 
+SCREEN_W, SCREEN_H = 1920, 1080
+
+
+def _placement(o):
+    """Where an object is drawn: center x/y and size in pixels of the 1920x1080 scene, and its layer."""
+    pos, size = o.get("position") or {}, o.get("size") or {}
+    if not pos and not size:
+        return None
+    return {"x": pos.get("x"), "y": pos.get("y"), "width": size.get("width"), "height": size.get("height"),
+            "layer": o.get("zIndex", 0), "has_sprite": bool(o.get("sprite"))}
+
+
+def place_object(project, object, x=None, y=None, width=None, height=None, layer=None):
+    """Moves or resizes an object on screen. x/y are its center; width or height alone keeps its proportions."""
+    oid, sid, obj = _object(project, object)
+    if obj.get("type") == "background":
+        raise ToolError("o cenário não se move; use edit_scene_background para mudar a imagem")
+    if all(v is None for v in (x, y, width, height, layer)):
+        raise ToolError("diga o que mudar: x, y (o centro), width, height ou layer")
+    pos = dict(obj.get("position") or {"x": SCREEN_W // 2, "y": SCREEN_H // 2})
+    size = dict(obj.get("size") or {"width": 180, "height": 180})
+    ratio = (size.get("height") or 1) / (size.get("width") or 1)
+    if width is not None and height is None:
+        width, height = width, width * ratio
+    elif height is not None and width is None:
+        width, height = height / ratio, height
+    if width is not None:
+        if width < 10 or height < 10 or width > SCREEN_W or height > SCREEN_H:
+            raise ToolError(f"tamanho fora da cena: {round(width)}x{round(height)} (mínimo 10, máximo {SCREEN_W}x{SCREEN_H})")
+        size = {"width": round(width), "height": round(height)}
+    if x is not None:
+        pos["x"] = round(x)
+    if y is not None:
+        pos["y"] = round(y)
+    if not (0 <= pos["x"] <= SCREEN_W and 0 <= pos["y"] <= SCREEN_H):
+        raise ToolError(f"o centro ({pos['x']}, {pos['y']}) fica fora da cena (0..{SCREEN_W}, 0..{SCREEN_H})")
+    obj["position"], obj["size"] = pos, size
+    obj["scale"] = {"x": 1, "y": 1}
+    if layer is not None:
+        obj["zIndex"] = int(layer)
+    warnings = []
+    if pos["x"] - size["width"] / 2 < 0 or pos["x"] + size["width"] / 2 > SCREEN_W \
+            or pos["y"] - size["height"] / 2 < 0 or pos["y"] + size["height"] / 2 > SCREEN_H:
+        warnings.append("parte do objeto fica para fora da tela")
+    return {"placed": oid, "scene": sid, "place": _placement(obj), **({"warnings": warnings} if warnings else {})}
+
+
 def set_script(project, target, script):
     """Replaces the SES script of an object or a scene (validated first)."""
     world = World(project)
@@ -296,6 +344,12 @@ TOOLS = {
                       {"object": (S, "id ou nome"), "name": (S, ""), "description": (S, ""), "portable": (B, ""),
                        "hidden": (B, ""), "aliases": (A, ""), "move_to_scene": (S, ""),
                        "script": (S, "novo script SES (validado)")}, ["object"]),
+    "place_object": (place_object, "Move ou redimensiona um objeto na tela (cena de 1920x1080 px). x e y são o CENTRO do objeto; "
+                                    "width ou height sozinho mantém a proporção; layer = camada (maior fica na frente). "
+                                    "get_scene mostra o 'place' atual de cada objeto.",
+                     {"object": (S, "id ou nome"), "x": (I, "centro horizontal, 0 a 1920"), "y": (I, "centro vertical, 0 a 1080"),
+                      "width": (I, "largura em px"), "height": (I, "altura em px"), "layer": (I, "camada (zIndex)")},
+                     ["object"]),
     "set_script": (set_script, "Troca o script SES de um objeto ou de uma cena. É validado; erros voltam com linha e coluna e nada é salvo.",
                    {"target": (S, "id ou nome do objeto ou da cena"), "script": (S, "")}, ["target", "script"]),
     "delete_object": (delete_object, "Apaga um objeto.", {"object": (S, "")}, ["object"]),

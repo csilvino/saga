@@ -333,7 +333,10 @@ async def cut_sprites(sheet: Path, count: int, background: Path, boxes: List[lis
 
 async def create_scene_art(project_name: str, scene_ref: str, style: str = "", reference_scene: str = "",
                            keep_background: bool = False, review: bool = True,
-                           progress: Optional[Callable[[str], None]] = None) -> dict:
+                           progress: Optional[Callable[[str], None]] = None,
+                           only_new_sprites: bool = False) -> dict:
+    """only_new_sprites: keeps the background and every sprite already made, and makes only the
+    sprites of objects that have none yet (an object added after the scene was painted)."""
     say = progress or (lambda m: logger.info("arte: %s", m))
     project = project_service.load_project(project_name)
     root = project_service.load_project_path(project_name)
@@ -345,6 +348,14 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
     painted = [o for o in objs if not is_sprite(o)]
     sprites = [o for o in objs if is_sprite(o)]
     report: Dict[str, Any] = {"scene": scene.get("name"), "painted": [], "sprites": [], "problems": []}
+    if only_new_sprites:
+        if not background_path(scene):
+            raise ArtError(f"a cena '{scene.get('name')}' ainda não tem cenário: gere a arte dela inteira primeiro")
+        keep_background, painted = True, []
+        sprites = [o for o in sprites if "/" not in (o.get("sprite") or "")]   # a placeholder emoji is no sprite
+        if not sprites:
+            report["problems"].append("nenhum objeto desta cena está sem sprite; nada a fazer")
+            return report
 
     items = sheet_items(sprites)
     plan = await plan_prompts(scene, painted, items, style)
@@ -444,7 +455,7 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
                     part["sprite"], part["rect"] = save_part(root, f"{oid}_{n}", cut["png"], made[oid]["box"],
                                                              part, bg_path)
                     report["sprites"].append(f"{o.get('name')}/{part['name']}")
-        elif not is_sprite(o):
+        elif not is_sprite(o) and not only_new_sprites:
             found = boxes.get(oid)
             o["sprite"] = ""
             props["painted"] = True
@@ -468,7 +479,7 @@ async def place_new_objects(project_name: str, scene_ref: str) -> dict:
     scene = project["scenes"][sid]
     new = objects_without_art(scene)
     painted = [o for o in new if not is_sprite(o)]
-    out = {"placed": [], "problems": [f"'{o.get('name')}' precisa de sprite: gere a arte da cena de novo"
+    out = {"placed": [], "problems": [f"'{o.get('name')}' precisa de sprite: create_scene_art com only_new_sprites=true"
                                       for o in new if is_sprite(o)]}
     if not painted:
         return out

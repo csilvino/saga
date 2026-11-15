@@ -8,6 +8,7 @@ google-auth
 google-auth-oauthlib
 google-auth-httplib2
 google-genai
+mcp>=2.3,<3
 fastapi
 uvicorn
 python-dotenv
