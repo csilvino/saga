@@ -2052,7 +2052,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open { say \"Não há maçaneta. Só o encaixe redondo no centro.\" }\non use with \"medalhão de coral\" {\n  set tomas_resgatado; remove \"medalhão de coral\"; hide self\n  play \"porta de pedra pesada se abrindo com estrondo grave\"\n  end \"O medalhão encaixa com um clique. A porta afunda no chão e, lá dentro, à luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa.\"\n}\n"
+          "ses": "on open {\n  if flag(porta_templo_aberta) { say \"Já está aberta. É só entrar.\" }\n  else { say \"Não há maçaneta. Só o encaixe redondo no centro.\" }\n}\non use with \"medalhão de coral\" {\n  set porta_templo_aberta; remove \"medalhão de coral\"\n  link norte to \"Câmara da Maré\"; link entrar to \"Câmara da Maré\"\n  play \"porta de pedra pesada se abrindo com estrondo grave\"\n  say \"O medalhão encaixa com um clique. As ondas entalhadas giram, e a porta afunda devagar no chão. Do vão escuro sai uma luz verde e um cheiro de mar parado. Alguém tosse lá dentro.\"\n}\n"
         }
       ],
       "hotspots": [],
@@ -2060,15 +2060,124 @@
       "ses": "",
       "variants": [
         {
-          "when": "flag(tomas_resgatado)",
-          "background": "backgrounds/Variant_c3cb85b4.png",
-          "change": "a porta de pedra afundou no chão e a entrada está aberta; lá dentro, iluminado pela luz verde de algas que brilham nas paredes, um homem magro e barbudo de roupas rasgadas levanta a cabeça, sentado no chão de pedra, com um medalhão de coral encaixado no centro da soleira"
+          "when": "flag(porta_templo_aberta)",
+          "change": "a porta de pedra afundou no chão e a entrada está aberta, um vão escuro de onde sai uma luz verde suave; a soleira está vazia, sem ninguém, e o encaixe redondo agora segura um medalhão de coral vermelho",
+          "background": "backgrounds/Variant_a230b25b.png"
         }
       ],
       "sound": {
         "ambient": "templo antigo na selva, vento entre pedras, zumbido grave vindo de dentro",
         "variants": [],
         "file": "audio/Sound_templo_antigo_na_selva_vento_ent_df4e5f.ogg"
+      }
+    },
+    "scene_6eee1c1a": {
+      "id": "scene_6eee1c1a",
+      "name": "Câmara da Maré",
+      "description": "Uma câmara redonda de pedra, úmida e silenciosa. Algas que brilham sozinhas cobrem as paredes de luz verde, e ondas entalhadas correm pelo teto baixo. Num canto, um cobertor velho e uma caneca de lata sobre o chão de pedra lisa.",
+      "exits": {
+        "sul": "scene_e26bc425"
+      },
+      "objects": [
+        {
+          "id": "background_b31b5da3",
+          "name": "Background",
+          "type": "background",
+          "sprite": "backgrounds/Scene_b8c774e2.png",
+          "position": {
+            "x": 960,
+            "y": 540
+          },
+          "origin": {
+            "x": 960,
+            "y": 540
+          },
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 0,
+          "properties": {},
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_tomas_albuquerque_8251",
+          "name": "Tomás Albuquerque",
+          "type": "personagem",
+          "sprite": "sprites/Sprite_obj_tomas_albuquerque_8251_20b9a2.png",
+          "position": {
+            "x": 360,
+            "y": 790
+          },
+          "size": {
+            "width": 329,
+            "height": 380
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Personagem de adventure point-and-click pintado no mesmo estilo ilustrado do cenário, o corpo inteiro visível da cabeça aos pés descalços, do tamanho de um homem adulto sentado no chão da câmara, ocupando boa parte da altura da parede. Um homem magro sentado, abraçando os joelhos dobrados, com barba castanha comprida e cheia, cabelo desgrenhado até os ombros, camisa bege lisa e rasgada nas mangas, calça azul gasta. Iluminado pela mesma luz verde das algas da câmara, com sombras esverdeadas. Ele olha para cima, cansado e aliviado.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "tomás",
+              "tomas",
+              "homem"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_caneca_de_lata_cbaf",
+          "name": "caneca de lata",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_caneca_de_lata_cbaf_7f8321.png",
+          "position": {
+            "x": 575,
+            "y": 938
+          },
+          "size": {
+            "width": 57,
+            "height": 55
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 11,
+          "description": "Uma caneca de lata pequena e amassada, cinza-prateada, com a alça torta, vazia. Iluminada pela luz verde da câmara.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "caneca",
+              "lata"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        }
+      ],
+      "hotspots": [],
+      "actions": [],
+      "ses": "on enter {\n  play \"eco de passos em câmara de pedra, voz fraca de homem\"\n  end \"À luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa.\"\n}\n",
+      "variants": [],
+      "sound": {
+        "ambient": "câmara de pedra fechada, gotas ecoando, zumbido grave e suave, respiração fraca",
+        "variants": [],
+        "file": "audio/Sound_camara_de_pedra_fechada_gotas_ec_30edf4.ogg"
       }
     }
   },
@@ -2167,6 +2276,10 @@
     "porta_de_pedra_pesada_se_abrindo_com_estrondo_grave": {
       "text": "porta de pedra pesada se abrindo com estrondo grave",
       "file": "audio/Sound_porta_de_pedra_pesada_se_abrindo_c93354.ogg"
+    },
+    "eco_de_passos_em_camara_de_pedra_voz_fraca_de_homem": {
+      "text": "eco de passos em câmara de pedra, voz fraca de homem",
+      "file": "audio/Sound_eco_de_passos_em_camara_de_pedra_8f64b9.ogg"
     }
   }
 }
