@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional
 import httpx
 from PIL import Image, ImageDraw
 
+from backend.services import sprite_light
 from backend.services.project_service import project_service
 from backend.ses import director_tools
 from backend.ses.engine import GameEngine
@@ -180,10 +181,12 @@ def _trim(img: Image.Image) -> Image.Image:
 
 
 async def import_sprite(project_name: str, object: str, source: str, remove_background: bool = True,
-                        x: Optional[int] = None, y: Optional[int] = None, height: Optional[int] = None) -> Dict[str, Any]:
+                        x: Optional[int] = None, y: Optional[int] = None, height: Optional[int] = None,
+                        light: float = 0.5) -> Dict[str, Any]:
     """A picture as an object's sprite. remove_background cuts out the figure (for pictures that
     come on a plain or scenic background); transparent margins are trimmed. Placed at x/y (center)
-    with this height, or where the object already is, keeping the picture's proportions."""
+    with this height, or where the object already is, keeping the picture's proportions. light
+    (0 to 1) gives it the colour and brightness of the scene around it."""
     data, _ = await _read_source(source, IMAGE_EXT)
     img = _open_image(data).convert("RGBA")
     if remove_background:
@@ -210,8 +213,33 @@ async def import_sprite(project_name: str, object: str, source: str, remove_back
     if y is not None:
         pos["y"] = int(y)
     obj["position"], obj["size"], obj["scale"] = pos, {"width": w, "height": h}, {"x": 1, "y": 1}
+    obj.pop("light", None)
+    bg = sprite_light.scene_background(project["scenes"][sid])
+    if light and bg:
+        rel = sprite_light.apply_to_object(root, obj, bg, light)
     project_service.save_project_data(project_name, project)
-    return {"object": oid, "scene": sid, "sprite": rel, "place": director_tools._placement(obj)}
+    return {"object": oid, "scene": sid, "sprite": rel, "place": director_tools._placement(obj),
+            **({"light": obj["light"]} if obj.get("light") else {})}
+
+
+def match_sprite_light(project_name: str, object: str, strength: float = 0.5) -> Dict[str, Any]:
+    """Gives an object's sprite the colour and brightness of the scene around where it now stands
+    (run again after moving it). strength 0 puts back the picture as it was drawn."""
+    project = project_service.load_project(project_name)
+    root = project_service.load_project_path(project_name)
+    oid, sid, obj = director_tools._object(project, object)
+    if obj.get("type") == "background":
+        raise AssetError("o cenário não recebe luz de si mesmo")
+    bg = sprite_light.scene_background(project["scenes"][sid])
+    if not bg:
+        raise AssetError("a cena não tem cenário para dar a luz")
+    try:
+        rel = sprite_light.apply_to_object(root, obj, bg, max(0.0, min(1.0, float(strength))))
+    except ValueError as e:
+        raise AssetError(str(e))
+    project_service.save_project_data(project_name, project)
+    return {"object": oid, "scene": sid, "sprite": rel, "light": obj.get("light", 0),
+            "original": obj.get("sprite_original")}
 
 
 async def import_sound(project_name: str, source: str, kind: str, scene: str = "", object: str = "",

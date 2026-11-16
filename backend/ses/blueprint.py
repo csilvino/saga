@@ -34,8 +34,9 @@ from backend.ses import animation
 FILE_NAME = "ficha.yaml"
 
 # object fields the art writes; a rebuild carries them over from the previous project.json
-VISUAL_FIELDS = ("sprite", "position", "origin", "size", "scale", "rotation", "zIndex", "animation", "animations")
-VISUAL_PROPS = ("painted",)
+VISUAL_FIELDS = ("sprite", "position", "origin", "size", "scale", "rotation", "zIndex", "animation", "animations",
+                 "sprite_original", "light")
+VISUAL_PROPS = ("painted", "character")
 
 
 class BlueprintError(Exception):
@@ -186,7 +187,7 @@ def assemble(bp: dict, previous: Optional[dict] = None) -> Tuple[dict, List[dict
                           "retro": bool(pres.get("retro", False))},
          "launcher": {"title": name, "description": str(bp.get("descricao") or ""), "version": "1.0.0"}}
     if previous:
-        for key in ("metadata", "assets", "launcher"):
+        for key in ("metadata", "assets", "launcher", "characters"):
             if previous.get(key):
                 p[key] = copy.deepcopy(previous[key])
         p["launcher"].update({"title": name, "description": str(bp.get("descricao") or p["launcher"].get("description", ""))})
@@ -922,8 +923,11 @@ def art_status(project: dict) -> dict:
             "na_web": web}               # scenes whose missing pictures the creator uploads (not GERAR ARTE)
 
 
-def export(project: dict) -> dict:
-    """A blueprint from an existing project (to start using blueprints on a game made by hand)."""
+def export(project: dict, previous: Optional[dict] = None) -> dict:
+    """A blueprint from an existing project: to start using blueprints on a game made by hand, or
+    to bring the ficha up to date after the project was changed directly (editor, Director, MCP).
+    `previous` is the ficha it replaces: what exists only there (the tests, the requirements, keys
+    this function does not know) is kept from it, since the project has no trace of them."""
     world = World(project)
     scenes = []
     for sid, s in world.scenes.items():
@@ -997,7 +1001,29 @@ def export(project: dict) -> dict:
         bp["arte"] = {"estilo": project["art"].get("style", ""), "referencia": project["art"].get("reference", "")}
     bp["cenas"] = scenes
     bp["testes"] = {"vitoria": "", "solucao": [], "mortes": []}
+    if previous:
+        for key, value in previous.items():          # requisitos, testes and whatever only the ficha has
+            if key not in bp or key == "testes":
+                bp[key] = value
+        bp = {k: bp[k] for k in [*(k for k in previous if k in bp), *(k for k in bp if k not in previous)]}
     return bp
+
+
+def sync_file(project_name: str) -> Optional[str]:
+    """Rewrites projects/<name>/ficha.yaml from project.json, keeping what only the ficha has.
+    Called after the project is changed directly, so that saving the ficha later never undoes
+    those changes. Does nothing for a project without a ficha. Returns the file's path."""
+    from backend.services.project_service import project_service
+    path = project_dir(project_name) / FILE_NAME
+    if not path.exists():
+        return None
+    try:
+        previous = load(path.read_text(encoding="utf-8"))
+    except BlueprintError:
+        previous = None                                # a broken ficha: the project is the truth now
+    project = project_service.load_project(project_name)
+    path.write_text(dump(export(project, previous)), encoding="utf-8")
+    return str(path)
 
 
 # --- on disk: projects/<name>/ficha.yaml ------------------------------------------------------

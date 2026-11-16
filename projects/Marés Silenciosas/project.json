@@ -2110,7 +2110,7 @@
           "id": "obj_tomas_albuquerque_8251",
           "name": "Tomás Albuquerque",
           "type": "personagem",
-          "sprite": "sprites/Sprite_obj_tomas_albuquerque_8251_20b9a2.png",
+          "sprite": "sprites/Lit_obj_tomas_albuquerque_8251_b872a1.png",
           "position": {
             "x": 360,
             "y": 790
@@ -2136,13 +2136,15 @@
             ]
           },
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "sprite_original": "sprites/Sprite_obj_tomas_albuquerque_8251_20b9a2.png",
+          "light": 0.5
         },
         {
           "id": "obj_caneca_de_lata_cbaf",
           "name": "caneca de lata",
           "type": "item",
-          "sprite": "sprites/Sprite_obj_caneca_de_lata_cbaf_7f8321.png",
+          "sprite": "sprites/Lit_obj_caneca_de_lata_cbaf_1168a8.png",
           "position": {
             "x": 575,
             "y": 938
@@ -2167,7 +2169,9 @@
             ]
           },
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "sprite_original": "sprites/Sprite_obj_caneca_de_lata_cbaf_7f8321.png",
+          "light": 0.5
         }
       ],
       "hotspots": [],

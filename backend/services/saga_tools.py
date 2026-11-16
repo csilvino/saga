@@ -49,6 +49,9 @@ Como trabalhar:
   (pegáveis, escondidos, personagens) e posiciona tudo. Primeira cena sem reference_scene; as
   outras com reference_scene = a primeira. Se ela relatar problemas (objeto que não aparece),
   chame de novo para a mesma cena. Antes da arte, confira que cada objeto tem descrição visual.
+- Personagem que aparece em mais de uma cena: dê a ele uma ficha visual (set_character_reference)
+  antes da arte dessas cenas, para sair igual em todas. Os sprites novos já pegam a luz da cena; depois
+  de mover um objeto com place_object, rode match_sprite_light nele.
 - Objetos pintados que mudam de estado (porta que abre, lâmpada que acende, gaveta aberta): depois da
   arte da cena, crie a variante com create_background_variant, usando a mesma flag que o script
   marca (ex.: when "flag(porta_aberta)", change "a porta de ferro agora está aberta, escada visível").
@@ -108,6 +111,8 @@ IMAGE_TOOLS = [
             "only_new_sprites": types.Schema(type="BOOLEAN", description=(
                 "true: mantém o cenário e todos os sprites já feitos e faz só os dos objetos que ainda não têm "
                 "sprite (um objeto criado depois da arte da cena). Depois ajuste com place_object.")),
+            "light": types.Schema(type="NUMBER", description=(
+                "0 a 1 (padrão 0.5): quanto os sprites novos pegam a cor e o brilho do cenário em volta; 0 = como foram desenhados")),
         }, required=["scene"])),
     types.FunctionDeclaration(
         name="edit_scene_background",
@@ -191,7 +196,39 @@ IMAGE_TOOLS = [
             "x": types.Schema(type="INTEGER", description="centro horizontal, 0 a 1920 (padrão: onde o objeto já está)"),
             "y": types.Schema(type="INTEGER", description="centro vertical, 0 a 1080"),
             "height": types.Schema(type="INTEGER", description="altura em px (padrão: a atual)"),
+            "light": types.Schema(type="NUMBER", description="0 a 1 (padrão 0.5): quanto pega a cor e o brilho do cenário em volta; 0 = sem mudar"),
         }, required=["object", "source"])),
+    types.FunctionDeclaration(
+        name="match_sprite_light",
+        description=("Dá ao sprite de um objeto ou personagem a cor e o brilho do cenário em volta de onde ele está, "
+                     "para não parecer recortado e colado (luz verde de uma gruta, fogo, luar). Rode de novo depois de "
+                     "mover o objeto com place_object. Sempre parte do desenho original; strength 0 volta ao original. "
+                     "Rápida, sem IA."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "object": types.Schema(type="STRING", description="id ou nome do objeto"),
+            "strength": types.Schema(type="NUMBER", description="0 a 1 (padrão 0.5); 0.3 sutil, 0.8 forte"),
+        }, required=["object"])),
+    types.FunctionDeclaration(
+        name="get_characters",
+        description=("Lista os personagens com ficha visual (imagem de referência) e os objetos do tipo personagem "
+                     "do jogo, dizendo quais já têm referência."),
+        parameters=None),
+    types.FunctionDeclaration(
+        name="set_character_reference",
+        description=("Dá a um personagem uma imagem de referência (ficha visual: corpo inteiro, de frente), para ele "
+                     "sair igual em todas as cenas: daí em diante create_scene_art desenha os sprites dele a partir "
+                     "dela, sozinho, e depois aplica a luz da cena. Use exatamente uma origem: from_object (o sprite "
+                     "atual de um objeto, quando ele já ficou bom), source (arquivo ou URL) ou generate (desenha agora "
+                     "a partir de description; ~1 min). Um objeto é esse personagem quando tem o mesmo nome."),
+        parameters=types.Schema(type="OBJECT", properties={
+            "name": types.Schema(type="STRING", description="nome do personagem, como o do objeto (ex.: Tomás Albuquerque)"),
+            "from_object": types.Schema(type="STRING", description="id ou nome do objeto cujo sprite vira a referência"),
+            "source": types.Schema(type="STRING", description="URL http(s) ou caminho de arquivo neste computador (png, jpg, webp)"),
+            "generate": types.Schema(type="BOOLEAN", description="true: desenha a referência a partir de description"),
+            "description": types.Schema(type="STRING", description="aparência fixa: rosto, cabelo, corpo, roupa, cores (em inglês é melhor para gerar)"),
+            "style_scene": types.Schema(type="STRING", description="generate: cena cuja paleta seguir"),
+            "remove_background": types.Schema(type="BOOLEAN", description="source: recortar o fundo (padrão true)"),
+        }, required=["name"])),
     types.FunctionDeclaration(
         name="import_sound",
         description=("Usa um som feito fora do Saga (efeito, voz, música). kind ambient = som de fundo da cena (em "
@@ -207,8 +244,10 @@ IMAGE_TOOLS = [
         }, required=["source", "kind"])),
 ]
 
-ASSET_TOOLS = {"render_scene", "import_background", "import_sprite", "import_sound"}
-READ_ONLY = READ_ONLY | {"render_scene"}
+ASSET_TOOLS = {"render_scene", "import_background", "import_sprite", "import_sound", "match_sprite_light"}
+CHARACTER_TOOLS = {"get_characters", "set_character_reference"}
+LAYOUT_ONLY = {"place_object"}           # changes nothing the ficha holds
+READ_ONLY = READ_ONLY | {"render_scene", "get_characters"}
 
 
 # --- the catalogue, as JSON Schema (for MCP and any other caller) --------------------------------
@@ -263,6 +302,11 @@ async def run_tool(project_name: str, name: str, args: Optional[Dict[str, Any]])
             result = director_tools.run_tool(project, name, args)
             if name not in director_tools.READ_ONLY and "error" not in result:
                 project_service.save_project_data(project_name, project)
+                if name not in LAYOUT_ONLY:
+                    # the ficha follows the project, so a later save_blueprint never undoes this change
+                    synced = await asyncio.to_thread(blueprint.sync_file, project_name)
+                    if synced:
+                        result = {**result, "ficha": "atualizada"}
             return result
         if name in BLUEPRINT_TOOLS:
             return await _blueprint_tool(project_name, name, args)
@@ -270,6 +314,8 @@ async def run_tool(project_name: str, name: str, args: Optional[Dict[str, Any]])
             return await _art_tool(project_name, name, args)
         if name in ASSET_TOOLS:
             return await _asset_tool(project_name, name, args)
+        if name in CHARACTER_TOOLS:
+            return await _character_tool(project_name, name, args)
         if name == "generate_image_and_set_as_background":
             return await _generate_background(project_name, args)
         if name == "generate_sprite_for_object":
@@ -293,7 +339,8 @@ async def _art_tool(project_name: str, name: str, args: Dict[str, Any]) -> Dict[
             return await scene_art.create_scene_art(
                 project_name, args.get("scene"), args.get("style", ""),
                 args.get("reference_scene", ""), bool(args.get("keep_background")),
-                only_new_sprites=bool(args.get("only_new_sprites")))
+                only_new_sprites=bool(args.get("only_new_sprites")),
+                light=float(args["light"]) if args.get("light") is not None else 0.5)
         if name == "edit_scene_background":
             return await scene_art.edit_background(project_name, args.get("scene"), args.get("change", ""))
         if name == "create_background_variant":
@@ -316,10 +363,30 @@ async def _asset_tool(project_name: str, name: str, args: Dict[str, Any]) -> Dic
         if name == "import_sprite":
             return await asset_tools.import_sprite(project_name, a.get("object"), a.get("source"),
                                                    bool(a.get("remove_background", True)),
-                                                   a.get("x"), a.get("y"), a.get("height"))
+                                                   a.get("x"), a.get("y"), a.get("height"),
+                                                   float(a.get("light", 0.5)))
+        if name == "match_sprite_light":
+            return await asyncio.to_thread(asset_tools.match_sprite_light, project_name, a.get("object"),
+                                           float(a.get("strength", 0.5)))
         return await asset_tools.import_sound(project_name, a.get("source"), a.get("kind", ""), a.get("scene", ""),
                                               a.get("object", ""), a.get("text", ""), a.get("mode", "loop"))
     except asset_tools.AssetError as e:
+        return {"error": str(e)}
+
+
+async def _character_tool(project_name: str, name: str, args: Dict[str, Any]) -> Dict[str, Any]:
+    from backend.services import characters
+    from backend.services.asset_tools import AssetError
+    from backend.services.scene_art import ArtError
+    if name == "get_characters":
+        return await asyncio.to_thread(characters.list_characters, project_name)
+    a = {k: v for k, v in args.items() if v is not None}
+    try:
+        return await characters.set_reference(
+            project_name, a.get("name", ""), a.get("from_object", ""), a.get("source", ""),
+            bool(a.get("generate")), a.get("description", ""), a.get("style_scene", ""),
+            bool(a.get("remove_background", True)))
+    except (characters.CharacterError, AssetError, ArtError) as e:
         return {"error": str(e)}
 
 

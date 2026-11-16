@@ -33,6 +33,7 @@ from PIL import Image, ImageOps
 
 from backend.config.user_settings import get_gemini_key, get_gemini_model, get_generation_source
 from backend.services.local_image_generator import local_image_service
+from backend.services import sprite_light
 from backend.services.project_service import project_service
 from backend.ses import animation, director_tools
 
@@ -334,7 +335,7 @@ async def cut_sprites(sheet: Path, count: int, background: Path, boxes: List[lis
 async def create_scene_art(project_name: str, scene_ref: str, style: str = "", reference_scene: str = "",
                            keep_background: bool = False, review: bool = True,
                            progress: Optional[Callable[[str], None]] = None,
-                           only_new_sprites: bool = False) -> dict:
+                           only_new_sprites: bool = False, light: float = 0.5) -> dict:
     """only_new_sprites: keeps the background and every sprite already made, and makes only the
     sprites of objects that have none yet (an object added after the scene was painted)."""
     say = progress or (lambda m: logger.info("arte: %s", m))
@@ -396,16 +397,31 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
     say("localizando os objetos na imagem")
     boxes = await locate(bg_path, painted, sprites) if objs else {}
 
-    # 3. sprites, a few per sheet, in the style of this scene's background
+    # 3. sprites, a few per sheet, in the style of this scene's background; a character with a
+    #    reference picture (characters.py) alone, from that picture, so it looks the same everywhere
     made: Dict[str, dict] = {}
-    for i in range(0, len(items), SHEET_MAX):
-        group = items[i:i + SHEET_MAX]
-        say(f"gerando sprites: {', '.join(o.get('name') or o['id'] for o in group)}")
+    from backend.services import characters
+    solo = {o["id"]: characters.reference_path(project, root, o["obj"]) for o in items
+            if o["part"] is None and not o["obj"].get("parts")}
+    solo = {k: v for k, v in solo.items() if v}
+    groups = [[o] for o in items if o["id"] in solo]
+    rest = [o for o in items if o["id"] not in solo]
+    groups += [rest[i:i + SHEET_MAX] for i in range(0, len(rest), SHEET_MAX)]
+    for group in groups:
+        alone = len(group) == 1 and group[0]["id"] in solo
+        say(f"gerando sprites: {', '.join(o.get('name') or o['id'] for o in group)}"
+            + (" (a partir da ficha do personagem)" if alone else ""))
         group_boxes = [None if o["part"] is not None else boxes.get(o["id"], {}).get("box") or default_box(o["obj"])
                        for o in group]
+        if alone:
+            o = group[0]
+            prompt = characters.sprite_prompt(characters.find(project, o["obj"]), plan["sprites"][o["id"]], STYLE_HINT)
+            reference = solo[o["id"]]
+        else:
+            prompt, reference = sheet_prompt([plan["sprites"][o["id"]] for o in group]), bg_path
         err = None
         for attempt in range(2):           # a sheet occasionally merges two objects: try once more
-            sheet = await generate(sheet_prompt([plan["sprites"][o["id"]] for o in group]), 1456, 720, bg_path)
+            sheet = await generate(prompt, 1456, 720, reference)
             sheet_path = root / "sprites" / f"_sheet_{uuid.uuid4().hex[:8]}.png"
             sheet_path.parent.mkdir(exist_ok=True)
             sheet.save(sheet_path, "PNG")
@@ -448,6 +464,11 @@ async def create_scene_art(project_name: str, scene_ref: str, style: str = "", r
             o["sprite"] = made[oid]["sprite"]
             props.pop("painted", None)
             place(o, made[oid]["box"])
+            if light > 0 and not o.get("parts"):       # it takes the light of where it stands
+                try:
+                    sprite_light.apply_to_object(root, o, bg_rel, light)
+                except Exception as e:                 # a plain sprite is still a sprite
+                    report["problems"].append(f"luz de '{o.get('name')}': {e}")
             report["sprites"].append(o.get("name"))
             for n, part in enumerate(o.get("parts") or []):
                 cut = made.get(f"{oid}#{n}")

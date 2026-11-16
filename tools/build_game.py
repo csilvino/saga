@@ -59,7 +59,9 @@ def main():
     if a.exportar:
         from backend.services.project_service import project_service
         sys.stdout.reconfigure(encoding="utf-8")
-        print(blueprint.dump(blueprint.export(project_service.load_project(a.projeto))))
+        current = blueprint.project_dir(a.projeto) / blueprint.FILE_NAME   # its tests and requirements are kept
+        previous = blueprint.load(current.read_text(encoding="utf-8")) if current.exists() else None
+        print(blueprint.dump(blueprint.export(project_service.load_project(a.projeto), previous)))
         return 0
     if a.arte:
         result = asyncio.run(blueprint.make_art(a.projeto, lambda m: print(time.strftime("%H:%M:%S"), m, flush=True)))
