@@ -221,41 +221,21 @@ cenas:
     quando: not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))
     morte: Você tateia no escuro, tropeça numa caixa e bate a cabeça no cimento. Lá em cima, ninguém ouve nada.
 - nome: Passagem Secreta
-  descricao: Um corredor de pedra antiga, muito mais velho que a casa, iluminado por tochas que alguém mantém acesas.
-    No fundo, ao norte, uma luz azulada pulsa.
+  descricao: 'Um corredor de pedra antiga, muito mais velho que a casa, mergulhado no escuro: só o facho da lanterna
+    mostra as paredes úmidas. Ao norte, o corredor segue para uma porta em arco.'
   saidas:
     norte: Laboratório
-  som: corredor de pedra, tochas crepitando, eco de passos, zumbido elétrico distante
-  objetos:
-  - nome: tocha da parede
-    descricao: A tocha acesa mais próxima, presa num suporte de ferro na parede da direita.
-    tipo: movel
-    apelidos:
-    - tocha
-    - fogo
-    script: |
-      on take { say "Está chumbada no suporte. E alguém a acendeu há pouco: o óleo ainda está fresco." }
-    animacao:
-      tipo: tremular
-      intensidade: 0.7
-      periodo: 0.9
-      cor: laranja
-  - nome: tocha do arco
-    descricao: Uma tocha acesa num suporte de ferro, na coluna de pedra do arco, mais ao fundo.
-    tipo: movel
-    apelidos:
-    - tochas
-    animacao:
-      tipo: tremular
-      intensidade: 0.6
-      periodo: 0.9
-      cor: laranja
+  som: corredor de pedra no escuro, gotas pingando, eco de passos
 - nome: Laboratório
-  descricao: Painéis cheios de mostradores, cabos grossos pelo chão e, no centro, um grande anel de metal sobre
-    uma plataforma. O ar vibra e cheira a ozônio.
+  descricao: 'Painéis apagados, cabos grossos pelo chão e, no centro, um grande anel de metal sobre uma plataforma.
+    Está tudo desligado: só o facho da lanterna mostra alguma coisa.'
   saidas:
     sul: Passagem Secreta
-  som: laboratório com máquinas zumbindo, estalos elétricos, bipes de painéis
+  som:
+    ambiente: sala subterrânea silenciosa no escuro, gotas pingando ao longe, eco abafado
+    quando:
+    - quando: flag(energia)
+      ambiente: laboratório com máquinas zumbindo, estalos elétricos, bipes de painéis
   objetos:
   - nome: alavanca de energia
     descricao: Uma alavanca grande num dos painéis, marcada 'ENERGIA'. Está para baixo.
@@ -303,14 +283,11 @@ cenas:
           say "O anel acende por dentro: um redemoinho de luz azul, com cheiro de mar. Dá para entrar."
         }
       }
-    animacao:
-      tipo: pulsar
-      intensidade: 0.45
-      periodo: 3.0
-      cor: azul
   variantes:
+  - quando: flag(energia)
+    mudanca: 'energia ligada: luzes, telas e o anel acesos'
   - quando: flag(portal_ativo)
-    mudanca: o anel de metal no centro está aceso por dentro com um redemoinho de luz azul brilhante
+    mudanca: um portal dimensional aberto sobre a plataforma, com uma ilha tropical do outro lado
 - nome: Colina da Chegada
   descricao: Uma trilha sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. Atrás de você,
     um círculo de pedras ainda zumbe. Ao longe, ruínas aparecem entre as árvores.

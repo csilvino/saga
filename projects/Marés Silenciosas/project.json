@@ -585,7 +585,7 @@
     "scene_bda57d51": {
       "id": "scene_bda57d51",
       "name": "Passagem Secreta",
-      "description": "Um corredor de pedra antiga, muito mais velho que a casa, iluminado por tochas que alguém mantém acesas. No fundo, ao norte, uma luz azulada pulsa.",
+      "description": "Um corredor de pedra antiga, muito mais velho que a casa, mergulhado no escuro: só o facho da lanterna mostra as paredes úmidas. Ao norte, o corredor segue para uma porta em arco.",
       "exits": {
         "norte": "scene_dc4d935d"
       },
@@ -594,7 +594,7 @@
           "id": "background_5ef6aa99",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_cc7f2cce.png",
+          "sprite": "backgrounds/Scene_import_ef5d807f.png",
           "position": {
             "x": 960,
             "y": 540
@@ -616,81 +616,6 @@
           "properties": {},
           "actions": [],
           "ses": ""
-        },
-        {
-          "id": "obj_tocha_da_parede_b4bd",
-          "name": "tocha da parede",
-          "type": "movel",
-          "sprite": "",
-          "position": {
-            "x": 1628,
-            "y": 392
-          },
-          "size": {
-            "width": 129,
-            "height": 297
-          },
-          "scale": {
-            "x": 1,
-            "y": 1
-          },
-          "rotation": 0,
-          "zIndex": 10,
-          "description": "A tocha acesa mais próxima, presa num suporte de ferro na parede da direita.",
-          "properties": {
-            "portable": false,
-            "hidden": false,
-            "aliases": [
-              "tocha",
-              "fogo"
-            ],
-            "painted": true
-          },
-          "actions": [],
-          "ses": "on take { say \"Está chumbada no suporte. E alguém a acendeu há pouco: o óleo ainda está fresco.\" }\n",
-          "effect": {
-            "type": "flicker",
-            "amount": 0.7,
-            "period": 0.9,
-            "color": "#ffa040"
-          }
-        },
-        {
-          "id": "obj_tocha_do_arco_b207",
-          "name": "tocha do arco",
-          "type": "movel",
-          "sprite": "",
-          "position": {
-            "x": 1010,
-            "y": 452
-          },
-          "size": {
-            "width": 71,
-            "height": 171
-          },
-          "scale": {
-            "x": 1,
-            "y": 1
-          },
-          "rotation": 0,
-          "zIndex": 10,
-          "description": "Uma tocha acesa num suporte de ferro, na coluna de pedra do arco, mais ao fundo.",
-          "properties": {
-            "portable": false,
-            "hidden": false,
-            "aliases": [
-              "tochas"
-            ],
-            "painted": true
-          },
-          "actions": [],
-          "ses": "",
-          "effect": {
-            "type": "flicker",
-            "amount": 0.6,
-            "period": 0.9,
-            "color": "#ffa040"
-          }
         }
       ],
       "hotspots": [],
@@ -698,15 +623,15 @@
       "ses": "",
       "variants": [],
       "sound": {
-        "ambient": "corredor de pedra, tochas crepitando, eco de passos, zumbido elétrico distante",
+        "ambient": "corredor de pedra no escuro, gotas pingando, eco de passos",
         "variants": [],
-        "file": "audio/Sound_corredor_de_pedra_tochas_crepita_5edb0b.ogg"
+        "file": "audio/Sound_corredor_de_pedra_no_escuro_gota_c9f6ce.ogg"
       }
     },
     "scene_dc4d935d": {
       "id": "scene_dc4d935d",
       "name": "Laboratório",
-      "description": "Painéis cheios de mostradores, cabos grossos pelo chão e, no centro, um grande anel de metal sobre uma plataforma. O ar vibra e cheira a ozônio.",
+      "description": "Painéis apagados, cabos grossos pelo chão e, no centro, um grande anel de metal sobre uma plataforma. Está tudo desligado: só o facho da lanterna mostra alguma coisa.",
       "exits": {
         "sul": "scene_bda57d51"
       },
@@ -715,7 +640,7 @@
           "id": "background_62c522cf",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_b1e4e810.png",
+          "sprite": "backgrounds/Scene_import_2475eadb.png",
           "position": {
             "x": 960,
             "y": 540
@@ -834,13 +759,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on use {\n  if flag(portal_ativo) { say \"O anel está aberto. É só entrar.\" }\n  else if not flag(energia) { say \"Nada acontece. A máquina está sem energia.\" }\n  else if not flag(painel_programado) {\n    play \"descarga elétrica violenta e estrondo de energia\"\n    end \"O anel se acende sem destino nenhum. A luz azul puxa você para dentro e espalha cada pedaço seu entre lugar nenhum e coisa nenhuma. Sem coordenadas, a máquina de Tomás não leva a lugar algum.\"\n  }\n  else {\n    set portal_ativo; link entrar to \"Colina da Chegada\"\n    play \"zumbido elétrico crescendo até um redemoinho de energia se abrir\"\n    say \"O anel acende por dentro: um redemoinho de luz azul, com cheiro de mar. Dá para entrar.\"\n  }\n}\n",
-          "effect": {
-            "type": "pulse",
-            "amount": 0.45,
-            "period": 3.0,
-            "color": "#7fd4ff"
-          }
+          "ses": "on use {\n  if flag(portal_ativo) { say \"O anel está aberto. É só entrar.\" }\n  else if not flag(energia) { say \"Nada acontece. A máquina está sem energia.\" }\n  else if not flag(painel_programado) {\n    play \"descarga elétrica violenta e estrondo de energia\"\n    end \"O anel se acende sem destino nenhum. A luz azul puxa você para dentro e espalha cada pedaço seu entre lugar nenhum e coisa nenhuma. Sem coordenadas, a máquina de Tomás não leva a lugar algum.\"\n  }\n  else {\n    set portal_ativo; link entrar to \"Colina da Chegada\"\n    play \"zumbido elétrico crescendo até um redemoinho de energia se abrir\"\n    say \"O anel acende por dentro: um redemoinho de luz azul, com cheiro de mar. Dá para entrar.\"\n  }\n}\n"
         }
       ],
       "hotspots": [],
@@ -848,15 +767,26 @@
       "ses": "",
       "variants": [
         {
+          "when": "flag(energia)",
+          "background": "backgrounds/Variant_import_a32ed4a6.png",
+          "change": "energia ligada: luzes, telas e o anel acesos"
+        },
+        {
           "when": "flag(portal_ativo)",
-          "change": "o anel de metal no centro está aceso por dentro com um redemoinho de luz azul brilhante",
-          "background": "backgrounds/Variant_e4817509.png"
+          "change": "um portal dimensional aberto sobre a plataforma, com uma ilha tropical do outro lado",
+          "background": "backgrounds/Variant_import_46b4af7d.png"
         }
       ],
       "sound": {
-        "ambient": "laboratório com máquinas zumbindo, estalos elétricos, bipes de painéis",
-        "variants": [],
-        "file": "audio/Sound_laboratorio_com_maquinas_zumbind_c98912.ogg"
+        "ambient": "sala subterrânea silenciosa no escuro, gotas pingando ao longe, eco abafado",
+        "variants": [
+          {
+            "when": "flag(energia)",
+            "ambient": "laboratório com máquinas zumbindo, estalos elétricos, bipes de painéis",
+            "file": "audio/Sound_laboratorio_com_maquinas_zumbind_c98912.ogg"
+          }
+        ],
+        "file": "audio/Sound_sala_subterranea_silenciosa_no_e_1a508a.ogg"
       }
     },
     "scene_54ecade0": {
