@@ -7,7 +7,7 @@ todas as outras.
 
 ![As 6 cenas de O Farol, geradas pelo Diretor com FLUX.1 Kontext numa RTX 3060](images/flux-kontext/o-farol-6-cenas.jpg)
 
-*As 6 cenas do projeto de exemplo [O Farol](../projects/O%20Farol/project.json). Quem pediu as
+*As 6 cenas do primeiro projeto de exemplo, O Farol (hoje fora do repositório). Quem pediu as
 imagens foi o Diretor, pela conversa: a Praia foi gerada só com texto, e as outras 5 usaram a Praia
 como referência. Os contornos azuis são as áreas clicáveis dos objetos pintados no cenário. A
 garrafa e a gaivota, na Praia, são sprites. Tudo rodou numa RTX 3060 12 GB, sem custo.*

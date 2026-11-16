@@ -41,9 +41,10 @@ O caminho tem duas fases:
   Saga confere a lógica, roda a solução e as mortes, e um jogador automático tenta vencer sozinho e
   denuncia atalhos. Depois monta o projeto de uma vez e gera a arte em segundo plano. É assim que o
   Diretor faz jogos grandes. Veja [A ficha do jogo](#a-ficha-do-jogo).
-- **Projeto de exemplo** [`projects/O Farol`](projects/O%20Farol/project.json): um adventure curto
-  (6 cenas) escrito em SES. A solução está em [`tools/build_demo_farol.py`](tools/build_demo_farol.py).
-  Os cenários foram gerados pelo Diretor com FLUX.1 Kontext numa RTX 3060.
+- **Jogo de exemplo** [`projects/Marés Silenciosas`](projects/Mar%C3%A9s%20Silenciosas/ficha.yaml): um adventure completo
+  (21 cenas, da mansão de um oceanógrafo desaparecido a um templo numa ilha), feito pela ficha. A
+  própria ficha traz a solução e as mortes, testadas. Arte gerada com FLUX.1 Kontext numa RTX 3060, e
+  sons com Stable Audio.
 
 Um trecho real, de quando o Diretor criou e testou um jogo sozinho:
 
@@ -199,7 +200,7 @@ pip install -r requirements.txt
    npm install
    npm run dev
    ```
-4. Abra o projeto **O Farol** e clique em jogar. Ou crie um projeto vazio e peça ao Diretor:
+4. Abra o projeto **Marés Silenciosas** e clique em jogar. Ou crie um projeto vazio e peça ao Diretor:
    *"crie um adventure curto de fuga de uma cabana, com um objeto escondido e um final; teste a solução"*.
 
 No plano gratuito da Gemini, o limite é de cerca de 15 chamadas por minuto, e cada passo do Diretor
@@ -250,7 +251,7 @@ Formato completo e regras: [docs/FICHA.md](docs/FICHA.md).
 
 ## Imagens: cenários no mesmo estilo
 
-![As 6 cenas de O Farol](docs/images/flux-kontext/o-farol-6-cenas.jpg)
+![Seis das 21 cenas de Marés Silenciosas](docs/images/mares-silenciosas-6-cenas.jpg)
 
 Para que todas as cenas pareçam do mesmo jogo, o Saga gera **uma primeira imagem** e a usa como
 **referência de estilo** para as outras. Você pede ao Diretor no chat ("crie os cenários de todas as
@@ -336,7 +337,7 @@ backend/
   services/           orquestrador Gemini, geração de imagens
   api/routes/         FastAPI: /api/game, /api/ses, /api/orchestrator, cenas, objetos...
 frontend/             editor React + Vite
-projects/             projetos (O Farol = exemplo em SES; Calixto Island = experimento visual)
+projects/             projetos (Marés Silenciosas = jogo de exemplo; Calixto Island = experimento visual)
 local_image_worker/   gerador local de imagens (FLUX.1 Kontext), processo e venv próprios
 tools/build_game.py   a ficha pela linha de comando
 docs/                 SES.md (a linguagem), FICHA.md (o jogo num arquivo), IMAGENS.md (cenários),

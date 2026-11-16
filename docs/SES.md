@@ -95,20 +95,19 @@ Objetos e cenas são citados pelo id ou pelo nome. Nomes com espaço vão entre 
 
 ## Exemplo completo
 
-A porta da base do farol (projeto [`projects/O Farol`](../projects/O%20Farol/project.json)):
+A porta do templo (projeto [`projects/Marés Silenciosas`](../projects/Mar%C3%A9s%20Silenciosas/ficha.yaml)): abre com o
+medalhão, que some do inventário, e passa a levar para a câmara onde está o oceanógrafo:
 
 ```
-on examine {
-  if flag(porta_aberta) { say "A porta está aberta. Lá dentro, uma escada sobe." }
-  else { say "Uma porta de ferro, trancada, com uma fechadura grande." }
-}
 on open {
-  if flag(porta_aberta) { say "Já está aberta." }
-  else { say "Trancada. Precisa de uma chave." }
+  if flag(porta_templo_aberta) { say "Já está aberta. É só entrar." }
+  else { say "Não há maçaneta. Só o encaixe redondo no centro." }
 }
-on use with chave {
-  if flag(porta_aberta) { say "Já está aberta." }
-  else { set porta_aberta; link norte to "Dentro do Farol"; say "A chave gira com um rangido." }
+on use with "medalhão de coral" {
+  set porta_templo_aberta; remove "medalhão de coral"
+  link norte to "Câmara da Maré"; link entrar to "Câmara da Maré"
+  play "porta de pedra pesada se abrindo com estrondo grave"
+  say "O medalhão encaixa com um clique. As ondas entalhadas giram, e a porta afunda devagar no chão."
 }
 ```
 

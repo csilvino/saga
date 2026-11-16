@@ -314,7 +314,7 @@ Para mudanças grandes, ele lê a ficha com `get_blueprint`, edita e salva de no
 python tools/build_game.py "Neve sobre o Claustro"                     # verifica a ficha do projeto
 python tools/build_game.py "Meu Jogo" --ficha rascunho.yaml --salvar   # verifica e monta
 python tools/build_game.py "Meu Jogo" --arte                           # gera a arte que falta
-python tools/build_game.py "O Farol" --exportar > ficha.yaml           # ficha de um projeto feito à mão
+python tools/build_game.py "Marés Silenciosas" --exportar > ficha.yaml # ficha de um projeto feito à mão
 ```
 
 **Pela API:**
