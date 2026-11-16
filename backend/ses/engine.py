@@ -44,6 +44,8 @@ VERBS = {
     "pull":      ["puxar", "puxa", "puxe", "pull"],
     "talk":      ["falar", "fala", "fale", "conversar", "conversa", "perguntar", "talk"],
     "go":        ["ir", "vai", "va", "vá", "andar", "anda", "seguir", "segue", "caminhar", "go", "walk"],
+    "give":      ["dar", "de", "entregar", "entrega", "entregue", "oferecer", "oferece", "ofereca", "ofereça",
+                  "trocar", "troca", "troque", "negociar", "negocia", "give", "trade", "offer"],
     "inventory": ["inventario", "inventário", "inv", "i", "mochila", "inventory"],
     "help":      ["ajuda", "help", "comandos", "?"],
 }
@@ -73,9 +75,12 @@ STOPWORDS = {"o", "a", "os", "as", "um", "uma", "uns", "umas", "de", "do", "da",
              "para", "pro", "pra", "ao", "à", "the", "to", "at"}
 # "usar X em Y": these split the first object from the second
 LINKS = {"em", "no", "na", "nos", "nas", "com", "sobre", "dentro", "on", "with", "in"}
+# "dar X ao Y", "trocar X com Y": the receiver
+GIVE_LINKS = {"a", "ao", "aos", "as", "para", "pra", "pro", "com", "to", "with"}
 
 HELP = ("Comandos: olhar, examinar <coisa>, pegar <coisa>, largar <coisa>, usar <coisa> [em <coisa>], "
-        "abrir/fechar <coisa>, empurrar/puxar <coisa>, falar com <alguém>, inventário, "
+        "abrir/fechar <coisa>, empurrar/puxar <coisa>, falar com <alguém>, dar/trocar <coisa> [com <alguém>], "
+        "inventário, "
         "ir <direção> (ou só norte, sul, leste, oeste, cima, baixo, entrar, sair). "
         "Pode abreviar: N, S, L, O, I, PEG CHAVE, EXA PORTA.")
 
@@ -283,6 +288,14 @@ class GameEngine:
             return self.say("Você carrega: " + ", ".join(self.world.object_name(o) for o in inv) + "."
                             if inv else "Você não carrega nada.")
 
+        if verb == "give":
+            # 'dar tapete ao capitão', 'trocar tapete com o capitão', 'trocar tapete': a 'use' whose
+            # second object is whoever receives it (handlers are 'on use with' either way)
+            verb = "use"
+            for i, w in enumerate(words[1:], 1):
+                if w in GIVE_LINKS and i > 1:
+                    words = words[:i] + ["com"] + words[i + 1:]
+                    break
         rest = [w for w in words[1:] if w not in STOPWORDS]
         if verb == "look" and not rest:
             return self._look()

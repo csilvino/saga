@@ -198,34 +198,65 @@
             "portable": false,
             "hidden": false,
             "aliases": [
-              "tapete persa",
               "alçapão",
               "alcapao"
             ],
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  if flag(tapete_enrolado) { say \"O tapete está enrolado num canto. No chão, o alçapão aberto desce para o porão.\" }\n  else { say \"Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco.\" }\n}\non take {\n  if flag(tapete_enrolado) { say \"Já está enrolado num canto. O alçapão aberto desce para o porão.\" }\n  else {\n    set tapete_enrolado; link baixo to Porão; link cima to \"Escritório de Tomás\" in Porão\n    play \"tapete pesado sendo enrolado e arrastado sobre assoalho de madeira\"\n    say \"Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro.\"\n  }\n}\non pull {\n  if flag(tapete_enrolado) { say \"Já está enrolado num canto. O alçapão aberto desce para o porão.\" }\n  else {\n    set tapete_enrolado; link baixo to Porão; link cima to \"Escritório de Tomás\" in Porão\n    play \"tapete pesado sendo enrolado e arrastado sobre assoalho de madeira\"\n    say \"Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro.\"\n  }\n}\n"
+          "ses": "on take {\n  set tapete_enrolado; link baixo to Porão; link cima to \"Escritório de Tomás\" in Porão\n  hide self; take \"tapete persa\"\n  play \"tapete pesado sendo enrolado e arrastado sobre assoalho de madeira\"\n  say \"Você enrola o tapete e o põe no ombro. É pesado, mas é um belo tapete persa: alguém, em algum lugar, pagaria bem por ele. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro.\"\n}\non pull {\n  set tapete_enrolado; link baixo to Porão; link cima to \"Escritório de Tomás\" in Porão\n  hide self; take \"tapete persa\"\n  play \"tapete pesado sendo enrolado e arrastado sobre assoalho de madeira\"\n  say \"Você enrola o tapete e o põe no ombro. É pesado, mas é um belo tapete persa: alguém, em algum lugar, pagaria bem por ele. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro.\"\n}\n"
+        },
+        {
+          "id": "obj_tapete_persa_a16d",
+          "name": "tapete persa",
+          "type": "item",
+          "sprite": "sprites/Lit_obj_tapete_persa_a16d_666e4d.png",
+          "position": {
+            "x": 904,
+            "y": 966
+          },
+          "size": {
+            "width": 335,
+            "height": 227
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "O tapete persa de Tomás, enrolado, vermelho e azul, com franjas de seda. Pesado e bonito, de um tipo que não se vê em qualquer lugar.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "tapete enrolado"
+            ]
+          },
+          "actions": [],
+          "ses": "on use {\n  if here(\"Capitão Rocha\") {\n    set troca_feita; remove \"tapete persa\"; take \"chave de ferro\"; take facão\n    play \"tapete pesado desenrolado sobre balcão de madeira e moedas tilintando\"\n    say \"Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'\"\n  }\n  else { say \"Trocar com quem? Não há ninguém aqui interessado num tapete.\" }\n}\n",
+          "sprite_original": "sprites/Sprite_obj_tapete_persa_a16d_00fdfe.png",
+          "light": 0.5
         }
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on first_enter {\n  say \"Lúcia Albuquerque deixou a chave com você: 'Meu irmão sumiu há três semanas. A polícia desistiu. Eu não.'\"\n}\n",
+      "ses": "on first_enter {\n  say \"Lúcia Albuquerque deixou a chave com você: 'Meu irmão sumiu há três semanas. A polícia desistiu. Eu não.'\"\n}\non enter {\n  if flag(tomas_resgatado) {\n    play \"porta abrindo, passos apressados e choro de alegria\"\n    end \"Vocês sobem pela escada do alçapão, cobertos de areia e sal. Lúcia está no escritório, sentada na cadeira do irmão. Ela levanta devagar, como quem não acredita, e corre para abraçá-lo. Tomás voltou para casa.\"\n  }\n}\n",
       "variants": [
         {
           "when": "flag(tapete_enrolado)",
-          "background": "backgrounds/Variant_import_a1e2b877.png",
-          "change": "tapete enrolado junto à parede e alçapão aberto no chão; a escrivaninha continua fechada"
+          "change": "tapete enrolado junto à parede e alçapão aberto no chão; a escrivaninha continua fechada",
+          "background": "backgrounds/Variant_import_a1e2b877.png"
         },
         {
           "when": "flag(escrivaninha_aberta)",
-          "background": "backgrounds/Variant_import_90e8724c.png",
-          "change": "a tampa corrediça da escrivaninha está levantada: aparecem o tampo de escrever, papéis e um bloco branco"
+          "change": "a tampa corrediça da escrivaninha está levantada: aparecem o tampo de escrever, papéis e um bloco branco",
+          "background": "backgrounds/Variant_import_90e8724c.png"
         },
         {
           "when": "flag(escrivaninha_aberta) and flag(tapete_enrolado)",
-          "background": "backgrounds/Variant_import_90b215be.png",
-          "change": "escrivaninha aberta e tapete enrolado com o alçapão aberto"
+          "change": "escrivaninha aberta e tapete enrolado com o alçapão aberto",
+          "background": "backgrounds/Variant_import_90b215be.png"
         }
       ],
       "sound": {
@@ -300,7 +331,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else { say \"Trancado. A fechadura é pequena, de latão.\" }\n}\non use with \"chave de latão\" {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else {\n    set bau_aberto; show \"cartão perfurado\"; show \"carta das marés\"; show lanterna\n    play \"fechadura de latão girando e tampa de baú de madeira rangendo\"\n    say \"A chave gira e a tampa range ao subir. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna de metal prateada.\"\n  }\n}\n"
+          "ses": "on open {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else { say \"Trancado. A fechadura é pequena, de latão.\" }\n}\non use with \"chave de latão\" {\n  if flag(bau_aberto) { say \"Já está aberto.\" }\n  else {\n    set bau_aberto; show \"cartão perfurado\"; show \"carta das marés\"; show lanterna; show \"caixa de bijuterias\"\n    play \"fechadura de latão girando e tampa de baú de madeira rangendo\"\n    say \"A chave gira e a tampa range ao subir. Dentro do baú: um cartão perfurado, uma carta náutica dobrada, uma lanterna de metal prateada e uma caixinha de bijuterias baratas.\"\n  }\n}\n"
         },
         {
           "id": "obj_cartao_perfurado_46dc",
@@ -393,6 +424,41 @@
           },
           "actions": [],
           "ses": "on use {\n  if not has(lanterna) { say \"Primeiro pegue a lanterna.\" }\n  else if flag(lanterna_acesa) { say \"Já está acesa.\" }\n  else {\n    set lanterna_acesa; play \"clique de interruptor de lanterna de metal\"\n    say \"Clique. Um facho de luz amarela corta a escuridão.\"\n  }\n}\n"
+        },
+        {
+          "id": "obj_caixa_de_bijuterias_97e2",
+          "name": "caixa de bijuterias",
+          "type": "item",
+          "sprite": "sprites/Lit_obj_caixa_de_bijuterias_97e2_ca26b2.png",
+          "position": {
+            "x": 1086,
+            "y": 708
+          },
+          "size": {
+            "width": 177,
+            "height": 186
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma caixinha de madeira pintada, cheia de colares de contas coloridas, anéis de lata e brincos de vidro que brilham como pedras preciosas. Não valem nada aqui. Em outro lugar, quem sabe.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "caixa",
+              "caixinha",
+              "bijuterias",
+              "colares"
+            ]
+          },
+          "actions": [],
+          "ses": "on use {\n  if in(\"Praia Branca\") and not flag(nativos_calmos) {\n    set nativos_calmos; remove \"caixa de bijuterias\"\n    play \"tambores parando, murmúrio de vozes animadas e colares tilintando\"\n    say \"Você abre a caixa e a deixa na areia, aberta, virada para a mata. Por um longo momento, nada. Então mãos rápidas a levam para dentro das folhas, e os tambores param. Uma voz ri. Uma lança é cravada na areia, de ponta para baixo: você pode passar.\"\n  }\n  else { say \"Ninguém aqui quer bijuterias.\" }\n}\n",
+          "sprite_original": "sprites/Sprite_obj_caixa_de_bijuterias_97e2_f5fcc1.png",
+          "light": 0.5
         }
       ],
       "hotspots": [],
@@ -562,8 +628,8 @@
       "variants": [
         {
           "when": "flag(estante_movida)",
-          "background": "backgrounds/Variant_0a072212.png",
           "change": "só a estante de madeira alta iluminada à direita do centro muda - ela girou sobre um eixo e está afastada em ângulo, e na parede de trás, onde ela estava, abriu-se uma passagem em arco de pedra escura que leva a um corredor de pedra. O facho de luz quente da lanterna continua no mesmo lugar, agora iluminando a passagem em arco e a estante girada. A escada, o balde e o resto do porão continuam exatamente iguais e escuros",
+          "background": "backgrounds/Variant_0a072212.png",
           "review": {
             "problems": [
               "A estante de madeira desapareceu em vez de ser mostrada girada/afastada em ângulo ao lado da passagem."
@@ -622,6 +688,10 @@
       "actions": [],
       "ses": "",
       "variants": [],
+      "dark": {
+        "when": "not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))",
+        "death": "No escuro, o chão de pedra some sob os seus pés. Você escorrega num degrau limo e bate a nuca na parede antiga. O corredor guarda mais um segredo."
+      },
       "sound": {
         "ambient": "corredor de pedra no escuro, gotas pingando, eco de passos",
         "variants": [],
@@ -768,8 +838,8 @@
       "variants": [
         {
           "when": "flag(energia)",
-          "background": "backgrounds/Variant_import_a32ed4a6.png",
-          "change": "energia ligada: luzes, telas e o anel acesos"
+          "change": "energia ligada: luzes, telas e o anel acesos",
+          "background": "backgrounds/Variant_import_a32ed4a6.png"
         },
         {
           "when": "flag(portal_ativo)",
@@ -777,6 +847,10 @@
           "background": "backgrounds/Variant_import_46b4af7d.png"
         }
       ],
+      "dark": {
+        "when": "not flag(energia) and not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))",
+        "death": "Você tateia no escuro, o pé se enrosca num cabo grosso e a mão bate num terminal desencapado. Um estalo azul, um cheiro de queimado, e depois nada."
+      },
       "sound": {
         "ambient": "sala subterrânea silenciosa no escuro, gotas pingando ao longe, eco abafado",
         "variants": [
@@ -841,7 +915,7 @@
     "scene_eff3c38f": {
       "id": "scene_eff3c38f",
       "name": "Posto do Capitão Rocha",
-      "description": "Uma velha loja de madeira. Um balcão comprido atravessa a sala e, atrás dele, prateleiras expõem garrafas, lampiões, cordas, conchas, mapas enrolados e bugigangas do mundo inteiro. Sobre o balcão, entre moedas e quinquilharias, uma bola de cristal brilha ao lado de um livro grosso de capa vermelha. Ninguém compra ou vende aqui há muito tempo. Na parede do fundo, atrás do balcão, uma porta de tábuas grossas está trancada por um cadeado de ferro pendurado na frente.",
+      "description": "Uma velha loja de madeira. Um balcão comprido atravessa a sala e, atrás dele, prateleiras expõem garrafas, lampiões, cordas, conchas, mapas enrolados e bugigangas do mundo inteiro. Atrás do balcão, entre moedas e quinquilharias, um velho de barba branca observa você sem piscar, ao lado de um livro grosso de capa vermelha. Na parede do fundo, uma porta de tábuas grossas está trancada por um cadeado de ferro pendurado na frente.",
       "exits": {
         "oeste": "scene_54ecade0"
       },
@@ -850,7 +924,7 @@
           "id": "background_fe76fa53",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_92c96470.png",
+          "sprite": "backgrounds/Scene_1ef7fa8f.png",
           "position": {
             "x": 960,
             "y": 540
@@ -874,17 +948,17 @@
           "ses": ""
         },
         {
-          "id": "obj_bola_de_cristal_3feb",
-          "name": "bola de cristal",
-          "type": "movel",
-          "sprite": "",
+          "id": "obj_capitao_rocha_4590",
+          "name": "Capitão Rocha",
+          "type": "personagem",
+          "sprite": "sprites/Lit_obj_capitao_rocha_4590_57e524.png",
           "position": {
-            "x": 918,
-            "y": 475
+            "x": 900,
+            "y": 442
           },
           "size": {
-            "width": 163,
-            "height": 228
+            "width": 309,
+            "height": 300
           },
           "scale": {
             "x": 1,
@@ -892,24 +966,86 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Uma bola de cristal azulada, acesa por dentro, sobre um suporte em cima do balcão.",
+          "description": "Um velho negociante de pé atrás do balcão, visto da cintura para cima, com as mãos grandes apoiadas na madeira. Barba branca e cheia, pele queimada de sol, um quepe de capitão desbotado, camisa de linho clara com as mangas dobradas e um colete marrom de couro gasto. Um olhar esperto, de quem nunca perdeu uma troca.",
           "properties": {
             "portable": false,
             "hidden": false,
             "aliases": [
-              "bola",
-              "cristal"
-            ],
-            "painted": true
+              "rocha",
+              "capitao",
+              "capitão",
+              "negociante",
+              "velho"
+            ]
           },
           "actions": [],
-          "ses": "on examine { say \"Uma luz azul gira dentro do vidro, lenta como uma maré. Por um instante você vê uma ilhota branca e um templo. Depois, só o seu rosto.\" }\non take { say \"Está quente demais para segurar.\" }\n",
-          "effect": {
-            "type": "pulse",
-            "amount": 0.6,
-            "period": 2.5,
-            "color": "#7fd4ff"
-          }
+          "ses": "on talk {\n  if flag(troca_feita) { say \"'Negócio é negócio', diz Rocha, alisando o tapete. 'Cuidado com o que mora em tronco oco. E na ilhota, quem chega de mãos vazias não sai.'\" }\n  else { say \"'Aqui ninguém usa dinheiro, forasteiro. Aqui se troca.' Ele olha você de cima a baixo. 'Gente que vem pelo círculo de pedras às vezes traz coisas bonitas do outro lado. Panos bordados, tapetes... Isso sim eu aceito.'\" }\n}\non use with \"tapete persa\" {\n  if flag(troca_feita) { say \"Já negociamos.\" }\n  else {\n    set troca_feita; remove \"tapete persa\"; take \"chave de ferro\"; take facão\n    play \"tapete pesado desenrolado sobre balcão de madeira e moedas tilintando\"\n    say \"Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'\"\n  }\n}\non take { say \"Rocha segura o seu pulso com uma força que não combina com a idade. 'Aqui se troca. Não se toma.'\" }\n",
+          "sprite_original": "sprites/Sprite_obj_capitao_rocha_4590_busto.png",
+          "light": 0.5
+        },
+        {
+          "id": "obj_chave_de_ferro_048d",
+          "name": "chave de ferro",
+          "type": "item",
+          "sprite": "sprites/Sprite_obj_chave_de_ferro_048d_c13b11.png",
+          "position": {
+            "x": 470,
+            "y": 920
+          },
+          "size": {
+            "width": 100,
+            "height": 84
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Uma chave de ferro grande e enferrujada.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "chave grande"
+            ]
+          },
+          "actions": [],
+          "ses": ""
+        },
+        {
+          "id": "obj_facao_a435",
+          "name": "facão",
+          "type": "item",
+          "sprite": "sprites/Lit_obj_facao_a435_d08e62.png",
+          "position": {
+            "x": 412,
+            "y": 558
+          },
+          "size": {
+            "width": 45,
+            "height": 61
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um facão de lâmina larga e cabo de madeira gasto, bem afiado.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "facao",
+              "machete",
+              "faca"
+            ]
+          },
+          "actions": [],
+          "ses": "",
+          "sprite_original": "sprites/Sprite_obj_facao_a435_86beb7.png",
+          "light": 0.5
         },
         {
           "id": "obj_livro_de_contas_2f37",
@@ -941,7 +1077,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  say \"Contas do Capitão Rocha, contrabandista. A última anotação: 'Guardei a bússola, o remo e a bomba no depósito. A chave ficou no tronco oco do pântano, onde nenhum ladrão mete a mão. Quem quiser a ilhota que espere a maré morta e leve a carta.'\"\n}\n"
+          "ses": "on examine {\n  say \"Contas do Capitão Rocha, em letra torta. Trocas e mais trocas. Uma das últimas: 'Ao forasteiro de barba castanha: bússola, remo e bomba de ar, em troca de um relógio de bolso. Ficaram no depósito, ele volta para buscar.' Nunca voltou. Mais abaixo: 'Os da ilhota não deixam ninguém passar sem presente. Gostam de coisa que brilha.'\"\n}\n"
         },
         {
           "id": "obj_porta_dos_fundos_916b",
@@ -1228,37 +1364,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open {\n  if flag(tronco_revirado) { say \"Não há mais nada lá dentro.\" }\n  else { set tronco_revirado; show \"chave de ferro\"; play \"mão revirando folhas molhadas e madeira podre\"; say \"Você enfia a mão no oco, entre folhas podres, e toca em metal: uma chave de ferro.\" }\n}\non use { say \"Talvez dê para revirar o oco dele.\" }\n"
-        },
-        {
-          "id": "obj_chave_de_ferro_048d",
-          "name": "chave de ferro",
-          "type": "item",
-          "sprite": "sprites/Sprite_obj_chave_de_ferro_048d_c13b11.png",
-          "position": {
-            "x": 470,
-            "y": 920
-          },
-          "size": {
-            "width": 100,
-            "height": 84
-          },
-          "scale": {
-            "x": 1,
-            "y": 1
-          },
-          "rotation": 0,
-          "zIndex": 10,
-          "description": "Uma chave de ferro grande e enferrujada.",
-          "properties": {
-            "portable": true,
-            "hidden": true,
-            "aliases": [
-              "chave grande"
-            ]
-          },
-          "actions": [],
-          "ses": ""
+          "ses": "on examine {\n  if flag(cobra_fugiu) { say \"Oco e vazio, só folhas podres.\" }\n  else { say \"Coberto de musgo, oco por dentro. Lá no fundo, entre as folhas podres, alguma coisa se mexe e chia baixinho.\" }\n}\non open {\n  if flag(cobra_fugiu) { say \"Só folhas podres e água. Nada que valha alguma coisa.\" }\n  else {\n    play \"chiado de cobra e bote rápido entre folhas secas\"\n    end \"Você enfia a mão no oco, entre as folhas podres. Uma picada no pulso, rápida como um estalo. A jararaca some na água escura, e o seu braço começa a queimar. O pântano fica muito longe de qualquer socorro.\"\n  }\n}\non use with facão {\n  if flag(cobra_fugiu) { say \"Não há mais nada lá dentro.\" }\n  else { set cobra_fugiu; play \"facão batendo em madeira podre e cobra escorregando na água\"; say \"Você cutuca o oco com a ponta do facão. Uma jararaca enorme escorrega para fora, sibila para você e some na água escura. Melhor não ter posto a mão.\" }\n}\non use { say \"Enfiar a mão aí dentro? Algo se mexe no fundo.\" }\n"
         }
       ],
       "hotspots": [],
@@ -1337,7 +1443,39 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  if flag(bote_cheio) { say \"Cheio e firme. Pesado, mas dá para arrastar.\" }\n  else { say \"Murcho, mas sem furos. Precisa de ar.\" }\n}\non use with \"bomba de ar\" {\n  if flag(bote_cheio) { say \"Já está cheio.\" }\n  else { set bote_cheio; play \"bomba de ar de pé bombeando e bote de borracha enchendo\"; say \"Você bombeia até o braço doer. O bote endurece, inteiro.\" }\n}\non push {\n  if not flag(bote_cheio) { say \"Murcho assim, não vai flutuar.\" }\n  else { set bote_na_praia; hide self; show \"bote cinza\"; play \"bote de borracha sendo arrastado sobre areia\"; say \"Você arrasta o bote pela trilha, até a beira da água na praia, ao norte.\" }\n}\non pull { say \"Melhor empurrar: a trilha para a praia é ao norte.\" }\n"
+          "ses": "on examine {\n  if flag(bote_cheio) { say \"Cheio e firme. Pesado, mas dá para arrastar.\" }\n  else { say \"Murcho, mas sem furos. Precisa de ar.\" }\n}\non use with \"bomba de ar\" {\n  if flag(bote_cheio) { say \"Já está cheio.\" }\n  else { set bote_cheio; play \"bomba de ar de pé bombeando e bote de borracha enchendo\"; say \"Você bombeia até o braço doer. O bote endurece, mas numa das costuras do fundo a borracha está fina, gasta. Bote velho é assim: uma hora murcha, outra hora vaza.\" }\n}\non push {\n  if not flag(bote_cheio) { say \"Murcho assim, não vai flutuar.\" }\n  else { set bote_na_praia; hide self; show \"bote cinza\"; play \"bote de borracha sendo arrastado sobre areia\"; say \"Você arrasta o bote pela trilha, até a beira da água na praia, ao norte.\" }\n}\non pull { say \"Melhor empurrar: a trilha para a praia é ao norte.\" }\n"
+        },
+        {
+          "id": "obj_balde_d623",
+          "name": "balde",
+          "type": "item",
+          "sprite": "sprites/Lit_obj_balde_d623_98e319.png",
+          "position": {
+            "x": 74,
+            "y": 1009
+          },
+          "size": {
+            "width": 90,
+            "height": 130
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um balde de zinco amassado, com alça de arame.",
+          "properties": {
+            "portable": true,
+            "hidden": false,
+            "aliases": [
+              "balde de zinco"
+            ]
+          },
+          "actions": [],
+          "ses": "on use {\n  if not has(balde) { say \"Primeiro pegue o balde.\" }\n  else if flag(agua_no_bote) {\n    clear agua_no_bote\n    play \"balde jogando água para fora de um bote de borracha, várias vezes\"\n    say \"Você joga balde atrás de balde por cima da borda até o fundo do bote aparecer de novo. A costura ainda verte, mas agora dá para seguir.\"\n  }\n  else { say \"Não há nada para esvaziar aqui.\" }\n}\n",
+          "sprite_original": "sprites/Sprite_obj_balde_d623_31571c.png",
+          "light": 0.5
         }
       ],
       "hotspots": [],
@@ -1364,7 +1502,7 @@
     "scene_7b7791fe": {
       "id": "scene_7b7791fe",
       "name": "Selva Densa",
-      "description": "Árvores imensas fecham o céu e raízes grossas cruzam o chão. A luz chega verde, em manchas. A leste, entre as pedras, abre-se uma fenda escura.",
+      "description": "Árvores imensas fecham o céu e raízes grossas cruzam o chão. A luz chega verde, em manchas. A leste, uma cortina de cipós grossos fecha a mata; atrás dela, entre as pedras, parece haver uma fenda escura.",
       "exits": {
         "sul": "scene_54ecade0",
         "leste": "scene_13871910"
@@ -1396,6 +1534,41 @@
           "properties": {},
           "actions": [],
           "ses": ""
+        },
+        {
+          "id": "obj_cipos_d447",
+          "name": "cipós",
+          "type": "movel",
+          "sprite": "📦",
+          "position": {
+            "x": 1560,
+            "y": 330
+          },
+          "size": {
+            "width": 680,
+            "height": 620
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Cipós grossos como braços, emaranhados de árvore em árvore, fechando a passagem para o leste.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "cipo",
+              "cipó",
+              "cipos",
+              "mata",
+              "cortina"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(cipos_cortados) { say \"Cortados. Uma passagem estreita leva a leste, até a fenda.\" }\n  else { say \"Grossos como braços, emaranhados. Entre eles, um parece mais liso que os outros, com escamas vermelhas, pretas e amarelas.\" }\n}\non use with facão {\n  if flag(cipos_cortados) { say \"A passagem já está aberta, a leste.\" }\n  else {\n    set cipos_cortados; link leste to \"Fenda Escura\"\n    play \"facão cortando cipós grossos e galhos caindo\"\n    say \"Você abre caminho a golpes de facão. Um dos cipós se desenrola sozinho e foge rastejando: era uma cobra coral. A passagem para o leste está aberta.\"\n  }\n}\non pull {\n  if flag(cipos_cortados) { say \"Já estão cortados.\" }\n  else {\n    play \"cobra dando bote e grito abafado na mata\"\n    end \"Você agarra os cipós e puxa com força. Um deles é macio demais, e se mexe. A coral morde a sua mão antes que você possa soltar. Na selva, ninguém ouve você cair.\"\n  }\n}\non take {\n  if flag(cipos_cortados) { say \"Já estão cortados.\" }\n  else {\n    play \"cobra dando bote e grito abafado na mata\"\n    end \"Você agarra os cipós para arrancá-los. Um deles é macio demais, e se mexe. A coral morde a sua mão antes que você possa soltar. Na selva, ninguém ouve você cair.\"\n  }\n}\non push { say \"Eles cedem um pouco e voltam, como molas. Sem algo para cortar, não passa.\" }\n"
         }
       ],
       "hotspots": [],
@@ -1586,7 +1759,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "",
+      "ses": "on enter {\n  if flag(agua_no_bote) {\n    play \"bote de borracha afundando, água borbulhando, ondas\"\n    end \"A praia está ali, a cem metros. Mas o bote já está cheio d'água e afunda de vez, e a arrebentação puxa você para baixo antes da areia.\"\n  }\n}\n",
       "variants": [],
       "sound": {
         "ambient": "praia tranquila, ondas pequenas na areia, gaivotas, brisa",
@@ -1633,7 +1806,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on enter {\n  if not has(bússola) {\n    play \"neblina densa, vento uivando e ondas grandes\"\n    end \"Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote cinza some na neblina.\"\n  } else {\n    say \"Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte.\"\n  }\n}\n",
+      "ses": "on enter {\n  if not has(bússola) {\n    play \"neblina densa, vento uivando e ondas grandes\"\n    end \"Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote cinza some na neblina.\"\n  } else {\n    set agua_no_bote\n    play \"água entrando num bote de borracha, borbulhas\"\n    say \"Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte. Então você sente os pés molhados: uma costura do fundo cedeu, e a água do mar entra no bote, devagar mas sem parar.\"\n  }\n}\n",
       "effect": {
         "type": "bob",
         "amount": 12.0,
@@ -1685,7 +1858,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "",
+      "ses": "on enter {\n  if flag(agua_no_bote) {\n    play \"bote de borracha afundando, água borbulhando, gaivotas\"\n    end \"A água já passa dos joelhos. O bote cinza afunda devagar, com você dentro, a poucas braçadas da ilhota. As correntes da maré morta são frias e fundas, e puxam para baixo.\"\n  }\n}\n",
       "variants": [],
       "sound": {
         "ambient": "mar calmo, ondas distantes, gaivotas sobre uma ilha",
@@ -1729,11 +1902,77 @@
           "properties": {},
           "actions": [],
           "ses": ""
+        },
+        {
+          "id": "obj_nativos_1b7d",
+          "name": "nativos",
+          "type": "movel",
+          "sprite": "📦",
+          "position": {
+            "x": 1250,
+            "y": 470
+          },
+          "size": {
+            "width": 760,
+            "height": 380
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Você não os vê de verdade. Só olhos entre as folhas, pontas de lança e, de vez em quando, um brilho de colar de concha.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "olhos",
+              "lancas",
+              "lanças",
+              "mata",
+              "folhas"
+            ],
+            "painted": true
+          },
+          "actions": [],
+          "ses": "on talk {\n  if flag(nativos_calmos) { say \"Uma risada na mata. Alguém balança um colar de contas coloridas entre as folhas.\" }\n  else { say \"Silêncio. Depois, os tambores, mais rápidos. Uma lança se finca na areia, a um palmo do seu pé, apontando para a mata. Eles querem alguma coisa.\" }\n}\non use with \"caixa de bijuterias\" {\n  set nativos_calmos; remove \"caixa de bijuterias\"\n  play \"tambores parando, murmúrio de vozes animadas e colares tilintando\"\n  say \"Você abre a caixa e a deixa na areia, aberta, virada para a mata. Por um longo momento, nada. Então mãos rápidas a levam para dentro das folhas, e os tambores param. Uma voz ri. Uma lança é cravada na areia, de ponta para baixo: você pode passar.\"\n}\n"
+        },
+        {
+          "id": "obj_bote_na_areia_8c76",
+          "name": "bote na areia",
+          "type": "movel",
+          "sprite": "sprites/Sprite_obj_bote_cinza_8d21f4.png",
+          "position": {
+            "x": 820,
+            "y": 930
+          },
+          "size": {
+            "width": 560,
+            "height": 187
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "O bote cinza, arrastado para a areia.",
+          "properties": {
+            "portable": false,
+            "hidden": false,
+            "aliases": [
+              "bote",
+              "bote cinza"
+            ]
+          },
+          "actions": [],
+          "ses": "on examine {\n  if flag(bote_murchou) and not flag(bote_recheio) { say \"Murcho. Alguém abriu a válvula. Sem ar, não sai daqui.\" }\n  else { say \"O bote cinza, na areia, pronto para voltar ao mar.\" }\n}\non use with \"bomba de ar\" {\n  if not flag(bote_murchou) { say \"Está cheio.\" }\n  else if flag(bote_recheio) { say \"Já está cheio de novo.\" }\n  else {\n    set bote_recheio; link sul to \"Mar da Ilhota\"\n    play \"bomba de ar de pé bombeando e bote de borracha enchendo\"\n    say \"Você bombeia com toda a força, de olho na água que sobe. O bote endurece de novo. Para o sul, o mar.\"\n  }\n}\n"
         }
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "",
+      "ses": "on first_enter {\n  play \"tambores ao longe na mata, ritmo lento e ameaçador\"\n  say \"Você arrasta o bote para a areia. Tambores começam a soar na mata. Entre as folhas, olhos e pontas de lança acompanham cada passo seu. Ninguém aparece. Ninguém precisa.\"\n}\non enter {\n  if flag(tomas_resgatado) {\n    inc mare\n    if flag(mare) > 5 {\n      play \"ondas fortes engolindo a praia, rugido do mar\"\n      end \"A maré morta acabou. O mar volta de uma vez, alto e rápido, e engole a praia, a trilha e o bote. A ilhota some debaixo d'água, como fazia antes de vocês chegarem. Como fará sempre.\"\n    }\n    if not flag(bote_murchou) {\n      set bote_murchou; unlink sul\n      play \"ar escapando de um bote de borracha, risadas na mata\"\n      say \"Na areia, o bote cinza está murcho, mole como um lenço. Da mata vem uma risada abafada: alguém tirou o ar dele enquanto vocês estavam lá dentro. E o mar já começa a subir.\"\n    }\n  }\n}\n",
       "variants": [],
       "sound": {
         "ambient": "praia tropical, ondas suaves, coqueiros balançando, pássaros",
@@ -1844,7 +2083,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "",
+      "ses": "on enter {\n  if not flag(nativos_calmos) {\n    play \"lança zunindo no ar e baque surdo\"\n    end \"Você dá as costas para a mata. Os tambores param de repente. O silêncio dura um segundo, e a lança chega antes do som. Quem chega à ilhota de mãos vazias não sai dela.\"\n  }\n  if flag(tomas_resgatado) {\n    inc mare\n    if flag(mare) > 5 {\n      play \"ondas fortes engolindo a praia, rugido do mar\"\n      end \"A água entra na enseada como um rio. Em minutos, a areia, as rochas e a gruta somem. A maré morta acabou, e a ilhota volta para o fundo do mar com vocês dois.\"\n    }\n  }\n}\n",
       "variants": [],
       "sound": {
         "ambient": "enseada calma, água batendo nas rochas, eco suave de gruta",
@@ -1857,7 +2096,8 @@
       "name": "Clareira das Pedras",
       "description": "Raios de sol atravessam árvores altas e caem sobre um santuário de pedra coberto de musgo, com degraus gastos. Luzes verdes flutuam no ar.",
       "exits": {
-        "sul": "scene_91a92135"
+        "sul": "scene_91a92135",
+        "norte": "scene_e26bc425"
       },
       "objects": [
         {
@@ -1923,7 +2163,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "",
+      "ses": "on enter {\n  if not flag(nativos_calmos) {\n    play \"lança zunindo no ar e baque surdo\"\n    end \"Você entra na mata sem olhar para trás. Os tambores param de repente. O silêncio dura um segundo, e a lança chega antes do som. Quem chega à ilhota de mãos vazias não sai dela.\"\n  }\n  if flag(tomas_resgatado) {\n    inc mare\n    if flag(mare) > 5 {\n      play \"ondas fortes engolindo a floresta, rugido do mar\"\n      end \"A água sobe pela trilha de pedras e invade a clareira, quente e rápida. A maré morta acabou. A ilhota volta para o fundo do mar com vocês dois.\"\n    }\n  }\n}\n",
       "variants": [
         {
           "when": "flag(mare_baixa)",
@@ -1941,7 +2181,9 @@
       "id": "scene_e26bc425",
       "name": "Templo da Maré",
       "description": "Um templo de pedra engolido pela mata, coberto de raízes e musgo. Uma porta escura, fechada, guarda a entrada; no centro dela, um encaixe redondo.",
-      "exits": {},
+      "exits": {
+        "sul": "scene_4508b915"
+      },
       "objects": [
         {
           "id": "background_34cdf27b",
@@ -2005,7 +2247,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "",
+      "ses": "on enter {\n  if flag(tomas_resgatado) {\n    inc mare\n    if flag(mare) > 5 {\n      play \"ondas fortes engolindo a floresta, rugido do mar\"\n      end \"A água já cobre os degraus do templo. A maré morta acabou, e a ilhota volta para o fundo do mar com vocês dois.\"\n    }\n  }\n}\n",
       "variants": [
         {
           "when": "flag(porta_templo_aberta)",
@@ -2124,7 +2366,7 @@
       ],
       "hotspots": [],
       "actions": [],
-      "ses": "on enter {\n  play \"eco de passos em câmara de pedra, voz fraca de homem\"\n  end \"À luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa.\"\n}\n",
+      "ses": "on first_enter {\n  set tomas_resgatado\n  play \"eco de passos em câmara de pedra, voz fraca de homem\"\n  say \"À luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. 'Rápido. A maré morta está acabando. Quando a água voltar, a ilhota afunda, e nós com ela. E o bote... os da mata adoram brincar com o bote.'\"\n}\non enter {\n  if visited(\"Câmara da Maré\") and flag(mare) > 0 { say \"Tomás puxa o seu braço. 'Não há nada aqui! A maré!'\" }\n}\n",
       "variants": [],
       "sound": {
         "ambient": "câmara de pedra fechada, gotas ecoando, zumbido grave e suave, respiração fraca",
@@ -2153,6 +2395,10 @@
     "reference": "Colina da Chegada"
   },
   "sounds": {
+    "porta_abrindo_passos_apressados_e_choro_de_alegria": {
+      "text": "porta abrindo, passos apressados e choro de alegria",
+      "file": "audio/Sound_porta_abrindo_passos_apressados__3600b9.ogg"
+    },
     "tampa_de_madeira_de_escrivaninha_rolando_e_abrindo": {
       "text": "tampa de madeira de escrivaninha rolando e abrindo",
       "file": "audio/Sound_tampa_de_madeira_de_escrivaninha_ee83a1.ogg"
@@ -2161,6 +2407,10 @@
       "text": "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira",
       "file": "audio/Sound_tapete_pesado_sendo_enrolado_e_a_35a64e.ogg"
     },
+    "tapete_pesado_desenrolado_sobre_balcao_de_madeira_e_moedas_tilintando": {
+      "text": "tapete pesado desenrolado sobre balcão de madeira e moedas tilintando",
+      "file": "audio/Sound_tapete_pesado_desenrolado_sobre__0cdc9d.ogg"
+    },
     "fechadura_de_latao_girando_e_tampa_de_bau_de_madeira_rangendo": {
       "text": "fechadura de latão girando e tampa de baú de madeira rangendo",
       "file": "audio/Sound_fechadura_de_latao_girando_e_tam_449d5f.ogg"
@@ -2168,6 +2418,10 @@
     "clique_de_interruptor_de_lanterna_de_metal": {
       "text": "clique de interruptor de lanterna de metal",
       "file": "audio/Sound_clique_de_interruptor_de_lantern_55f8ca.ogg"
+    },
+    "tambores_parando_murmurio_de_vozes_animadas_e_colares_tilintando": {
+      "text": "tambores parando, murmúrio de vozes animadas e colares tilintando",
+      "file": "audio/Sound_tambores_parando_murmurio_de_voz_3e64e8.ogg"
     },
     "estante_pesada_de_madeira_deslizando_sobre_piso_de_cimento": {
       "text": "estante pesada de madeira deslizando sobre piso de cimento",
@@ -2197,9 +2451,13 @@
       "text": "tampa pesada de baú com ferragens abrindo",
       "file": "audio/Sound_tampa_pesada_de_bau_com_ferragen_d735b6.ogg"
     },
-    "mao_revirando_folhas_molhadas_e_madeira_podre": {
-      "text": "mão revirando folhas molhadas e madeira podre",
-      "file": "audio/Sound_mao_revirando_folhas_molhadas_e__580be1.ogg"
+    "chiado_de_cobra_e_bote_rapido_entre_folhas_secas": {
+      "text": "chiado de cobra e bote rápido entre folhas secas",
+      "file": "audio/Sound_chiado_de_cobra_e_bote_rapido_en_4ee1ad.ogg"
+    },
+    "facao_batendo_em_madeira_podre_e_cobra_escorregando_na_agua": {
+      "text": "facão batendo em madeira podre e cobra escorregando na água",
+      "file": "audio/Sound_facao_batendo_em_madeira_podre_e_8ac12e.ogg"
     },
     "bomba_de_ar_de_pe_bombeando_e_bote_de_borracha_enchendo": {
       "text": "bomba de ar de pé bombeando e bote de borracha enchendo",
@@ -2209,9 +2467,25 @@
       "text": "bote de borracha sendo arrastado sobre areia",
       "file": "audio/Sound_bote_de_borracha_sendo_arrastado_56b375.ogg"
     },
+    "balde_jogando_agua_para_fora_de_um_bote_de_borracha_varias_vezes": {
+      "text": "balde jogando água para fora de um bote de borracha, várias vezes",
+      "file": "audio/Sound_balde_jogando_agua_para_fora_de__e3fa43.ogg"
+    },
+    "facao_cortando_cipos_grossos_e_galhos_caindo": {
+      "text": "facão cortando cipós grossos e galhos caindo",
+      "file": "audio/Sound_facao_cortando_cipos_grossos_e_g_e6d7ac.ogg"
+    },
+    "cobra_dando_bote_e_grito_abafado_na_mata": {
+      "text": "cobra dando bote e grito abafado na mata",
+      "file": "audio/Sound_cobra_dando_bote_e_grito_abafado_4de0f7.ogg"
+    },
     "escorregao_em_pedra_molhada_e_queda_no_escuro_eco": {
       "text": "escorregão em pedra molhada e queda no escuro, eco",
       "file": "audio/Sound_escorregao_em_pedra_molhada_e_qu_69fac5.ogg"
+    },
+    "bote_de_borracha_afundando_agua_borbulhando_ondas": {
+      "text": "bote de borracha afundando, água borbulhando, ondas",
+      "file": "audio/Sound_bote_de_borracha_afundando_agua__3a071a.ogg"
     },
     "bote_de_borracha_sendo_empurrado_para_a_agua_remo_batendo_no_mar": {
       "text": "bote de borracha sendo empurrado para a água, remo batendo no mar",
@@ -2220,6 +2494,34 @@
     "neblina_densa_vento_uivando_e_ondas_grandes": {
       "text": "neblina densa, vento uivando e ondas grandes",
       "file": "audio/Sound_neblina_densa_vento_uivando_e_on_357edc.ogg"
+    },
+    "agua_entrando_num_bote_de_borracha_borbulhas": {
+      "text": "água entrando num bote de borracha, borbulhas",
+      "file": "audio/Sound_agua_entrando_num_bote_de_borrac_501278.ogg"
+    },
+    "bote_de_borracha_afundando_agua_borbulhando_gaivotas": {
+      "text": "bote de borracha afundando, água borbulhando, gaivotas",
+      "file": "audio/Sound_bote_de_borracha_afundando_agua__adc996.ogg"
+    },
+    "tambores_ao_longe_na_mata_ritmo_lento_e_ameacador": {
+      "text": "tambores ao longe na mata, ritmo lento e ameaçador",
+      "file": "audio/Sound_tambores_ao_longe_na_mata_ritmo__8e4e24.ogg"
+    },
+    "ondas_fortes_engolindo_a_praia_rugido_do_mar": {
+      "text": "ondas fortes engolindo a praia, rugido do mar",
+      "file": "audio/Sound_ondas_fortes_engolindo_a_praia_r_ca2243.ogg"
+    },
+    "ar_escapando_de_um_bote_de_borracha_risadas_na_mata": {
+      "text": "ar escapando de um bote de borracha, risadas na mata",
+      "file": "audio/Sound_ar_escapando_de_um_bote_de_borra_a88a7e.ogg"
+    },
+    "lanca_zunindo_no_ar_e_baque_surdo": {
+      "text": "lança zunindo no ar e baque surdo",
+      "file": "audio/Sound_lanca_zunindo_no_ar_e_baque_surd_87fc54.ogg"
+    },
+    "ondas_fortes_engolindo_a_floresta_rugido_do_mar": {
+      "text": "ondas fortes engolindo a floresta, rugido do mar",
+      "file": "audio/Sound_ondas_fortes_engolindo_a_florest_80a322.ogg"
     },
     "ronco_grave_de_pedra_e_agua_recuando_ondas_se_afastando": {
       "text": "ronco grave de pedra e água recuando, ondas se afastando",

@@ -13,7 +13,7 @@ arte:
 requisitos:
   cenas: 20
   puzzles: 14
-  mortes: 3
+  mortes: 12
 cenas:
 - nome: Escritório de Tomás
   descricao: Paredes azuis, um tapete gasto e o cheiro de papel velho. Tudo está arrumado demais, como se o dono
@@ -21,6 +21,12 @@ cenas:
   script: |
     on first_enter {
       say "Lúcia Albuquerque deixou a chave com você: 'Meu irmão sumiu há três semanas. A polícia desistiu. Eu não.'"
+    }
+    on enter {
+      if flag(tomas_resgatado) {
+        play "porta abrindo, passos apressados e choro de alegria"
+        end "Vocês sobem pela escada do alçapão, cobertos de areia e sal. Lúcia está no escritório, sentada na cadeira do irmão. Ela levanta devagar, como quem não acredita, e corre para abraçá-lo. Tomás voltou para casa."
+      }
     }
   saidas:
     norte: Biblioteca
@@ -76,29 +82,36 @@ cenas:
       o tivesse mexido há pouco.
     tipo: movel
     apelidos:
-    - tapete persa
     - alçapão
     - alcapao
     script: |
-      on examine {
-        if flag(tapete_enrolado) { say "O tapete está enrolado num canto. No chão, o alçapão aberto desce para o porão." }
-        else { say "Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco." }
-      }
       on take {
-        if flag(tapete_enrolado) { say "Já está enrolado num canto. O alçapão aberto desce para o porão." }
-        else {
-          set tapete_enrolado; link baixo to Porão; link cima to "Escritório de Tomás" in Porão
-          play "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira"
-          say "Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
-        }
+        set tapete_enrolado; link baixo to Porão; link cima to "Escritório de Tomás" in Porão
+        hide self; take "tapete persa"
+        play "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira"
+        say "Você enrola o tapete e o põe no ombro. É pesado, mas é um belo tapete persa: alguém, em algum lugar, pagaria bem por ele. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
       }
       on pull {
-        if flag(tapete_enrolado) { say "Já está enrolado num canto. O alçapão aberto desce para o porão." }
-        else {
-          set tapete_enrolado; link baixo to Porão; link cima to "Escritório de Tomás" in Porão
-          play "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira"
-          say "Você enrola o tapete e o arrasta para o canto. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
+        set tapete_enrolado; link baixo to Porão; link cima to "Escritório de Tomás" in Porão
+        hide self; take "tapete persa"
+        play "tapete pesado sendo enrolado e arrastado sobre assoalho de madeira"
+        say "Você enrola o tapete e o põe no ombro. É pesado, mas é um belo tapete persa: alguém, em algum lugar, pagaria bem por ele. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
+      }
+  - nome: tapete persa
+    descricao: O tapete persa de Tomás, enrolado, vermelho e azul, com franjas de seda. Pesado e bonito, de um tipo
+      que não se vê em qualquer lugar.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - tapete enrolado
+    script: |
+      on use {
+        if here("Capitão Rocha") {
+          set troca_feita; remove "tapete persa"; take "chave de ferro"; take facão
+          play "tapete pesado desenrolado sobre balcão de madeira e moedas tilintando"
+          say "Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'"
         }
+        else { say "Trocar com quem? Não há ninguém aqui interessado num tapete." }
       }
   variantes:
   - quando: flag(tapete_enrolado)
@@ -130,9 +143,9 @@ cenas:
       on use with "chave de latão" {
         if flag(bau_aberto) { say "Já está aberto." }
         else {
-          set bau_aberto; show "cartão perfurado"; show "carta das marés"; show lanterna
+          set bau_aberto; show "cartão perfurado"; show "carta das marés"; show lanterna; show "caixa de bijuterias"
           play "fechadura de latão girando e tampa de baú de madeira rangendo"
-          say "A chave gira e a tampa range ao subir. Dentro do baú: um cartão perfurado, uma carta náutica dobrada e uma lanterna de metal prateada."
+          say "A chave gira e a tampa range ao subir. Dentro do baú: um cartão perfurado, uma carta náutica dobrada, uma lanterna de metal prateada e uma caixinha de bijuterias baratas."
         }
       }
   - nome: cartão perfurado
@@ -164,6 +177,25 @@ cenas:
           set lanterna_acesa; play "clique de interruptor de lanterna de metal"
           say "Clique. Um facho de luz amarela corta a escuridão."
         }
+      }
+  - nome: caixa de bijuterias
+    descricao: Uma caixinha de madeira pintada, cheia de colares de contas coloridas, anéis de lata e brincos de
+      vidro que brilham como pedras preciosas. Não valem nada aqui. Em outro lugar, quem sabe.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - caixa
+    - caixinha
+    - bijuterias
+    - colares
+    script: |
+      on use {
+        if in("Praia Branca") and not flag(nativos_calmos) {
+          set nativos_calmos; remove "caixa de bijuterias"
+          play "tambores parando, murmúrio de vozes animadas e colares tilintando"
+          say "Você abre a caixa e a deixa na areia, aberta, virada para a mata. Por um longo momento, nada. Então mãos rápidas a levam para dentro das folhas, e os tambores param. Uma voz ri. Uma lança é cravada na areia, de ponta para baixo: você pode passar."
+        }
+        else { say "Ninguém aqui quer bijuterias." }
       }
   variantes:
   - quando: flag(bau_aberto)
@@ -226,6 +258,10 @@ cenas:
   saidas:
     norte: Laboratório
   som: corredor de pedra no escuro, gotas pingando, eco de passos
+  escuro:
+    quando: not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))
+    morte: No escuro, o chão de pedra some sob os seus pés. Você escorrega num degrau limo e bate a nuca na parede
+      antiga. O corredor guarda mais um segredo.
 - nome: Laboratório
   descricao: 'Painéis apagados, cabos grossos pelo chão e, no centro, um grande anel de metal sobre uma plataforma.
     Está tudo desligado: só o facho da lanterna mostra alguma coisa.'
@@ -288,6 +324,10 @@ cenas:
     mudanca: 'energia ligada: luzes, telas e o anel acesos'
   - quando: flag(portal_ativo)
     mudanca: um portal dimensional aberto sobre a plataforma, com uma ilha tropical do outro lado
+  escuro:
+    quando: not flag(energia) and not (flag(lanterna_acesa) and (has(lanterna) or here(lanterna)))
+    morte: Você tateia no escuro, o pé se enrosca num cabo grosso e a mão bate num terminal desencapado. Um estalo
+      azul, um cheiro de queimado, e depois nada.
 - nome: Colina da Chegada
   descricao: Uma trilha sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. Atrás de você,
     um círculo de pedras ainda zumbe. Ao longe, ruínas aparecem entre as árvores.
@@ -305,28 +345,52 @@ cenas:
   som: selva tropical de dia, pássaros exóticos, insetos, brisa nas palmeiras
 - nome: Posto do Capitão Rocha
   descricao: Uma velha loja de madeira. Um balcão comprido atravessa a sala e, atrás dele, prateleiras expõem garrafas,
-    lampiões, cordas, conchas, mapas enrolados e bugigangas do mundo inteiro. Sobre o balcão, entre moedas e quinquilharias,
-    uma bola de cristal brilha ao lado de um livro grosso de capa vermelha. Ninguém compra ou vende aqui há muito
-    tempo. Na parede do fundo, atrás do balcão, uma porta de tábuas grossas está trancada por um cadeado de ferro
-    pendurado na frente.
+    lampiões, cordas, conchas, mapas enrolados e bugigangas do mundo inteiro. Atrás do balcão, entre moedas e quinquilharias,
+    um velho de barba branca observa você sem piscar, ao lado de um livro grosso de capa vermelha. Na parede do
+    fundo, uma porta de tábuas grossas está trancada por um cadeado de ferro pendurado na frente.
   saidas:
     oeste: Colina da Chegada
   som: interior de cabana de madeira, tábuas rangendo, sinos de vento lá fora, mar distante
   objetos:
-  - nome: bola de cristal
-    descricao: Uma bola de cristal azulada, acesa por dentro, sobre um suporte em cima do balcão.
-    tipo: movel
+  - nome: Capitão Rocha
+    descricao: Um velho negociante de pé atrás do balcão, visto da cintura para cima, com as mãos grandes apoiadas
+      na madeira. Barba branca e cheia, pele queimada de sol, um quepe de capitão desbotado, camisa de linho clara
+      com as mangas dobradas e um colete marrom de couro gasto. Um olhar esperto, de quem nunca perdeu uma troca.
+    tipo: personagem
     apelidos:
-    - bola
-    - cristal
+    - rocha
+    - capitao
+    - capitão
+    - negociante
+    - velho
     script: |
-      on examine { say "Uma luz azul gira dentro do vidro, lenta como uma maré. Por um instante você vê uma ilhota branca e um templo. Depois, só o seu rosto." }
-      on take { say "Está quente demais para segurar." }
-    animacao:
-      tipo: pulsar
-      intensidade: 0.6
-      periodo: 2.5
-      cor: azul
+      on talk {
+        if flag(troca_feita) { say "'Negócio é negócio', diz Rocha, alisando o tapete. 'Cuidado com o que mora em tronco oco. E na ilhota, quem chega de mãos vazias não sai.'" }
+        else { say "'Aqui ninguém usa dinheiro, forasteiro. Aqui se troca.' Ele olha você de cima a baixo. 'Gente que vem pelo círculo de pedras às vezes traz coisas bonitas do outro lado. Panos bordados, tapetes... Isso sim eu aceito.'" }
+      }
+      on use with "tapete persa" {
+        if flag(troca_feita) { say "Já negociamos." }
+        else {
+          set troca_feita; remove "tapete persa"; take "chave de ferro"; take facão
+          play "tapete pesado desenrolado sobre balcão de madeira e moedas tilintando"
+          say "Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'"
+        }
+      }
+      on take { say "Rocha segura o seu pulso com uma força que não combina com a idade. 'Aqui se troca. Não se toma.'" }
+  - nome: chave de ferro
+    descricao: Uma chave de ferro grande e enferrujada.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - chave grande
+  - nome: facão
+    descricao: Um facão de lâmina larga e cabo de madeira gasto, bem afiado.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - facao
+    - machete
+    - faca
   - nome: livro de contas
     descricao: Um livro grosso de capa vermelha, aberto sobre o balcão, ao lado da bola de cristal.
     tipo: livro
@@ -335,7 +399,7 @@ cenas:
     - contas
     script: |
       on examine {
-        say "Contas do Capitão Rocha, contrabandista. A última anotação: 'Guardei a bússola, o remo e a bomba no depósito. A chave ficou no tronco oco do pântano, onde nenhum ladrão mete a mão. Quem quiser a ilhota que espere a maré morta e leve a carta.'"
+        say "Contas do Capitão Rocha, em letra torta. Trocas e mais trocas. Uma das últimas: 'Ao forasteiro de barba castanha: bússola, remo e bomba de ar, em troca de um relógio de bolso. Ficaram no depósito, ele volta para buscar.' Nunca voltou. Mais abaixo: 'Os da ilhota não deixam ninguém passar sem presente. Gostam de coisa que brilha.'"
       }
   - nome: porta dos fundos
     descricao: Uma porta de tábuas grossas atrás do balcão, trancada por um cadeado de ferro.
@@ -410,17 +474,22 @@ cenas:
     apelidos:
     - tronco
     script: |
-      on open {
-        if flag(tronco_revirado) { say "Não há mais nada lá dentro." }
-        else { set tronco_revirado; show "chave de ferro"; play "mão revirando folhas molhadas e madeira podre"; say "Você enfia a mão no oco, entre folhas podres, e toca em metal: uma chave de ferro." }
+      on examine {
+        if flag(cobra_fugiu) { say "Oco e vazio, só folhas podres." }
+        else { say "Coberto de musgo, oco por dentro. Lá no fundo, entre as folhas podres, alguma coisa se mexe e chia baixinho." }
       }
-      on use { say "Talvez dê para revirar o oco dele." }
-  - nome: chave de ferro
-    descricao: Uma chave de ferro grande e enferrujada.
-    pegavel: true
-    escondido: true
-    apelidos:
-    - chave grande
+      on open {
+        if flag(cobra_fugiu) { say "Só folhas podres e água. Nada que valha alguma coisa." }
+        else {
+          play "chiado de cobra e bote rápido entre folhas secas"
+          end "Você enfia a mão no oco, entre as folhas podres. Uma picada no pulso, rápida como um estalo. A jararaca some na água escura, e o seu braço começa a queimar. O pântano fica muito longe de qualquer socorro."
+        }
+      }
+      on use with facão {
+        if flag(cobra_fugiu) { say "Não há mais nada lá dentro." }
+        else { set cobra_fugiu; play "facão batendo em madeira podre e cobra escorregando na água"; say "Você cutuca o oco com a ponta do facão. Uma jararaca enorme escorrega para fora, sibila para você e some na água escura. Melhor não ter posto a mão." }
+      }
+      on use { say "Enfiar a mão aí dentro? Algo se mexe no fundo." }
 - nome: Galpão de Barcos
   descricao: Um galpão de tábuas que range com o vento. Ferramentas numa bancada, potes e cordas, e no chão um bote
     cinza murcho. Uma trilha segue para o norte, até o mar.
@@ -442,13 +511,28 @@ cenas:
       }
       on use with "bomba de ar" {
         if flag(bote_cheio) { say "Já está cheio." }
-        else { set bote_cheio; play "bomba de ar de pé bombeando e bote de borracha enchendo"; say "Você bombeia até o braço doer. O bote endurece, inteiro." }
+        else { set bote_cheio; play "bomba de ar de pé bombeando e bote de borracha enchendo"; say "Você bombeia até o braço doer. O bote endurece, mas numa das costuras do fundo a borracha está fina, gasta. Bote velho é assim: uma hora murcha, outra hora vaza." }
       }
       on push {
         if not flag(bote_cheio) { say "Murcho assim, não vai flutuar." }
         else { set bote_na_praia; hide self; show "bote cinza"; play "bote de borracha sendo arrastado sobre areia"; say "Você arrasta o bote pela trilha, até a beira da água na praia, ao norte." }
       }
       on pull { say "Melhor empurrar: a trilha para a praia é ao norte." }
+  - nome: balde
+    descricao: Um balde de zinco amassado, com alça de arame.
+    pegavel: true
+    apelidos:
+    - balde de zinco
+    script: |
+      on use {
+        if not has(balde) { say "Primeiro pegue o balde." }
+        else if flag(agua_no_bote) {
+          clear agua_no_bote
+          play "balde jogando água para fora de um bote de borracha, várias vezes"
+          say "Você joga balde atrás de balde por cima da borda até o fundo do bote aparecer de novo. A costura ainda verte, mas agora dá para seguir."
+        }
+        else { say "Não há nada para esvaziar aqui." }
+      }
   variantes:
   - quando: flag(bote_cheio)
     mudanca: o bote inflável cinza-esverdeado no chão está cheio, inflado e firme, com os dois bancos de madeira
@@ -457,11 +541,49 @@ cenas:
     mudanca: o bote inflável que estava no chão sumiu; só o assoalho de madeira vazio onde ele estava
 - nome: Selva Densa
   descricao: Árvores imensas fecham o céu e raízes grossas cruzam o chão. A luz chega verde, em manchas. A leste,
-    entre as pedras, abre-se uma fenda escura.
+    uma cortina de cipós grossos fecha a mata; atrás dela, entre as pedras, parece haver uma fenda escura.
   saidas:
     sul: Colina da Chegada
     leste: Fenda Escura
   som: selva densa e úmida, pássaros, macacos ao longe, folhas pingando
+  objetos:
+  - nome: cipós
+    descricao: Cipós grossos como braços, emaranhados de árvore em árvore, fechando a passagem para o leste.
+    tipo: movel
+    apelidos:
+    - cipo
+    - cipó
+    - cipos
+    - mata
+    - cortina
+    script: |
+      on examine {
+        if flag(cipos_cortados) { say "Cortados. Uma passagem estreita leva a leste, até a fenda." }
+        else { say "Grossos como braços, emaranhados. Entre eles, um parece mais liso que os outros, com escamas vermelhas, pretas e amarelas." }
+      }
+      on use with facão {
+        if flag(cipos_cortados) { say "A passagem já está aberta, a leste." }
+        else {
+          set cipos_cortados; link leste to "Fenda Escura"
+          play "facão cortando cipós grossos e galhos caindo"
+          say "Você abre caminho a golpes de facão. Um dos cipós se desenrola sozinho e foge rastejando: era uma cobra coral. A passagem para o leste está aberta."
+        }
+      }
+      on pull {
+        if flag(cipos_cortados) { say "Já estão cortados." }
+        else {
+          play "cobra dando bote e grito abafado na mata"
+          end "Você agarra os cipós e puxa com força. Um deles é macio demais, e se mexe. A coral morde a sua mão antes que você possa soltar. Na selva, ninguém ouve você cair."
+        }
+      }
+      on take {
+        if flag(cipos_cortados) { say "Já estão cortados." }
+        else {
+          play "cobra dando bote e grito abafado na mata"
+          end "Você agarra os cipós para arrancá-los. Um deles é macio demais, e se mexe. A coral morde a sua mão antes que você possa soltar. Na selva, ninguém ouve você cair."
+        }
+      }
+      on push { say "Eles cedem um pouco e voltam, como molas. Sem algo para cortar, não passa." }
 - nome: Fenda Escura
   descricao: Uma rachadura enorme na rocha, molhada e coberta de musgo. A água escorre pelas paredes e some num
     buraco sem fundo no meio do chão.
@@ -490,6 +612,13 @@ cenas:
 - nome: Praia do Barco Velho
   descricao: Areia clara, água transparente e a sombra das árvores. Um barco de madeira apodrece na areia, com o
     casco rachado. Ao norte, só mar.
+  script: |
+    on enter {
+      if flag(agua_no_bote) {
+        play "bote de borracha afundando, água borbulhando, ondas"
+        end "A praia está ali, a cem metros. Mas o bote já está cheio d'água e afunda de vez, e a arrebentação puxa você para baixo antes da areia."
+      }
+    }
   saidas:
     sul: Galpão de Barcos
   som: praia tranquila, ondas pequenas na areia, gaivotas, brisa
@@ -527,7 +656,9 @@ cenas:
         play "neblina densa, vento uivando e ondas grandes"
         end "Uma névoa branca cai de repente sobre o mar. Sem saber para onde fica o norte, você rema em círculos até as forças acabarem. O bote cinza some na neblina."
       } else {
-        say "Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte."
+        set agua_no_bote
+        play "água entrando num bote de borracha, borbulhas"
+        say "Uma névoa começa a subir do mar, mas a agulha da bússola aponta firme para o norte. Então você sente os pés molhados: uma costura do fundo cedeu, e a água do mar entra no bote, devagar mas sem parar."
       }
     }
   saidas:
@@ -539,6 +670,13 @@ cenas:
 - nome: Mar da Ilhota
   descricao: A névoa se abre. Ao norte, uma ilhota verde surge do mar, como se tivesse acabado de nascer. A água
     está baixa, quase parada.
+  script: |
+    on enter {
+      if flag(agua_no_bote) {
+        play "bote de borracha afundando, água borbulhando, gaivotas"
+        end "A água já passa dos joelhos. O bote cinza afunda devagar, com você dentro, a poucas braçadas da ilhota. As correntes da maré morta são frias e fundas, e puxam para baixo."
+      }
+    }
   saidas:
     sul: Mar Aberto
     norte: Praia Branca
@@ -546,14 +684,88 @@ cenas:
 - nome: Praia Branca
   descricao: Uma faixa de areia muito branca entre coqueiros e flores vermelhas. A maré está tão baixa que pedras
     escuras aparecem na água. Uma trilha entra na mata ao norte; a oeste, a praia vira uma enseada.
+  script: |
+    on first_enter {
+      play "tambores ao longe na mata, ritmo lento e ameaçador"
+      say "Você arrasta o bote para a areia. Tambores começam a soar na mata. Entre as folhas, olhos e pontas de lança acompanham cada passo seu. Ninguém aparece. Ninguém precisa."
+    }
+    on enter {
+      if flag(tomas_resgatado) {
+        inc mare
+        if flag(mare) > 5 {
+          play "ondas fortes engolindo a praia, rugido do mar"
+          end "A maré morta acabou. O mar volta de uma vez, alto e rápido, e engole a praia, a trilha e o bote. A ilhota some debaixo d'água, como fazia antes de vocês chegarem. Como fará sempre."
+        }
+        if not flag(bote_murchou) {
+          set bote_murchou; unlink sul
+          play "ar escapando de um bote de borracha, risadas na mata"
+          say "Na areia, o bote cinza está murcho, mole como um lenço. Da mata vem uma risada abafada: alguém tirou o ar dele enquanto vocês estavam lá dentro. E o mar já começa a subir."
+        }
+      }
+    }
   saidas:
     sul: Mar da Ilhota
     oeste: Enseada Verde
     norte: Clareira das Pedras
   som: praia tropical, ondas suaves, coqueiros balançando, pássaros
+  objetos:
+  - nome: nativos
+    descricao: Você não os vê de verdade. Só olhos entre as folhas, pontas de lança e, de vez em quando, um brilho
+      de colar de concha.
+    tipo: movel
+    apelidos:
+    - olhos
+    - lancas
+    - lanças
+    - mata
+    - folhas
+    script: |
+      on talk {
+        if flag(nativos_calmos) { say "Uma risada na mata. Alguém balança um colar de contas coloridas entre as folhas." }
+        else { say "Silêncio. Depois, os tambores, mais rápidos. Uma lança se finca na areia, a um palmo do seu pé, apontando para a mata. Eles querem alguma coisa." }
+      }
+      on use with "caixa de bijuterias" {
+        set nativos_calmos; remove "caixa de bijuterias"
+        play "tambores parando, murmúrio de vozes animadas e colares tilintando"
+        say "Você abre a caixa e a deixa na areia, aberta, virada para a mata. Por um longo momento, nada. Então mãos rápidas a levam para dentro das folhas, e os tambores param. Uma voz ri. Uma lança é cravada na areia, de ponta para baixo: você pode passar."
+      }
+  - nome: bote na areia
+    descricao: O bote cinza, arrastado para a areia.
+    tipo: movel
+    apelidos:
+    - bote
+    - bote cinza
+    script: |
+      on examine {
+        if flag(bote_murchou) and not flag(bote_recheio) { say "Murcho. Alguém abriu a válvula. Sem ar, não sai daqui." }
+        else { say "O bote cinza, na areia, pronto para voltar ao mar." }
+      }
+      on use with "bomba de ar" {
+        if not flag(bote_murchou) { say "Está cheio." }
+        else if flag(bote_recheio) { say "Já está cheio de novo." }
+        else {
+          set bote_recheio; link sul to "Mar da Ilhota"
+          play "bomba de ar de pé bombeando e bote de borracha enchendo"
+          say "Você bombeia com toda a força, de olho na água que sobe. O bote endurece de novo. Para o sul, o mar."
+        }
+      }
 - nome: Enseada Verde
   descricao: Uma enseada fechada entre rochas, com água verde e parada. Um barco a remo está encalhado na areia.
     No fundo, uma gruta brilha com uma luz verde, fraca.
+  script: |
+    on enter {
+      if not flag(nativos_calmos) {
+        play "lança zunindo no ar e baque surdo"
+        end "Você dá as costas para a mata. Os tambores param de repente. O silêncio dura um segundo, e a lança chega antes do som. Quem chega à ilhota de mãos vazias não sai dela."
+      }
+      if flag(tomas_resgatado) {
+        inc mare
+        if flag(mare) > 5 {
+          play "ondas fortes engolindo a praia, rugido do mar"
+          end "A água entra na enseada como um rio. Em minutos, a areia, as rochas e a gruta somem. A maré morta acabou, e a ilhota volta para o fundo do mar com vocês dois."
+        }
+      }
+    }
   saidas:
     leste: Praia Branca
   som: enseada calma, água batendo nas rochas, eco suave de gruta
@@ -577,8 +789,23 @@ cenas:
 - nome: Clareira das Pedras
   descricao: Raios de sol atravessam árvores altas e caem sobre um santuário de pedra coberto de musgo, com degraus
     gastos. Luzes verdes flutuam no ar.
+  script: |
+    on enter {
+      if not flag(nativos_calmos) {
+        play "lança zunindo no ar e baque surdo"
+        end "Você entra na mata sem olhar para trás. Os tambores param de repente. O silêncio dura um segundo, e a lança chega antes do som. Quem chega à ilhota de mãos vazias não sai dela."
+      }
+      if flag(tomas_resgatado) {
+        inc mare
+        if flag(mare) > 5 {
+          play "ondas fortes engolindo a floresta, rugido do mar"
+          end "A água sobe pela trilha de pedras e invade a clareira, quente e rápida. A maré morta acabou. A ilhota volta para o fundo do mar com vocês dois."
+        }
+      }
+    }
   saidas:
     sul: Praia Branca
+    norte: Templo da Maré
   som: clareira de floresta, raios de sol, zumbido místico suave, pássaros
   objetos:
   - nome: santuário
@@ -606,6 +833,18 @@ cenas:
 - nome: Templo da Maré
   descricao: Um templo de pedra engolido pela mata, coberto de raízes e musgo. Uma porta escura, fechada, guarda
     a entrada; no centro dela, um encaixe redondo.
+  script: |
+    on enter {
+      if flag(tomas_resgatado) {
+        inc mare
+        if flag(mare) > 5 {
+          play "ondas fortes engolindo a floresta, rugido do mar"
+          end "A água já cobre os degraus do templo. A maré morta acabou, e a ilhota volta para o fundo do mar com vocês dois."
+        }
+      }
+    }
+  saidas:
+    sul: Clareira das Pedras
   som: templo antigo na selva, vento entre pedras, zumbido grave vindo de dentro
   objetos:
   - nome: porta do templo
@@ -634,9 +873,13 @@ cenas:
     verde, e ondas entalhadas correm pelo teto baixo. Num canto, um cobertor velho e uma caneca de lata sobre o
     chão de pedra lisa.
   script: |
-    on enter {
+    on first_enter {
+      set tomas_resgatado
       play "eco de passos em câmara de pedra, voz fraca de homem"
-      end "À luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. Lá fora, a água já começa a subir; é hora de voltar para casa."
+      say "À luz verde das algas, Tomás Albuquerque levanta a cabeça, magro e barbudo, mas vivo. 'A maré me prendeu aqui', ele sussurra. 'Achei que ninguém viria.' Você o ajuda a ficar de pé. 'Rápido. A maré morta está acabando. Quando a água voltar, a ilhota afunda, e nós com ela. E o bote... os da mata adoram brincar com o bote.'"
+    }
+    on enter {
+      if visited("Câmara da Maré") and flag(mare) > 0 { say "Tomás puxa o seu braço. 'Não há nada aqui! A maré!'" }
     }
   saidas:
     sul:
@@ -663,7 +906,7 @@ cenas:
     - caneca
     - lata
 testes:
-  vitoria: Tomás Albuquerque levanta a cabeça
+  vitoria: Tomás voltou para casa
   solucao:
   - abrir escrivaninha
   - pegar chave de latão
@@ -672,6 +915,7 @@ testes:
   - pegar cartão perfurado
   - pegar carta das marés
   - pegar lanterna
+  - pegar caixa de bijuterias
   - baixo
   - norte
   - ler diário
@@ -686,11 +930,8 @@ testes:
   - usar cartão perfurado no painel
   - usar anel
   - entrar
-  - sul
-  - abrir tronco
-  - pegar chave de ferro
-  - norte
   - leste
+  - trocar tapete
   - usar chave de ferro na porta
   - norte
   - abrir baú
@@ -700,24 +941,43 @@ testes:
   - sul
   - oeste
   - norte
+  - usar facão nos cipós
   - leste
   - pegar medalhão de coral
   - oeste
   - sul
   - sul
   - leste
+  - pegar balde
   - usar bomba de ar no bote
   - empurrar bote
   - norte
   - usar remo no bote
   - norte
+  - usar balde
   - norte
   - norte
+  - dar caixa de bijuterias aos nativos
   - norte
   - usar carta das marés no santuário
   - norte
   - usar medalhão de coral na porta
   - entrar
+  - sul
+  - sul
+  - sul
+  - usar bomba de ar no bote
+  - sul
+  - sul
+  - usar balde
+  - sul
+  - sul
+  - oeste
+  - norte
+  - entrar
+  - sul
+  - oeste
+  - cima
   mortes:
   - nome: anel sem coordenadas
     comandos:
@@ -725,7 +985,10 @@ testes:
     - pegar chave de latão
     - cima
     - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
     - pegar lanterna
+    - pegar caixa de bijuterias
     - baixo
     - norte
     - ler diário
@@ -746,7 +1009,9 @@ testes:
     - cima
     - usar chave de latão no baú
     - pegar cartão perfurado
+    - pegar carta das marés
     - pegar lanterna
+    - pegar caixa de bijuterias
     - baixo
     - norte
     - ler diário
@@ -762,7 +1027,11 @@ testes:
     - largar lanterna
     - usar anel
     - entrar
+    - leste
+    - trocar tapete
+    - oeste
     - norte
+    - usar facão nos cipós
     - leste
     fim: escorrega para o buraco
   - nome: mar sem bússola
@@ -772,7 +1041,102 @@ testes:
     - cima
     - usar chave de latão no baú
     - pegar cartão perfurado
+    - pegar carta das marés
     - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
+    - leste
+    - norte
+    - puxar alavanca
+    - usar cartão perfurado no painel
+    - usar anel
+    - entrar
+    - leste
+    - trocar tapete
+    - usar chave de ferro na porta
+    - norte
+    - abrir baú
+    - pegar remo
+    - pegar bomba de ar
+    - sul
+    - oeste
+    - sul
+    - leste
+    - pegar balde
+    - usar bomba de ar no bote
+    - empurrar bote
+    - norte
+    - usar remo no bote
+    - norte
+    fim: rema em círculos
+  - nome: porão no escuro
+    comandos:
+    - pegar tapete
+    - baixo
+    - empurrar estante
+    fim: tateia no escuro
+  - nome: corredor no escuro
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
+    - largar lanterna
+    - leste
+    - norte
+    fim: degrau limo
+  - nome: laboratório no escuro
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
+    - leste
+    - largar lanterna
+    - norte
+    - puxar alavanca
+    fim: terminal desencapado
+  - nome: mão no tronco oco
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
     - baixo
     - norte
     - ler diário
@@ -789,27 +1153,263 @@ testes:
     - entrar
     - sul
     - abrir tronco
-    - pegar chave de ferro
+    fim: jararaca some
+  - nome: cipós com a mão
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
     - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
     - leste
+    - norte
+    - puxar alavanca
+    - usar cartão perfurado no painel
+    - usar anel
+    - entrar
+    - norte
+    - puxar cipós
+    fim: coral morde
+  - nome: bote afunda na ida
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
+    - leste
+    - norte
+    - puxar alavanca
+    - usar cartão perfurado no painel
+    - usar anel
+    - entrar
+    - leste
+    - trocar tapete
     - usar chave de ferro na porta
     - norte
     - abrir baú
+    - pegar bússola
     - pegar remo
     - pegar bomba de ar
     - sul
     - oeste
+    - norte
+    - usar facão nos cipós
+    - leste
+    - pegar medalhão de coral
+    - oeste
+    - sul
     - sul
     - leste
+    - pegar balde
     - usar bomba de ar no bote
     - empurrar bote
     - norte
     - usar remo no bote
     - norte
-    fim: rema em círculos
-  - nome: porão no escuro
+    - norte
+    fim: afunda devagar
+  - nome: lança dos nativos
     comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
     - pegar tapete
+    - acender lanterna
     - baixo
     - empurrar estante
-    fim: tateia no escuro
+    - leste
+    - norte
+    - puxar alavanca
+    - usar cartão perfurado no painel
+    - usar anel
+    - entrar
+    - leste
+    - trocar tapete
+    - usar chave de ferro na porta
+    - norte
+    - abrir baú
+    - pegar bússola
+    - pegar remo
+    - pegar bomba de ar
+    - sul
+    - oeste
+    - norte
+    - usar facão nos cipós
+    - leste
+    - pegar medalhão de coral
+    - oeste
+    - sul
+    - sul
+    - leste
+    - pegar balde
+    - usar bomba de ar no bote
+    - empurrar bote
+    - norte
+    - usar remo no bote
+    - norte
+    - usar balde
+    - norte
+    - norte
+    - norte
+    fim: lança chega
+  - nome: maré sobe
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
+    - leste
+    - norte
+    - puxar alavanca
+    - usar cartão perfurado no painel
+    - usar anel
+    - entrar
+    - leste
+    - trocar tapete
+    - usar chave de ferro na porta
+    - norte
+    - abrir baú
+    - pegar bússola
+    - pegar remo
+    - pegar bomba de ar
+    - sul
+    - oeste
+    - norte
+    - usar facão nos cipós
+    - leste
+    - pegar medalhão de coral
+    - oeste
+    - sul
+    - sul
+    - leste
+    - pegar balde
+    - usar bomba de ar no bote
+    - empurrar bote
+    - norte
+    - usar remo no bote
+    - norte
+    - usar balde
+    - norte
+    - norte
+    - dar caixa de bijuterias aos nativos
+    - norte
+    - usar carta das marés no santuário
+    - norte
+    - usar medalhão de coral na porta
+    - entrar
+    - sul
+    - sul
+    - sul
+    - oeste
+    - leste
+    - oeste
+    fim: volta para o fundo do mar
+  - nome: bote afunda na volta
+    comandos:
+    - abrir escrivaninha
+    - pegar chave de latão
+    - cima
+    - usar chave de latão no baú
+    - pegar cartão perfurado
+    - pegar carta das marés
+    - pegar lanterna
+    - pegar caixa de bijuterias
+    - baixo
+    - norte
+    - ler diário
+    - sul
+    - pegar tapete
+    - acender lanterna
+    - baixo
+    - empurrar estante
+    - leste
+    - norte
+    - puxar alavanca
+    - usar cartão perfurado no painel
+    - usar anel
+    - entrar
+    - leste
+    - trocar tapete
+    - usar chave de ferro na porta
+    - norte
+    - abrir baú
+    - pegar bússola
+    - pegar remo
+    - pegar bomba de ar
+    - sul
+    - oeste
+    - norte
+    - usar facão nos cipós
+    - leste
+    - pegar medalhão de coral
+    - oeste
+    - sul
+    - sul
+    - leste
+    - pegar balde
+    - usar bomba de ar no bote
+    - empurrar bote
+    - norte
+    - usar remo no bote
+    - norte
+    - usar balde
+    - norte
+    - norte
+    - dar caixa de bijuterias aos nativos
+    - norte
+    - usar carta das marés no santuário
+    - norte
+    - usar medalhão de coral na porta
+    - entrar
+    - sul
+    - sul
+    - sul
+    - usar bomba de ar no bote
+    - sul
+    - sul
+    - sul
+    fim: afunda de vez
