@@ -22,7 +22,7 @@
           "id": "background_c79cba66",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_n_322aa0.png",
+          "sprite": "backgrounds/Scene_389dc449.png",
           "position": {
             "x": 960,
             "y": 540
@@ -81,14 +81,14 @@
           "id": "obj_chave_de_latao_f2e2",
           "name": "chave de latão",
           "type": "item",
-          "sprite": "sprites/Sprite_obj_chave_de_latao_f2e2_2ae689.png",
+          "sprite": "sprites/Lit_obj_chave_de_latao_f2e2_caf77e.png",
           "position": {
-            "x": 513,
-            "y": 639
+            "x": 510,
+            "y": 636
           },
           "size": {
-            "width": 20,
-            "height": 36
+            "width": 52,
+            "height": 40
           },
           "scale": {
             "x": 1,
@@ -106,7 +106,9 @@
             ]
           },
           "actions": [],
-          "ses": ""
+          "ses": "",
+          "sprite_original": "sprites/Sprite_obj_chave_de_latao_f2e2_import_de65ba.png",
+          "light": 0.5
         },
         {
           "id": "obj_relogio_de_pendulo_3287",
@@ -212,8 +214,18 @@
       "variants": [
         {
           "when": "flag(tapete_enrolado)",
-          "change": "só o tapete persa do chão muda - ele virou um rolo comprido deitado no assoalho, junto ao rodapé, embaixo da mesa da direita; no centro do assoalho, onde ele estava, há um alçapão de madeira aberto com uma escada descendo para o escuro. A escrivaninha de tampo corrido à esquerda, o lampião, a mesinha, a mesa da direita e a escada continuam exatamente iguais",
-          "background": "backgrounds/Variant_2f6323a2.png"
+          "background": "backgrounds/Variant_import_a1e2b877.png",
+          "change": "tapete enrolado junto à parede e alçapão aberto no chão; a escrivaninha continua fechada"
+        },
+        {
+          "when": "flag(escrivaninha_aberta)",
+          "background": "backgrounds/Variant_import_90e8724c.png",
+          "change": "a tampa corrediça da escrivaninha está levantada: aparecem o tampo de escrever, papéis e um bloco branco"
+        },
+        {
+          "when": "flag(escrivaninha_aberta) and flag(tapete_enrolado)",
+          "background": "backgrounds/Variant_import_90b215be.png",
+          "change": "escrivaninha aberta e tapete enrolado com o alçapão aberto"
         }
       ],
       "sound": {
@@ -481,14 +493,14 @@
     "scene_cb0dfc72": {
       "id": "scene_cb0dfc72",
       "name": "Porão",
-      "description": "Chão de cimento rachado, uma lâmpada queimada pendurada no teto e prateleiras cheias de caixas. A escada de madeira sobe de volta ao alçapão do escritório. Uma das estantes está estranhamente afastada da parede.",
+      "description": "Chão de cimento rachado e prateleiras cheias de caixas, escuro como breu: só o facho da lanterna mostra alguma coisa. A escada de madeira sobe de volta ao alçapão do escritório. Uma das estantes está estranhamente afastada da parede.",
       "exits": {},
       "objects": [
         {
           "id": "background_9af12029",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_8deeede1.png",
+          "sprite": "backgrounds/Scene_import_cb35bee7.png",
           "position": {
             "x": 960,
             "y": 540
@@ -550,8 +562,14 @@
       "variants": [
         {
           "when": "flag(estante_movida)",
-          "change": "só a estante de madeira alta à direita do centro muda - ela girou sobre um eixo e está afastada em ângulo, e na parede de trás, onde ela estava, abriu-se uma passagem em arco de pedra escura que leva a um corredor de pedra. A escada, a lâmpada, o balde e o resto do porão continuam exatamente iguais",
-          "background": "backgrounds/Variant_06939874.png"
+          "background": "backgrounds/Variant_0a072212.png",
+          "change": "só a estante de madeira alta iluminada à direita do centro muda - ela girou sobre um eixo e está afastada em ângulo, e na parede de trás, onde ela estava, abriu-se uma passagem em arco de pedra escura que leva a um corredor de pedra. O facho de luz quente da lanterna continua no mesmo lugar, agora iluminando a passagem em arco e a estante girada. A escada, o balde e o resto do porão continuam exatamente iguais e escuros",
+          "review": {
+            "problems": [
+              "A estante de madeira desapareceu em vez de ser mostrada girada/afastada em ângulo ao lado da passagem."
+            ],
+            "at": "2026-11-15 23:16"
+          }
         }
       ],
       "dark": {

@@ -311,9 +311,18 @@ async def run_tool(project_name: str, name: str, args: Optional[Dict[str, Any]])
         if name in BLUEPRINT_TOOLS:
             return await _blueprint_tool(project_name, name, args)
         if name in ART_TOOLS:
-            return await _art_tool(project_name, name, args)
+            result = await _art_tool(project_name, name, args)
+            if name == "create_background_variant" and "error" not in result:
+                if await asyncio.to_thread(blueprint.sync_file, project_name):   # the variant is in the ficha
+                    result = {**result, "ficha": "atualizada"}
+            return result
         if name in ASSET_TOOLS:
-            return await _asset_tool(project_name, name, args)
+            result = await _asset_tool(project_name, name, args)
+            if name == "import_background" and args.get("when") and "error" not in result:
+                # a variant is part of the ficha: keep it there, or a rebuild would drop it
+                if await asyncio.to_thread(blueprint.sync_file, project_name):
+                    result = {**result, "ficha": "atualizada"}
+            return result
         if name in CHARACTER_TOOLS:
             return await _character_tool(project_name, name, args)
         if name == "generate_image_and_set_as_background":
