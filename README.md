@@ -45,6 +45,8 @@ O caminho tem duas fases:
   (21 cenas, da mansão de um oceanógrafo desaparecido a um templo numa ilha), feito pela ficha. A
   própria ficha traz a solução e as mortes, testadas. Arte gerada com FLUX.1 Kontext numa RTX 3060, e
   sons com Stable Audio.
+- **Servidor MCP** para a sua própria IA (Claude, ChatGPT...) construir o jogo de fora do editor,
+  com as mesmas ferramentas do Diretor. Veja [Fazendo o jogo com a sua IA, pelo MCP](#fazendo-o-jogo-com-a-sua-ia-pelo-mcp).
 
 Um trecho real, de quando o Diretor criou e testou um jogo sozinho:
 
@@ -61,6 +63,56 @@ A chave abre a porta com um estalo!
 > norte
 Parabéns! Você escapou da cabana e alcançou a liberdade na floresta!
 ```
+
+## Fazendo o jogo com a sua IA, pelo MCP
+
+O Saga tem um servidor [MCP](https://modelcontextprotocol.io) embutido
+(`backend/services/mcp_server.py`). Com ele, a IA que você já usa (Claude, ChatGPT, Gemini...)
+opera o editor por fora, com as mesmas ferramentas do Diretor: são 37, de `create_scene` e
+`set_script` a `playtest`, `create_scene_art` e `import_background`. O servidor sobe junto com o
+Saga e só atende a própria máquina:
+
+```bash
+# com o Saga rodando (porta 8070); no Claude Code, por exemplo:
+claude mcp add --transport http saga http://127.0.0.1:8070/mcp/
+```
+
+### Por que fica mais rápido e mais fácil (relato de quem usou)
+
+Grande parte de *Marés Silenciosas* foi montada e ajustada por mim, Claude, conversando com o
+autor e usando este MCP. Mudanças como "o comerciante troca o tapete pelo facão", "não dá para
+atravessar a selva sem facão", "o bote enche de água até usar o balde" e "as luvas salvam da
+jararaca" levaram minutos cada uma, com o jogo testado no fim. Os motivos:
+
+- **Não preciso conhecer as entranhas do projeto.** Eu não edito `project.json` na mão nem
+  adivinho onde fica cada arquivo. Peço "esta imagem passa a valer quando `flag(cipos_cortados)`"
+  e o Saga grava a variante, renomeia o arquivo, atualiza a ficha e mantém os ids que os saves
+  usam. O que eu digo é o jogo; onde e como guardar fica com o Saga.
+- **Tudo é validado antes de entrar.** Um script SES com erro volta com linha e coluna, não vira
+  um jogo quebrado. Um objeto que um script cita mas não existe aparece na hora. Não sobra erro
+  escondido para o jogador achar.
+- **O jogo é testado a cada mudança, em segundos.** A ficha traz a solução e cada morte como
+  listas de comandos. Depois de qualquer mudança, o check roda os testes: a solução (70 comandos)
+  ainda vence? As 12 mortes ainda matam com o texto certo? Também uso o `playtest` para jogar um
+  trecho e ler a resposta exata. Assim, colocar luvas na troca do comerciante ou um perigo novo
+  no pântano é seguro: se eu quebrar o caminho, o teste avisa antes do autor.
+- **Eu consigo ver as cenas.** `render_scene` me devolve a imagem da cena com os objetos. Com ela
+  achei luvas escondidas atrás de uma caixa e um capitão pequeno demais na frente do balcão, e
+  mudei o lugar deles.
+- **A arte é uma ferramenta, não um processo à parte.** `create_scene_art`,
+  `edit_scene_background` e `create_background_variant` chamam o FLUX e encaixam o resultado no
+  jogo. Quando o modelo não acerta (ele não sabe "apagar as luzes" nem arredondar a proa de um
+  bote), corrijo a imagem com código (OpenCV) e devolvo com `import_background`. O MCP cuida do
+  jogo e eu cuido do que a IA de imagem não faz.
+- **A conversa vira o jogo direto.** O autor fala do jogo em português ("o tapete tem que ser
+  encardido, mas caro") e eu traduzo para ferramentas na hora, sem tela de editor no meio e sem
+  copiar e colar. As decisões dele viram mudança testada na mesma conversa.
+
+Cuidados que aprendi:
+- Gerar imagem leva minutos (`create_scene_art`, uns 8). `start_game_art` e `start_game_sound`
+  rodam em segundo plano; acompanhe com `get_job_status`.
+- Não rode em paralelo dois trabalhos que salvam o mesmo projeto: o último a salvar ganha, e o
+  que o outro gravou some.
 
 ## Como funciona a SES
 
