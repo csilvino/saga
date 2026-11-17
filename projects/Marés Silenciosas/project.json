@@ -193,7 +193,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco.",
+          "description": "Um tapete encardido, mas parece de fino trato e caro. Uma das pontas está levantada, como se alguém o tivesse mexido há pouco.",
           "properties": {
             "portable": false,
             "hidden": false,
@@ -225,7 +225,7 @@
           },
           "rotation": 0,
           "zIndex": 10,
-          "description": "O tapete persa de Tomás, enrolado, vermelho e azul, com franjas de seda. Pesado e bonito, de um tipo que não se vê em qualquer lugar.",
+          "description": "O tapete de Tomás, enrolado. Encardido, mas de fino trato e caro: franjas de seda e um desenho que não se vê em qualquer lugar.",
           "properties": {
             "portable": true,
             "hidden": true,
@@ -234,7 +234,7 @@
             ]
           },
           "actions": [],
-          "ses": "on use {\n  if here(\"Capitão Rocha\") {\n    set troca_feita; remove \"tapete persa\"; take \"chave de ferro\"; take facão\n    play \"tapete pesado desenrolado sobre balcão de madeira e moedas tilintando\"\n    say \"Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'\"\n  }\n  else { say \"Trocar com quem? Não há ninguém aqui interessado num tapete.\" }\n}\n",
+          "ses": "on use {\n  if here(\"Capitão Rocha\") {\n    set troca_feita; remove \"tapete persa\"; take \"chave de ferro\"; take facão; take \"luvas de couro\"\n    play \"tapete pesado desenrolado sobre balcão de madeira e moedas tilintando\"\n    say \"Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e, de baixo do balcão, um facão e um par de luvas grossas de couro. 'A chave abre o depósito. O facão e as luvas, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas. Calce as luvas antes de enfiar a mão onde não enxerga.'\"\n  }\n  else { say \"Trocar com quem? Não há ninguém aqui interessado num tapete.\" }\n}\n",
           "sprite_original": "sprites/Sprite_obj_tapete_persa_a16d_00fdfe.png",
           "light": 0.5
         }
@@ -245,8 +245,8 @@
       "variants": [
         {
           "when": "flag(tapete_enrolado)",
-          "change": "tapete enrolado junto à parede e alçapão aberto no chão; a escrivaninha continua fechada",
-          "background": "backgrounds/Variant_import_a1e2b877.png"
+          "change": "alçapão aberto no chão, sem o tapete (você o levou); a escrivaninha continua fechada",
+          "background": "backgrounds/Variant_import_ee2b856a.png"
         },
         {
           "when": "flag(escrivaninha_aberta)",
@@ -255,8 +255,8 @@
         },
         {
           "when": "flag(escrivaninha_aberta) and flag(tapete_enrolado)",
-          "change": "escrivaninha aberta e tapete enrolado com o alçapão aberto",
-          "background": "backgrounds/Variant_import_90b215be.png"
+          "change": "escrivaninha aberta e alçapão aberto, sem o tapete",
+          "background": "backgrounds/Variant_import_86921f2a.png"
         }
       ],
       "sound": {
@@ -866,7 +866,7 @@
     "scene_54ecade0": {
       "id": "scene_54ecade0",
       "name": "Colina da Chegada",
-      "description": "Uma trilha sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. Atrás de você, um círculo de pedras ainda zumbe. Ao longe, ruínas aparecem entre as árvores.",
+      "description": "Uma trilha de terra sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. No alto da trilha, o portal de pedras por onde você chegou ainda gira, azul e zumbindo.",
       "exits": {
         "leste": "scene_eff3c38f",
         "sul": "scene_3275efb2",
@@ -878,7 +878,7 @@
           "id": "background_d81284d6",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_a4d94814.png",
+          "sprite": "backgrounds/Scene_45980815.png",
           "position": {
             "x": 960,
             "y": 540
@@ -979,7 +979,7 @@
             ]
           },
           "actions": [],
-          "ses": "on talk {\n  if flag(troca_feita) { say \"'Negócio é negócio', diz Rocha, alisando o tapete. 'Cuidado com o que mora em tronco oco. E na ilhota, quem chega de mãos vazias não sai.'\" }\n  else { say \"'Aqui ninguém usa dinheiro, forasteiro. Aqui se troca.' Ele olha você de cima a baixo. 'Gente que vem pelo círculo de pedras às vezes traz coisas bonitas do outro lado. Panos bordados, tapetes... Isso sim eu aceito.'\" }\n}\non use with \"tapete persa\" {\n  if flag(troca_feita) { say \"Já negociamos.\" }\n  else {\n    set troca_feita; remove \"tapete persa\"; take \"chave de ferro\"; take facão\n    play \"tapete pesado desenrolado sobre balcão de madeira e moedas tilintando\"\n    say \"Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'\"\n  }\n}\non take { say \"Rocha segura o seu pulso com uma força que não combina com a idade. 'Aqui se troca. Não se toma.'\" }\n",
+          "ses": "on talk {\n  if flag(troca_feita) { say \"'Negócio é negócio', diz Rocha, alisando o tapete. 'Cuidado com o que mora em tronco oco. E na ilhota, quem chega de mãos vazias não sai.'\" }\n  else { say \"'Aqui ninguém usa dinheiro, forasteiro. Aqui se troca.' Ele olha você de cima a baixo. 'Gente que vem pelo círculo de pedras às vezes traz coisas bonitas do outro lado. Panos bordados, tapetes... Isso sim eu aceito.'\" }\n}\non use with \"tapete persa\" {\n  if flag(troca_feita) { say \"Já negociamos.\" }\n  else {\n    set troca_feita; remove \"tapete persa\"; take \"chave de ferro\"; take facão; take \"luvas de couro\"\n    play \"tapete pesado desenrolado sobre balcão de madeira e moedas tilintando\"\n    say \"Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e, de baixo do balcão, um facão e um par de luvas grossas de couro. 'A chave abre o depósito. O facão e as luvas, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas. Calce as luvas antes de enfiar a mão onde não enxerga.'\"\n  }\n}\non take { say \"Rocha segura o seu pulso com uma força que não combina com a idade. 'Aqui se troca. Não se toma.'\" }\n",
           "sprite_original": "sprites/Sprite_obj_capitao_rocha_4590_busto.png",
           "light": 0.5
         },
@@ -1048,6 +1048,40 @@
           "light": 0.5
         },
         {
+          "id": "obj_luvas_de_couro_f188",
+          "name": "luvas de couro",
+          "type": "item",
+          "sprite": "sprites/Lit_obj_luvas_de_couro_f188_23fd32.png",
+          "position": {
+            "x": 412,
+            "y": 558
+          },
+          "size": {
+            "width": 117,
+            "height": 100
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "rotation": 0,
+          "zIndex": 10,
+          "description": "Um par de luvas grossas de couro curtido, de cano longo, gastas nos dedos. Luvas de quem mexe em mato e em bicho.",
+          "properties": {
+            "portable": true,
+            "hidden": true,
+            "aliases": [
+              "luva",
+              "luvas",
+              "luva de couro"
+            ]
+          },
+          "actions": [],
+          "ses": "on use {\n  if not has(\"luvas de couro\") { say \"Primeiro pegue as luvas.\" }\n  else if flag(luvas_calcadas) { say \"Você já está com elas.\" }\n  else { set luvas_calcadas; play \"luvas grossas de couro sendo calçadas\"; say \"Você calça as luvas. O couro é duro e quente, e vai até o meio do braço.\" }\n}\n",
+          "sprite_original": "sprites/Sprite_obj_luvas_de_couro_f188_cdfc4b.png",
+          "light": 0.5
+        },
+        {
           "id": "obj_livro_de_contas_2f37",
           "name": "livro de contas",
           "type": "livro",
@@ -1109,7 +1143,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on open {\n  if flag(deposito_aberto) { say \"Já está aberta. O depósito fica ao norte.\" }\n  else { say \"O cadeado de ferro não cede.\" }\n}\non use with \"chave de ferro\" {\n  if flag(deposito_aberto) { say \"Já está aberta.\" }\n  else { set deposito_aberto; link norte to \"Depósito dos Fundos\"; link sul to \"Posto do Capitão Rocha\" in \"Depósito dos Fundos\"; play \"cadeado de ferro enferrujado abrindo e porta de madeira rangendo\"; say \"O cadeado abre com um estalo. A porta dá para o depósito, ao norte.\" }\n}\n"
+          "ses": "on open {\n  if flag(deposito_aberto) { say \"Já está aberta. O depósito fica ao norte.\" }\n  else { say \"O cadeado de ferro não cede.\" }\n}\non use with \"chave de ferro\" {\n  if flag(deposito_aberto) { say \"Já está aberta.\" }\n  else { set deposito_aberto; link norte to \"Depósito dos Fundos\"; link sul to \"Posto do Capitão Rocha\" in \"Depósito dos Fundos\"; play \"cadeado de ferro enferrujado abrindo e porta de madeira rangendo\"; say \"O cadeado abre com um estalo. Você o tira da argola e o deixa no chão. A porta dá para o depósito, ao norte.\" }\n}\n"
         }
       ],
       "hotspots": [],
@@ -1118,8 +1152,8 @@
       "variants": [
         {
           "when": "flag(deposito_aberto)",
-          "change": "só a porta de tábuas grossas na parede do fundo, atrás do balcão, muda - ela está escancarada para dentro e pela abertura se vê um depósito na penumbra; o cadeado de ferro, aberto, ficou pendurado na argola do batente, do lado de cá, bem à vista. O balcão, a bola de cristal, as prateleiras e o resto da loja continuam exatamente iguais",
-          "background": "backgrounds/Variant_23983746.png"
+          "change": "a porta de tábuas atrás do balcão está escancarada para dentro, sem cadeado, e pela abertura se vê o depósito na penumbra; o balcão sem a bola de cristal",
+          "background": "backgrounds/Variant_import_ff506335.png"
         }
       ],
       "sound": {
@@ -1364,7 +1398,7 @@
             "painted": true
           },
           "actions": [],
-          "ses": "on examine {\n  if flag(cobra_fugiu) { say \"Oco e vazio, só folhas podres.\" }\n  else { say \"Coberto de musgo, oco por dentro. Lá no fundo, entre as folhas podres, alguma coisa se mexe e chia baixinho.\" }\n}\non open {\n  if flag(cobra_fugiu) { say \"Só folhas podres e água. Nada que valha alguma coisa.\" }\n  else {\n    play \"chiado de cobra e bote rápido entre folhas secas\"\n    end \"Você enfia a mão no oco, entre as folhas podres. Uma picada no pulso, rápida como um estalo. A jararaca some na água escura, e o seu braço começa a queimar. O pântano fica muito longe de qualquer socorro.\"\n  }\n}\non use with facão {\n  if flag(cobra_fugiu) { say \"Não há mais nada lá dentro.\" }\n  else { set cobra_fugiu; play \"facão batendo em madeira podre e cobra escorregando na água\"; say \"Você cutuca o oco com a ponta do facão. Uma jararaca enorme escorrega para fora, sibila para você e some na água escura. Melhor não ter posto a mão.\" }\n}\non use { say \"Enfiar a mão aí dentro? Algo se mexe no fundo.\" }\n"
+          "ses": "on examine {\n  if flag(cobra_fugiu) { say \"Oco e vazio, só folhas podres.\" }\n  else { say \"Coberto de musgo, oco por dentro. Lá no fundo, entre as folhas podres, alguma coisa se mexe e chia baixinho.\" }\n}\non open {\n  if flag(cobra_fugiu) { say \"Só folhas podres e água. Nada que valha alguma coisa.\" }\n  else {\n    if flag(luvas_calcadas) and has(\"luvas de couro\") {\n      set cobra_fugiu; play \"chiado de cobra e bote rápido entre folhas secas\"\n      say \"Você enfia a mão no oco. Uma pancada seca no pulso: uma jararaca cravou os dentes na luva, mas o couro grosso aguentou. Você puxa o braço com a cobra pendurada; ela se solta, cai na lama e some na água escura. Lá dentro, só folhas podres.\"\n    }\n    else {\n    play \"chiado de cobra e bote rápido entre folhas secas\"\n    end \"Você enfia a mão no oco, entre as folhas podres. Uma picada no pulso, rápida como um estalo. A jararaca some na água escura, e o seu braço começa a queimar. O pântano fica muito longe de qualquer socorro.\"\n    }\n  }\n}\non use with facão {\n  if flag(cobra_fugiu) { say \"Não há mais nada lá dentro.\" }\n  else { set cobra_fugiu; play \"facão batendo em madeira podre e cobra escorregando na água\"; say \"Você cutuca o oco com a ponta do facão. Uma jararaca enorme escorrega para fora, sibila para você e some na água escura. Melhor não ter posto a mão.\" }\n}\non use { say \"Enfiar a mão aí dentro? Algo se mexe no fundo.\" }\n"
         }
       ],
       "hotspots": [],
@@ -1512,7 +1546,7 @@
           "id": "background_d00f92f6",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_cee999a5.png",
+          "sprite": "backgrounds/Scene_1ca52736.png",
           "position": {
             "x": 960,
             "y": 540
@@ -1541,12 +1575,12 @@
           "type": "movel",
           "sprite": "📦",
           "position": {
-            "x": 1560,
-            "y": 330
+            "x": 1450,
+            "y": 400
           },
           "size": {
-            "width": 680,
-            "height": 620
+            "width": 940,
+            "height": 800
           },
           "scale": {
             "x": 1,
@@ -1574,7 +1608,13 @@
       "hotspots": [],
       "actions": [],
       "ses": "",
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(cipos_cortados)",
+          "change": "os cipós da direita foram cortados a facão e abriu-se uma passagem escura entre as árvores",
+          "background": "backgrounds/Variant_import_8c8c8535.png"
+        }
+      ],
       "sound": {
         "ambient": "selva densa e úmida, pássaros, macacos ao longe, folhas pingando",
         "variants": [],
@@ -1780,7 +1820,7 @@
           "id": "background_ebab5fd2",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_366c31e1.png",
+          "sprite": "backgrounds/Scene_import_1ae65180.png",
           "position": {
             "x": 960,
             "y": 540
@@ -1812,7 +1852,13 @@
         "amount": 12.0,
         "period": 5.0
       },
-      "variants": [],
+      "variants": [
+        {
+          "when": "flag(agua_no_bote)",
+          "change": "o fundo do bote está cheio de água do mar",
+          "background": "backgrounds/Variant_import_61a829c4.png"
+        }
+      ],
       "sound": {
         "ambient": "mar aberto, ondas suaves batendo num bote de borracha, vento",
         "variants": [],
@@ -1832,7 +1878,7 @@
           "id": "background_ecab6da5",
           "name": "Background",
           "type": "background",
-          "sprite": "backgrounds/Scene_8f8e2c59.png",
+          "sprite": "backgrounds/Scene_import_cd911c2d.png",
           "position": {
             "x": 960,
             "y": 540
@@ -2414,6 +2460,10 @@
     "fechadura_de_latao_girando_e_tampa_de_bau_de_madeira_rangendo": {
       "text": "fechadura de latão girando e tampa de baú de madeira rangendo",
       "file": "audio/Sound_fechadura_de_latao_girando_e_tam_449d5f.ogg"
+    },
+    "luvas_grossas_de_couro_sendo_calcadas": {
+      "text": "luvas grossas de couro sendo calçadas",
+      "file": "audio/Sound_luvas_grossas_de_couro_sendo_cal_9a2a03.ogg"
     },
     "clique_de_interruptor_de_lanterna_de_metal": {
       "text": "clique de interruptor de lanterna de metal",

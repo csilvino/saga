@@ -129,10 +129,6 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
     <div
       style={style}
       onClick={onClick}
-      title={obj.name}
-      className={painted
-        ? "group rounded-md hover:outline hover:outline-2 hover:outline-cyan-300/60"
-        : "hover:scale-105 transition-transform duration-200 group"}
     >
       <div className="saga-fx" style={art}>
         {placeholder}
@@ -151,10 +147,6 @@ const AnimatedObject = ({ obj, projectName, onClick, invisible = false }: { obj:
         })}
       </div>
       {!invisible && <Glow effect={obj.effect} id={obj.id} />}
-      {/* Tooltip opcional */}
-      <div className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-900 px-2 py-1 rounded z-10 pointer-events-none">
-        {obj.name}
-      </div>
     </div>
   );
 };
@@ -612,8 +604,6 @@ const GamePlayer: React.FC<GamePlayerProps> = ({ project, initialSceneId, onClos
             </div>
 
             <div className="mt-2 flex items-center gap-4 text-gray-500" style={{ fontSize: `${fontSize - 2}px` }}>
-              <span>💡 Clique num objeto para examiná-lo</span>
-              <span>•</span>
               <span>Digite AJUDA para ver todos os comandos</span>
             </div>
           </div>

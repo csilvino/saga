@@ -78,7 +78,7 @@ cenas:
       - 0.595
       altura: 0.19
   - nome: tapete
-    descricao: Um tapete persa grande, vermelho e azul, gasto no meio. Uma das pontas está levantada, como se alguém
+    descricao: Um tapete encardido, mas parece de fino trato e caro. Uma das pontas está levantada, como se alguém
       o tivesse mexido há pouco.
     tipo: movel
     apelidos:
@@ -98,8 +98,8 @@ cenas:
         say "Você enrola o tapete e o põe no ombro. É pesado, mas é um belo tapete persa: alguém, em algum lugar, pagaria bem por ele. No assoalho, onde ele estava, aparece a tampa de um alçapão com uma argola de ferro. Você a levanta: uma escada de madeira desce para o escuro."
       }
   - nome: tapete persa
-    descricao: O tapete persa de Tomás, enrolado, vermelho e azul, com franjas de seda. Pesado e bonito, de um tipo
-      que não se vê em qualquer lugar.
+    descricao: 'O tapete de Tomás, enrolado. Encardido, mas de fino trato e caro: franjas de seda e um desenho que
+      não se vê em qualquer lugar.'
     pegavel: true
     escondido: true
     apelidos:
@@ -107,20 +107,20 @@ cenas:
     script: |
       on use {
         if here("Capitão Rocha") {
-          set troca_feita; remove "tapete persa"; take "chave de ferro"; take facão
+          set troca_feita; remove "tapete persa"; take "chave de ferro"; take facão; take "luvas de couro"
           play "tapete pesado desenrolado sobre balcão de madeira e moedas tilintando"
-          say "Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'"
+          say "Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e, de baixo do balcão, um facão e um par de luvas grossas de couro. 'A chave abre o depósito. O facão e as luvas, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas. Calce as luvas antes de enfiar a mão onde não enxerga.'"
         }
         else { say "Trocar com quem? Não há ninguém aqui interessado num tapete." }
       }
   variantes:
   - quando: flag(tapete_enrolado)
-    mudanca: tapete enrolado junto à parede e alçapão aberto no chão; a escrivaninha continua fechada
+    mudanca: alçapão aberto no chão, sem o tapete (você o levou); a escrivaninha continua fechada
   - quando: flag(escrivaninha_aberta)
     mudanca: 'a tampa corrediça da escrivaninha está levantada: aparecem o tampo de escrever, papéis e um bloco
       branco'
   - quando: flag(escrivaninha_aberta) and flag(tapete_enrolado)
-    mudanca: escrivaninha aberta e tapete enrolado com o alçapão aberto
+    mudanca: escrivaninha aberta e alçapão aberto, sem o tapete
 - nome: Sótão
   descricao: O telhado inclinado deixa pouco espaço para ficar em pé. Poeira grossa no assoalho, caixas de papelão
     e, encostado na parede, um baú antigo com ferragens.
@@ -329,8 +329,8 @@ cenas:
     morte: Você tateia no escuro, o pé se enrosca num cabo grosso e a mão bate num terminal desencapado. Um estalo
       azul, um cheiro de queimado, e depois nada.
 - nome: Colina da Chegada
-  descricao: Uma trilha sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. Atrás de você,
-    um círculo de pedras ainda zumbe. Ao longe, ruínas aparecem entre as árvores.
+  descricao: Uma trilha de terra sobe entre palmeiras e flores enormes, sob um céu limpo demais para ser real. No
+    alto da trilha, o portal de pedras por onde você chegou ainda gira, azul e zumbindo.
   script: |
     on first_enter {
       say "Você atravessa a luz e cai de joelhos numa trilha quente. O ar é salgado. Não há sinal de casa, nem de ninguém."
@@ -371,9 +371,9 @@ cenas:
       on use with "tapete persa" {
         if flag(troca_feita) { say "Já negociamos." }
         else {
-          set troca_feita; remove "tapete persa"; take "chave de ferro"; take facão
+          set troca_feita; remove "tapete persa"; take "chave de ferro"; take facão; take "luvas de couro"
           play "tapete pesado desenrolado sobre balcão de madeira e moedas tilintando"
-          say "Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e de baixo do balcão um facão. 'A chave abre o depósito. O facão, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas.'"
+          say "Rocha desenrola o tapete sobre o balcão e passa a mão nas franjas de seda, devagar. 'Persa. De verdade.' Ele tira do cinto uma chave de ferro e, de baixo do balcão, um facão e um par de luvas grossas de couro. 'A chave abre o depósito. O facão e as luvas, você vai precisar: a selva daqui não deixa ninguém passar de mãos limpas. Calce as luvas antes de enfiar a mão onde não enxerga.'"
         }
       }
       on take { say "Rocha segura o seu pulso com uma força que não combina com a idade. 'Aqui se troca. Não se toma.'" }
@@ -391,6 +391,21 @@ cenas:
     - facao
     - machete
     - faca
+  - nome: luvas de couro
+    descricao: Um par de luvas grossas de couro curtido, de cano longo, gastas nos dedos. Luvas de quem mexe em
+      mato e em bicho.
+    pegavel: true
+    escondido: true
+    apelidos:
+    - luva
+    - luvas
+    - luva de couro
+    script: |
+      on use {
+        if not has("luvas de couro") { say "Primeiro pegue as luvas." }
+        else if flag(luvas_calcadas) { say "Você já está com elas." }
+        else { set luvas_calcadas; play "luvas grossas de couro sendo calçadas"; say "Você calça as luvas. O couro é duro e quente, e vai até o meio do braço." }
+      }
   - nome: livro de contas
     descricao: Um livro grosso de capa vermelha, aberto sobre o balcão, ao lado da bola de cristal.
     tipo: livro
@@ -414,14 +429,12 @@ cenas:
       }
       on use with "chave de ferro" {
         if flag(deposito_aberto) { say "Já está aberta." }
-        else { set deposito_aberto; link norte to "Depósito dos Fundos"; link sul to "Posto do Capitão Rocha" in "Depósito dos Fundos"; play "cadeado de ferro enferrujado abrindo e porta de madeira rangendo"; say "O cadeado abre com um estalo. A porta dá para o depósito, ao norte." }
+        else { set deposito_aberto; link norte to "Depósito dos Fundos"; link sul to "Posto do Capitão Rocha" in "Depósito dos Fundos"; play "cadeado de ferro enferrujado abrindo e porta de madeira rangendo"; say "O cadeado abre com um estalo. Você o tira da argola e o deixa no chão. A porta dá para o depósito, ao norte." }
       }
   variantes:
   - quando: flag(deposito_aberto)
-    mudanca: só a porta de tábuas grossas na parede do fundo, atrás do balcão, muda - ela está escancarada para
-      dentro e pela abertura se vê um depósito na penumbra; o cadeado de ferro, aberto, ficou pendurado na argola
-      do batente, do lado de cá, bem à vista. O balcão, a bola de cristal, as prateleiras e o resto da loja continuam
-      exatamente iguais
+    mudanca: a porta de tábuas atrás do balcão está escancarada para dentro, sem cadeado, e pela abertura se vê
+      o depósito na penumbra; o balcão sem a bola de cristal
 - nome: Depósito dos Fundos
   descricao: Um quarto de tábuas com uma janela pequena e uma lâmpada fraca. Cordas, garrafas e caixas pelo chão.
     Contra a parede, um baú com ferragens pesadas.
@@ -481,8 +494,14 @@ cenas:
       on open {
         if flag(cobra_fugiu) { say "Só folhas podres e água. Nada que valha alguma coisa." }
         else {
+          if flag(luvas_calcadas) and has("luvas de couro") {
+            set cobra_fugiu; play "chiado de cobra e bote rápido entre folhas secas"
+            say "Você enfia a mão no oco. Uma pancada seca no pulso: uma jararaca cravou os dentes na luva, mas o couro grosso aguentou. Você puxa o braço com a cobra pendurada; ela se solta, cai na lama e some na água escura. Lá dentro, só folhas podres."
+          }
+          else {
           play "chiado de cobra e bote rápido entre folhas secas"
           end "Você enfia a mão no oco, entre as folhas podres. Uma picada no pulso, rápida como um estalo. A jararaca some na água escura, e o seu braço começa a queimar. O pântano fica muito longe de qualquer socorro."
+          }
         }
       }
       on use with facão {
@@ -584,6 +603,9 @@ cenas:
         }
       }
       on push { say "Eles cedem um pouco e voltam, como molas. Sem algo para cortar, não passa." }
+  variantes:
+  - quando: flag(cipos_cortados)
+    mudanca: os cipós da direita foram cortados a facão e abriu-se uma passagem escura entre as árvores
 - nome: Fenda Escura
   descricao: Uma rachadura enorme na rocha, molhada e coberta de musgo. A água escorre pelas paredes e some num
     buraco sem fundo no meio do chão.
@@ -667,6 +689,9 @@ cenas:
       para: Praia do Barco Velho
       volta: false
   som: mar aberto, ondas suaves batendo num bote de borracha, vento
+  variantes:
+  - quando: flag(agua_no_bote)
+    mudanca: o fundo do bote está cheio de água do mar
 - nome: Mar da Ilhota
   descricao: A névoa se abre. Ao norte, uma ilhota verde surge do mar, como se tivesse acabado de nascer. A água
     está baixa, quase parada.

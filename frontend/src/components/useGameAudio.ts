@@ -150,6 +150,18 @@ export function useGameAudio(projectName: string, ambient: string | null | undef
   // mute / RETRO changed
   useEffect(() => { route(); }, [muted, retro, route]);
 
+  // browsers start audio suspended until the page gets a click or a key (e.g. right after a
+  // reload): resume on the first gesture, so the sounds already started are heard
+  useEffect(() => {
+    const wake = () => {
+      const c = ctxRef.current;
+      if (c && c.state === 'suspended') c.resume().catch(() => { /* still blocked */ });
+    };
+    const evs = ['pointerdown', 'keydown', 'touchstart'] as const;
+    evs.forEach(e => window.addEventListener(e, wake, true));
+    return () => evs.forEach(e => window.removeEventListener(e, wake, true));
+  }, []);
+
   // leaving the player: silence and free the audio device
   useEffect(() => () => {
     voices.current.forEach(v => v.timer && window.clearTimeout(v.timer));
